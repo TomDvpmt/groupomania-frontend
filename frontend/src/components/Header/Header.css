@@ -1,0 +1,9 @@
+.header {
+    border: 1px solid black;
+}
+
+.header__logo {
+    max-width: 300px;
+    display: block;
+    margin: auto;
+}

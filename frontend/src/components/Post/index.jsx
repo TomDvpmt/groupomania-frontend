@@ -5,7 +5,7 @@ const Post = () => {
             <div className="post__content">
                 <img
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/NZ_Landscape_from_the_van.jpg/800px-NZ_Landscape_from_the_van.jpg"
-                    alt="post image"
+                    alt="post illustration"
                 />
                 <p>
                     Lorem ipsum dolor sit, amet consectetur adipisicing elit.

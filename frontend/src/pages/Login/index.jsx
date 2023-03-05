@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { fetchCredentials } from "../../utils/user";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isCredentialsMatch, setIsCredentialsMatch] = useState(true);
 
     const handleChange = (e) => {
         if (e.target.name === "email") {
@@ -22,14 +24,11 @@ const Login = () => {
             password: password,
         };
 
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/auth/login`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(loginData),
-        })
-            .then((data) => console.log(data))
+        fetchCredentials("login", loginData)
+            .then((response) => {
+                console.log("========= response : =======", response);
+                setIsCredentialsMatch(response.status === 401 ? false : true);
+            })
             .catch((error) => console.log(error));
     };
 
@@ -42,6 +41,7 @@ const Login = () => {
                     placeholder="Entrez votre adresse e-mail"
                     value={email}
                     onChange={handleChange}
+                    required
                 />
                 <input
                     type="password"
@@ -49,9 +49,15 @@ const Login = () => {
                     placeholder="Entrez votre mot de passe"
                     value={password}
                     onChange={handleChange}
+                    required
                 />
                 <button>Login</button>
             </form>
+            {!isCredentialsMatch && (
+                <p className="credentials-error">
+                    La paire email / mot de passe est incorrecte.
+                </p>
+            )}
             <Link to="/signup">Créer un compte</Link>
         </React.Fragment>
     );

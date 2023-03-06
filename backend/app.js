@@ -2,8 +2,16 @@ const express = require("express");
 const app = express();
 const userRoutes = require("./routes/user");
 const postRoutes = require("./routes/post");
+require('dotenv').config();
 
-// connection to DB
+
+// Database connection
+
+const {initializeDbConnection} = require("./database/db-connect");
+initializeDbConnection();
+
+
+// Routes
 
 app.use(express.json());
 

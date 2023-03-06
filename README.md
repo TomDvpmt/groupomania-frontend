@@ -6,6 +6,8 @@
 ```terminal
 npm install
 ```
+- Install MySql by following these steps : [https://openclassrooms.com/fr/courses/6971126-implementez-vos-bases-de-donnees-relationnelles-avec-sql/7152681-installez-le-sgbd-mysql](https://openclassrooms.com/fr/courses/6971126-implementez-vos-bases-de-donnees-relationnelles-avec-sql/7152681-installez-le-sgbd-mysql)
+
 
 # Launching the app
 

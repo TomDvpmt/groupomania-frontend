@@ -27,7 +27,7 @@ const model = (sequelize) => {
         //
     };
 
-    return sequelize.define("user", attributes, options);
+    return sequelize.define("User", attributes, options);
 };
 
 module.exports = model;

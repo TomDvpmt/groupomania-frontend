@@ -19,7 +19,7 @@ const model = (sequelize) => {
         //
     };
 
-    return sequelize.define("like", attributes, options);
+    return sequelize.define("Like", attributes, options);
 };
 
 module.exports = model;

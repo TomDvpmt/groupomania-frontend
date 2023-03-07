@@ -5,7 +5,7 @@ import { fetchCredentials } from "../../utils/user";
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [isCredentialsMatch, setIsCredentialsMatch] = useState(true);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleChange = (e) => {
         if (e.target.name === "email") {
@@ -26,9 +26,13 @@ const Login = () => {
 
         fetchCredentials("login", loginData)
             .then((response) => {
-                console.log("========= response : =======", response);
-                setIsCredentialsMatch(response.status === 401 ? false : true);
+                if (response.status !== 200) {
+                    return response.json();
+                } else {
+                    response.json().then((result) => console.log(result));
+                }
             })
+            .then(({ message }) => setErrorMessage(message))
             .catch((error) => console.log(error));
     };
 
@@ -53,10 +57,8 @@ const Login = () => {
                 />
                 <button>Login</button>
             </form>
-            {!isCredentialsMatch && (
-                <p className="credentials-error">
-                    La paire email / mot de passe est incorrecte.
-                </p>
+            {errorMessage !== "" && (
+                <p className="credentials-error">{errorMessage}</p>
             )}
             <Link to="/signup">Créer un compte</Link>
         </React.Fragment>

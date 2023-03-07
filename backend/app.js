@@ -1,14 +1,15 @@
+require('dotenv').config();
 const express = require("express");
 const app = express();
 const userRoutes = require("./routes/user");
 const postRoutes = require("./routes/post");
-require('dotenv').config();
+const dbSetUp = require("./database/db-setup-mysql");
 
+dbSetUp();
 
-// Database connection
-
-const {initializeDbConnection} = require("./database/db-connect");
-initializeDbConnection();
+// // Database connection with sequelize
+// const {initializeDbConnection} = require("./database/db-connect-sequelize");
+// initializeDbConnection();
 
 
 // Routes

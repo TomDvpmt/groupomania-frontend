@@ -6,8 +6,7 @@ const SignUp = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
-    const [isPasswordMatch, setIsPasswordMatch] = useState(true);
-    const [userAlreadyExists, setUserAlreadyExists] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleChange = (e) => {
         if (e.target.name === "email") {
@@ -25,8 +24,6 @@ const SignUp = () => {
         e.preventDefault();
 
         if (password === passwordConfirm) {
-            setIsPasswordMatch(true);
-
             const signUpData = {
                 email: email,
                 password: password,
@@ -34,14 +31,15 @@ const SignUp = () => {
 
             fetchCredentials("signup", signUpData)
                 .then((response) => {
-                    console.log("========= response : =======", response);
-                    setUserAlreadyExists(
-                        response.status === 201 ? false : true
-                    );
+                    if (response.status !== 201) {
+                        return response.json();
+                    } else {
+                    }
                 })
+                .then(({ message }) => setErrorMessage(message))
                 .catch((error) => console.log(error));
         } else {
-            setIsPasswordMatch(false);
+            setErrorMessage("Les mots de passe ne correspondent pas.");
         }
     };
 
@@ -73,7 +71,7 @@ const SignUp = () => {
                     required
                 />
                 <button>Sign up</button>
-                {!isPasswordMatch && (
+                {/* {!isPasswordMatch && (
                     <p className="credentials-error">
                         Les mots de passe ne correspondent pas.
                     </p>
@@ -83,6 +81,9 @@ const SignUp = () => {
                         Cet email est déjà utilisé, veuillez en choisir un
                         autre.
                     </p>
+                )} */}
+                {errorMessage !== "" && (
+                    <p className="credentials-error">{errorMessage}</p>
                 )}
             </form>
             <Link to="/login">Déjà un compte ? S'identifier</Link>

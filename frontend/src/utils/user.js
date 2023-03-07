@@ -11,3 +11,7 @@ exports.fetchCredentials = (endpoint, credentialsData) => {
     );
     return response;
 };
+
+exports.logOut = (setToken) => {
+    setToken(null);
+};

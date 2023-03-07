@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchCredentials } from "../../utils/user";
 
-const Login = () => {
+const Login = ({ token, setToken }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+
+    console.log("token :", token);
 
     const handleChange = (e) => {
         if (e.target.name === "email") {
@@ -18,7 +20,6 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         const loginData = {
             email: email,
             password: password,
@@ -27,12 +28,15 @@ const Login = () => {
         fetchCredentials("login", loginData)
             .then((response) => {
                 if (response.status !== 200) {
-                    return response.json();
+                    response
+                        .json()
+                        .then(({ message }) => setErrorMessage(message));
                 } else {
-                    response.json().then((result) => console.log(result));
+                    response.json().then(({ token }) => {
+                        setToken(token);
+                    });
                 }
             })
-            .then(({ message }) => setErrorMessage(message))
             .catch((error) => console.log(error));
     };
 

@@ -71,17 +71,6 @@ const SignUp = () => {
                     required
                 />
                 <button>Sign up</button>
-                {/* {!isPasswordMatch && (
-                    <p className="credentials-error">
-                        Les mots de passe ne correspondent pas.
-                    </p>
-                )}
-                {userAlreadyExists && (
-                    <p className="credentials-error">
-                        Cet email est déjà utilisé, veuillez en choisir un
-                        autre.
-                    </p>
-                )} */}
                 {errorMessage !== "" && (
                     <p className="credentials-error">{errorMessage}</p>
                 )}

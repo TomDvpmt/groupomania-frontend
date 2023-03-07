@@ -39,7 +39,6 @@ exports.login = (req, res, next) => {
 
     const email = req.body.email;
     const password = req.body.password;
-    console.log("========= User input : ", email, password)
 
     connectToDb()
         .then(connection => {
@@ -66,16 +65,18 @@ exports.login = (req, res, next) => {
                                 bcrypt.compare(password, passwordHash)
                                 .then(isValidPassword => {
                                     if(!isValidPassword) {
+                                        close(connection);
                                         return res.status(401).json({message: "Email ou mot de passe invalide."})
                                     }
                                     else {
+                                        close(connection);
                                         res.status(200).json({
                                             userId: userId,
                                             token: jwt.sign(
                                                 {userId: userId},
                                                 process.env.TOKEN_CREATION_PHRASE
                                             )
-                                        })
+                                        });
                                     }
                                 })
                                 .catch(() => res.status(500).json({message: "Oops !"}))

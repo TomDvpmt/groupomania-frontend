@@ -7,22 +7,46 @@ const close = (connection) => {
     console.log("========= Déconnexion de la base de données. =============");
 };
 
+const logAfterSignUp = (connection, email, res) => {
+    connection.execute(`
+        SELECT id
+        FROM users
+        WHERE email = ?
+    `, [email])
+    .then(([rows]) => {
+        const userId = rows[0].id;
+        res.status(201).json({
+            userId: userId,
+            token: jwt.sign(
+                {userId: userId},
+                process.env.TOKEN_CREATION_PHRASE
+            )
+        });
+        close(connection);
+        console.log("======== Utilisateur créé et connecté à l'application. ==========")
+    })
+    .catch(error => console.log("============ Connexion à l'application impossible :", error));
+}
+
 exports.signUp = async (req, res, next) => {
 
     const hash = await bcrypt.hash(req.body.password, 10);
 
     connectToDb()
         .then(connection => {
+
+            const email = req.body.email;
+
             connection.execute(`
                 INSERT INTO users (email, passwordHash)
                 VALUES (?, ?)
             `,
-            [req.body.email, hash]
+            [email, hash]
             )
                 .then(() => {
-                    console.log("======= Utilisateur créé. ==========");
-                    close(connection);
-                    return res.status(201);
+                    logAfterSignUp(connection, email, res);                   
+                    // close(connection);
+                    // return res.status(201);
                 })
                 .catch(error => {
                     console.log("========= Impossible de créer l'utilisateur :", error);
@@ -77,10 +101,12 @@ exports.login = (req, res, next) => {
                                                 process.env.TOKEN_CREATION_PHRASE
                                             )
                                         });
+                                        console.log("======== Utilisateur connecté à l'application. ==========")
                                     }
                                 })
                                 .catch(() => res.status(500).json({message: "Oops !"}))
                             })
+                            .catch(() => console.log("============ Connexion à l'application impossible :", error));
                     }
                 })
                 .catch(error => {

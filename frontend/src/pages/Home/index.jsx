@@ -2,11 +2,17 @@ import React, { useEffect, useState } from "react";
 import Post from "../../components/Post";
 import PostForm from "../../components/PostForm";
 
-const Home = () => {
+const Home = ({ token }) => {
     const [posts, setPosts] = useState([]);
 
+    console.log("token :", token);
+
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/post`)
+        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/post`, {
+            headers: {
+                Authorization: `BEARER ${token}`,
+            },
+        })
             .then((response) => response.json())
             .then((data) => {
                 return data.map((post) => (
@@ -20,7 +26,9 @@ const Home = () => {
                 ));
             })
             .then((postsList) => setPosts(postsList))
-            .catch((error) => console.log(error));
+            .catch((error) =>
+                console.error("Impossible d'afficher les posts :", error)
+            );
     }, []);
 
     return (

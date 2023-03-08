@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchCredentials } from "../../utils/user";
 
-const Login = ({ token, setToken }) => {
+const Login = ({ setToken }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
-    console.log("token :", token);
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         if (e.target.name === "email") {
@@ -34,6 +34,7 @@ const Login = ({ token, setToken }) => {
                 } else {
                     response.json().then(({ token }) => {
                         setToken(token);
+                        navigate("/");
                     });
                 }
             })
@@ -42,6 +43,7 @@ const Login = ({ token, setToken }) => {
 
     return (
         <React.Fragment>
+            <h1>Connexion</h1>
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"

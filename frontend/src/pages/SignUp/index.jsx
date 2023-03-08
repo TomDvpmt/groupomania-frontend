@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchCredentials } from "../../utils/user";
 
-const SignUp = () => {
+const SignUp = ({ setToken }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         if (e.target.name === "email") {
@@ -32,11 +34,16 @@ const SignUp = () => {
             fetchCredentials("signup", signUpData)
                 .then((response) => {
                     if (response.status !== 201) {
-                        return response.json();
+                        response
+                            .json()
+                            .then(({ message }) => setErrorMessage(message));
                     } else {
+                        response.json().then(({ token }) => {
+                            setToken(token);
+                            navigate("/");
+                        });
                     }
                 })
-                .then(({ message }) => setErrorMessage(message))
                 .catch((error) => console.log(error));
         } else {
             setErrorMessage("Les mots de passe ne correspondent pas.");
@@ -45,6 +52,7 @@ const SignUp = () => {
 
     return (
         <React.Fragment>
+            <h1>Créer un compte</h1>
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"

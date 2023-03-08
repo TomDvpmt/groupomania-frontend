@@ -1,15 +1,13 @@
 const jwt = require("jsonwebtoken");
 
-const auth = (req, res, next) => {
+module.exports = (req, res, next) => {
     try{
         const token = req.headers.authorization.split(" ")[1];
         const decodedToken = jwt.verify(token, process.env.TOKEN_CREATION_PHRASE);
         const userId = decodedToken.userId;
         req.auth = {userId: userId};
-        next()
+        next();
     } catch(error) {
         res.status(401).json({message: "Non autorisé."})
     }
 }
-
-module.exports = auth;

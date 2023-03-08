@@ -4,11 +4,11 @@ const auth = require("../middlewares/auth");
 const multer = require("../middlewares/multer-config");
 const postCtrl = require("../controllers/post");
 
-router.get("/", postCtrl.getAllPosts);
-router.get("/:id", postCtrl.getOnePost);
-router.post("/", postCtrl.createPost);
-router.put("/:id", postCtrl.updatePost); // admin authorization
-router.delete("/:id", postCtrl.deletePost); // admin authorization
-router.post("/:id/like", postCtrl.likePost);
+router.get("/", auth, postCtrl.getAllPosts);
+router.get("/:id", auth, postCtrl.getOnePost);
+router.post("/", auth, postCtrl.createPost);
+router.put("/:id", auth, postCtrl.updatePost); // admin authorization
+router.delete("/:id", auth, postCtrl.deletePost); // admin authorization
+router.post("/:id/like", auth, postCtrl.likePost);
 
 module.exports = router;

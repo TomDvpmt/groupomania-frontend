@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 import Header from "../../components/Header/index";
 import Login from "../Login/index";
 import SignUp from "../SignUp/index";

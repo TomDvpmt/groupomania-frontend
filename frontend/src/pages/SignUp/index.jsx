@@ -80,7 +80,7 @@ const SignUp = () => {
                 />
                 <button>Sign up</button>
                 {errorMessage !== "" && (
-                    <p className="credentials-error">{errorMessage}</p>
+                    <p className="error-msg">{errorMessage}</p>
                 )}
             </form>
             <Link to="/login">Déjà un compte ? S'identifier</Link>

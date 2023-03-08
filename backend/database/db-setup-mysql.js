@@ -81,7 +81,8 @@ const setupDbTables = async (connection, dbName) => {
                 id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 user_id INT NOT NULL,
                 content VARCHAR(5000) NOT NULL,
-                img_url VARCHAR(500) NOT NULL
+                img_url VARCHAR(500) NOT NULL,
+                created_at BIGINT NOT NULL
             )
         `);
         console.log(`========= Table "posts" créée. =========`);

@@ -63,9 +63,7 @@ const Login = () => {
                 />
                 <button>Login</button>
             </form>
-            {errorMessage !== "" && (
-                <p className="credentials-error">{errorMessage}</p>
-            )}
+            {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}
             <Link to="/signup">Créer un compte</Link>
         </React.Fragment>
     );

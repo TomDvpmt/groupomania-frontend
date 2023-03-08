@@ -12,6 +12,17 @@ exports.fetchCredentials = (endpoint, credentialsData) => {
     return response;
 };
 
-exports.logOut = (setToken) => {
-    setToken(null);
+exports.sanitize = (input) => {
+    const htmlCodes = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+        "/": "&#x2F;",
+        "`": "&#x60;",
+        "=": "&#x3D;",
+    };
+    const regExp = /[&<>"'`=/]/gi;
+    return input.replace(regExp, (match) => htmlCodes[match]);
 };

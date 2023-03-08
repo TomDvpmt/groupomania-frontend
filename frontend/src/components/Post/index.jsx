@@ -8,6 +8,10 @@ const Post = (props) => {
                 <img src={props.imgUrl} alt="post illustration" />
                 <p>{props.content}</p>
             </div>
+            <div className="post__buttons">
+                <button>Modifier</button>
+                <button>Supprimer</button>
+            </div>
         </article>
     );
 };

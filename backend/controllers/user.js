@@ -45,8 +45,6 @@ exports.signUp = async (req, res, next) => {
             )
                 .then(() => {
                     logAfterSignUp(connection, email, res);                   
-                    // close(connection);
-                    // return res.status(201);
                 })
                 .catch(error => {
                     console.log("========= Impossible de créer l'utilisateur :", error);

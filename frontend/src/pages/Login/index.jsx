@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { fetchCredentials } from "../../utils/user";
 
-const Login = ({ setToken }) => {
+const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -33,7 +33,7 @@ const Login = ({ setToken }) => {
                         .then(({ message }) => setErrorMessage(message));
                 } else {
                     response.json().then(({ token }) => {
-                        setToken(token);
+                        localStorage.setItem("token", token);
                         navigate("/");
                     });
                 }

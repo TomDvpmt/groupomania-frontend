@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
+import Nav from "../../components/Nav";
 import Post from "../../components/Post";
 import PostForm from "../../components/PostForm";
 
-const Home = ({ token }) => {
+const Home = () => {
     const [posts, setPosts] = useState([]);
 
-    console.log("token :", token);
+    const token = localStorage.getItem("token");
+    console.log("token in storage :", localStorage.getItem("token"));
 
     useEffect(() => {
         fetch(`${process.env.REACT_APP_BACKEND_URI}/API/post`, {
@@ -33,6 +35,7 @@ const Home = ({ token }) => {
 
     return (
         <React.Fragment>
+            <Nav />
             <h2>Poster un message :</h2>
             <PostForm />
             <h2>Posts :</h2>

@@ -69,7 +69,8 @@ const setupDbTables = async (connection, dbName) => {
             CREATE TABLE IF NOT EXISTS users (
                 id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 email VARCHAR(100) NOT NULL UNIQUE,
-                passwordHash VARCHAR(500) NOT NULL
+                passwordHash VARCHAR(500) NOT NULL,
+                admin BOOLEAN DEFAULT 0
             )
         `);
         console.log(`========= Table "users" créée. =========`);
@@ -82,7 +83,8 @@ const setupDbTables = async (connection, dbName) => {
                 user_id INT NOT NULL,
                 content VARCHAR(5000) NOT NULL,
                 img_url VARCHAR(500) NOT NULL,
-                created_at BIGINT NOT NULL
+                created_at BIGINT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users(id)
             )
         `);
         console.log(`========= Table "posts" créée. =========`);

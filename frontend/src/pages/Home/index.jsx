@@ -2,21 +2,23 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Nav from "../../components/Nav";
 import Post from "../../components/Post";
-import PostForm from "../../components/PostForm";
+import CreatePostForm from "../../components/CreatePostForm";
 
 const Home = () => {
     const [posts, setPosts] = useState([]);
     const [hasNewPosts, setHasNewPosts] = useState(0);
     const [authorized, setAuthorized] = useState(true);
+    const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
     const token = localStorage.getItem("token");
 
     useEffect(() => {
-        if (token === "null") {
+        if (token === (null || "null")) {
             setAuthorized(false);
+            navigate("/login");
         }
-    }, [token]);
+    }, [token, navigate]);
 
     useEffect(() => {
         if (!authorized) {
@@ -34,33 +36,40 @@ const Home = () => {
         })
             .then((response) => response.json())
             .then((data) => {
-                return data.map((post) => (
+                console.log(data);
+                console.log(data.admin);
+                return data.posts.map((post) => (
                     <Post
                         key={post.id}
-                        // userEmail={post.userEmail}
+                        postUserId={post.postUserId}
+                        email={post.email}
                         imgUrl={post.imgUrl}
                         content={post.content}
                         date={post.date}
+                        admin={data.admin}
+                        loggedUserId={data.loggedUserId}
                     />
                 ));
             })
             .then((postsList) => setPosts(postsList))
-            .catch((error) =>
-                console.error("Impossible d'afficher les posts :", error)
-            );
+            .catch((error) => {
+                console.error("Impossible d'afficher les messages :", error);
+                setErrorMessage("Impossible d'afficher les messages.");
+            });
     }, [hasNewPosts, token]);
 
     return (
         <React.Fragment>
             <Nav />
             <h2>Poster un message :</h2>
-            <PostForm
+            <CreatePostForm
                 token={token}
                 hasNewPosts={hasNewPosts}
                 setHasNewPosts={setHasNewPosts}
             />
             <h2>Messages :</h2>
             {posts}
+            {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}
         </React.Fragment>
     );
 };

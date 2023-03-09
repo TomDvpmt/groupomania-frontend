@@ -1,30 +1,21 @@
 const connectToDb = require("../database/db-connect-mysql");
 
 exports.getAllPosts = (req, res, next) => {
-    // const mockPosts = [
-    //     {
-    //         "id": "1",
-    //         "userEmail": "mock_email@test.com",
-    //         "imgUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Le_paysage_de_la_RN1.jpg/640px-Le_paysage_de_la_RN1.jpg",
-    //         "content": "Lorem ipsum dolor sit, amet consectetur adipisicing elit.",
-    //         "date": `${new Date(1679055892915)}`
-    //     },
-
-    //     {
-    //         "id": "2",
-    //         "userEmail": "mock_email2@test.com",
-    //         "imgUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Paysage_Co%C3%ABvrons.JPG/640px-Paysage_Co%C3%ABvrons.JPG",
-    //         "content": "Lorem ipsum dolor sit, amet consectetur adipisicing elit.",
-    //         "date": `${new Date(1678058892935)}`
-    //     }
-    // ];
-    // return res.status(200).json(mockPosts);
     connectToDb()
     .then(connection => {
         connection.execute(
             `
-                SELECT id, user_id, content, img_url, created_at 
+                SELECT 
+                    posts.id, 
+                    posts.user_id, 
+                    posts.content, 
+                    posts.img_url, 
+                    posts.created_at, 
+                    users.id, 
+                    users.email
                 FROM posts
+                JOIN users
+                ON posts.user_id = users.id
                 ORDER BY created_at DESC
             `, [])
             .then(([rows]) => {
@@ -33,16 +24,21 @@ exports.getAllPosts = (req, res, next) => {
                     results[i] = 
                         {
                             id: rows[i].id,
-                            //userId: rows[i].user_id,
+                            postUserId: rows[i].user_id,
+                            email: rows[i].email,
                             content: rows[i].content,
                             imgUrl: rows[i].img_url,
                             date: rows[i].created_at
                         };
                 }
-                return results;
+                return {
+                    posts: results, 
+                    admin: req.auth.admin === 1, 
+                    loggedUserId: req.auth.userId
+                };
             })
-            .then((results) => {
-                res.status(200).json(results);
+            .then((response) => {
+                res.status(200).json(response);
             })
             .catch(error => {
                 console.log("Impossible de récupérer les données :", error);

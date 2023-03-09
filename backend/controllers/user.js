@@ -9,16 +9,16 @@ const close = (connection) => {
 
 const logAfterSignUp = (connection, email, res) => {
     connection.execute(`
-        SELECT id
+        SELECT id, admin
         FROM users
         WHERE email = ?
     `, [email])
     .then(([rows]) => {
         const userId = rows[0].id;
+        const admin = rows[0].admin;
         res.status(201).json({
-            userId: userId,
             token: jwt.sign(
-                {userId: userId},
+                {userId: userId, admin: admin},
                 process.env.TOKEN_CREATION_PHRASE
             )
         });
@@ -77,12 +77,13 @@ exports.login = (req, res, next) => {
                     }
                     else {
                         connection.execute(`
-                            SELECT id, passwordHash
+                            SELECT id, passwordHash, admin
                             FROM users
                             WHERE email = ?
                         `, [email])
                             .then(([rows]) => {
                                 const userId = rows[0].id;
+                                const admin = rows[0].admin;
                                 const passwordHash = rows[0].passwordHash;
                                 bcrypt.compare(password, passwordHash)
                                 .then(isValidPassword => {
@@ -93,9 +94,8 @@ exports.login = (req, res, next) => {
                                     else {
                                         close(connection);
                                         res.status(200).json({
-                                            userId: userId,
                                             token: jwt.sign(
-                                                {userId: userId},
+                                                {userId: userId, admin: admin},
                                                 process.env.TOKEN_CREATION_PHRASE
                                             )
                                         });

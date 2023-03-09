@@ -43,7 +43,6 @@ const PostForm = ({ token, hasNewPosts, setHasNewPosts }) => {
                             .json()
                             .then(({ message }) => setErrorMessage(message));
                     } else {
-                        console.log(response);
                         setHasNewPosts((hasNewPosts) => hasNewPosts + 1);
                     }
                 })
@@ -70,7 +69,7 @@ const PostForm = ({ token, hasNewPosts, setHasNewPosts }) => {
                 <br />
                 <button>Envoyer</button>
             </form>
-            <p className="error-msg">{errorMessage}</p>
+            {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}
         </React.Fragment>
     );
 };

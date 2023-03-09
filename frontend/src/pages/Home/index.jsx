@@ -4,43 +4,33 @@ import Nav from "../../components/Nav";
 import Post from "../../components/Post";
 import CreatePostForm from "../../components/CreatePostForm";
 
-const Home = () => {
+const Home = ({ setPostId }) => {
     const [posts, setPosts] = useState([]);
     const [hasNewPosts, setHasNewPosts] = useState(0);
-    const [authorized, setAuthorized] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
     const token = localStorage.getItem("token");
 
     useEffect(() => {
-        if (token === (null || "null")) {
-            setAuthorized(false);
-            navigate("/login");
-        }
-    }, [token, navigate]);
-
-    useEffect(() => {
-        if (!authorized) {
-            localStorage.setItem("token", null);
-            navigate("/login");
-        }
-    }, [authorized, navigate]);
-
-    useEffect(() => {
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/post`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts`, {
             method: "GET",
             headers: {
                 Authorization: `BEARER ${token}`,
             },
         })
-            .then((response) => response.json())
+            .then((response) => {
+                if (response.status === 401) {
+                    localStorage.setItem("token", null);
+                    console.error("Non autorisé.");
+                    navigate("/login");
+                } else return response.json();
+            })
             .then((data) => {
-                console.log(data);
-                console.log(data.admin);
                 return data.posts.map((post) => (
                     <Post
                         key={post.id}
+                        id={post.id}
                         postUserId={post.postUserId}
                         email={post.email}
                         imgUrl={post.imgUrl}
@@ -48,6 +38,7 @@ const Home = () => {
                         date={post.date}
                         admin={data.admin}
                         loggedUserId={data.loggedUserId}
+                        setPostId={setPostId}
                     />
                 ));
             })
@@ -56,7 +47,7 @@ const Home = () => {
                 console.error("Impossible d'afficher les messages :", error);
                 setErrorMessage("Impossible d'afficher les messages.");
             });
-    }, [hasNewPosts, token]);
+    }, [hasNewPosts, token, navigate, setPostId]);
 
     return (
         <React.Fragment>

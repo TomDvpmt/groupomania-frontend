@@ -4,41 +4,22 @@ import Header from "../../components/Header/index";
 import Login from "../Login/index";
 import SignUp from "../SignUp/index";
 import Home from "../Home/index";
+import UpdatePost from "../UpdatePost";
 
 const App = () => {
-    const [loggedUserId, setLoggedUserId] = useState(null);
-    const [isAdmin, setIsAdmin] = useState(false);
+    const [postId, setPostId] = useState(null);
+    console.log(postId);
+
     return (
         <React.Fragment>
             <Header />
             <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/" element={<Home setPostId={setPostId} />} />
                 <Route
-                    path="/login"
-                    element={
-                        <Login
-                            setIsAdmin={setIsAdmin}
-                            setLoggedUserId={setLoggedUserId}
-                        />
-                    }
-                />
-                <Route
-                    path="/signup"
-                    element={
-                        <SignUp
-                            setIsAdmin={setIsAdmin}
-                            setLoggedUserId={setLoggedUserId}
-                        />
-                    }
-                />
-                <Route
-                    path="/"
-                    element={
-                        <Home
-                            isAdmin={isAdmin}
-                            setIsAdmin={setIsAdmin}
-                            loggedUserId={loggedUserId}
-                        />
-                    }
+                    path={`/update`}
+                    element={<UpdatePost postId={postId} />}
                 />
             </Routes>
         </React.Fragment>

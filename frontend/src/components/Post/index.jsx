@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Post = ({
+    id,
     postUserId,
     email,
     content,
@@ -8,6 +10,7 @@ const Post = ({
     date,
     admin,
     loggedUserId,
+    setPostId,
 }) => {
     const rawDate = new Date(date);
     const hours =
@@ -17,6 +20,15 @@ const Post = ({
             ? `0${rawDate.getMinutes()}`
             : rawDate.getMinutes();
     const formatedDate = `Le ${rawDate.toLocaleDateString()} à ${hours}:${minutes}`;
+
+    const navigate = useNavigate();
+
+    const handleUpdate = () => {
+        setPostId(id);
+        navigate(`/update`);
+    };
+
+    const handleDelete = () => {};
 
     return (
         <article className="post">
@@ -30,8 +42,8 @@ const Post = ({
             <div className="post__buttons">
                 {(admin || postUserId === loggedUserId) && (
                     <React.Fragment>
-                        <button>Modifier</button>
-                        <button>Supprimer</button>
+                        <button onClick={handleUpdate}>Modifier</button>
+                        <button onClick={handleDelete}>Supprimer</button>
                     </React.Fragment>
                 )}
             </div>

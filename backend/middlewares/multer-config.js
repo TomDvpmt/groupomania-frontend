@@ -1,6 +1,6 @@
 const multer = require("multer");
 
-const mimeTypes = {
+const imgMimeTypes = {
     "image/jpg": "jpg",
     "image/jpeg": "jpg",
     "image/png": "png",
@@ -10,8 +10,8 @@ const mimeTypes = {
 
 try {
     const fileFilter = (req, file, callback) => {
-        const extension = mimeTypes[file.mimetype];
-        if(Object.values(mimeTypes).includes(extension)) {
+        const extension = imgMimeTypes[file.mimetype];
+        if(Object.values(imgMimeTypes).includes(extension)) {
             callback(null, true);
         }
         else {
@@ -24,7 +24,7 @@ try {
         },
         filename: (req, file, callback) => {
             const nameFormated = file.originalname.split(" ").join("_").split(".").join("_");
-            const extension = mimeTypes[file.mimetype];
+            const extension = imgMimeTypes[file.mimetype];
             callback(null, nameFormated + Date.now() + "." + extension);
         }
     });

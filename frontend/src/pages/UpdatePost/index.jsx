@@ -36,7 +36,7 @@ const UpdatePost = ({ postId }) => {
 
     return (
         <React.Fragment>
-            <Nav />
+            <Nav page="UpdatePost" />
             <UpdateFormPost
                 postId={postId}
                 content={content}

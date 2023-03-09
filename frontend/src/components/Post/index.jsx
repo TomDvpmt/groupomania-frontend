@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { formatDate } from "../../utils";
 
 const Post = ({
     id,
@@ -11,24 +12,44 @@ const Post = ({
     admin,
     loggedUserId,
     setPostId,
+    setHasNewPosts,
 }) => {
-    const rawDate = new Date(date);
-    const hours =
-        rawDate.getHours() < 10 ? `0${rawDate.getHours()}` : rawDate.getHours();
-    const minutes =
-        rawDate.getMinutes() < 10
-            ? `0${rawDate.getMinutes()}`
-            : rawDate.getMinutes();
-    const formatedDate = `Le ${rawDate.toLocaleDateString()} à ${hours}:${minutes}`;
-
+    const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
+    const token = localStorage.getItem("token");
+    const formatedDate = formatDate(date);
 
     const handleUpdate = () => {
         setPostId(id);
         navigate(`/update`);
     };
 
-    const handleDelete = () => {};
+    const handleDelete = () => {
+        if (
+            !window.confirm("Êtes-vous sûr de vouloir supprimer ce message ?")
+        ) {
+            return;
+        } else {
+            fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${id}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `BEARER ${token}`,
+                    "Content-type": "application/json",
+                },
+                body: JSON.stringify({ imgUrl: imgUrl }),
+            })
+                .then((response) => {
+                    if (response.status >= 400) {
+                        response
+                            .json()
+                            .then(({ message }) => setErrorMessage(message));
+                    } else {
+                        setHasNewPosts((hasNewPosts) => hasNewPosts + 1);
+                    }
+                })
+                .catch((error) => console.log(error));
+        }
+    };
 
     return (
         <article className="post">
@@ -36,8 +57,12 @@ const Post = ({
                 {email} | {formatedDate}
             </h3>
             <div className="post__content">
-                <img src={imgUrl} alt="post illustration" />
+                {imgUrl && <img src={imgUrl} alt="post illustration" />}
                 <p>{content}</p>
+            </div>
+            <div className="post_like-buttons">
+                <button>Like</button>
+                <button>Dislike</button>
             </div>
             <div className="post__buttons">
                 {(admin || postUserId === loggedUserId) && (
@@ -47,6 +72,7 @@ const Post = ({
                     </React.Fragment>
                 )}
             </div>
+            {errorMessage && <p className="error-msg">{errorMessage}</p>}
         </article>
     );
 };

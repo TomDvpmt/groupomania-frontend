@@ -27,20 +27,25 @@ const Home = ({ setPostId }) => {
                 } else return response.json();
             })
             .then((data) => {
-                return data.posts.map((post) => (
-                    <Post
-                        key={post.id}
-                        id={post.id}
-                        postUserId={post.postUserId}
-                        email={post.email}
-                        imgUrl={post.imgUrl}
-                        content={post.content}
-                        date={post.date}
-                        admin={data.admin}
-                        loggedUserId={data.loggedUserId}
-                        setPostId={setPostId}
-                    />
-                ));
+                if (data.posts.length === 0) {
+                    return <p>Aucun message à afficher.</p>;
+                } else {
+                    return data.posts.map((post) => (
+                        <Post
+                            key={post.id}
+                            id={post.id}
+                            postUserId={post.postUserId}
+                            email={post.email}
+                            imgUrl={post.imgUrl}
+                            content={post.content}
+                            date={post.date}
+                            admin={data.admin}
+                            loggedUserId={data.loggedUserId}
+                            setPostId={setPostId}
+                            setHasNewPosts={setHasNewPosts}
+                        />
+                    ));
+                }
             })
             .then((postsList) => setPosts(postsList))
             .catch((error) => {
@@ -51,7 +56,7 @@ const Home = ({ setPostId }) => {
 
     return (
         <React.Fragment>
-            <Nav />
+            <Nav page="Home" />
             <h2>Poster un message :</h2>
             <CreatePostForm
                 token={token}

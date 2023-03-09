@@ -31,7 +31,7 @@ const initializeDb = async (dbName) => {
             console.log(`========= Base de données "${dbName}" créée. =========`);
         }
 
-        const connection = await connectToDb();
+        const connection = await connectToDb("initialisation");
         return connection;
 
     } catch(error) {
@@ -81,8 +81,8 @@ const setupDbTables = async (connection, dbName) => {
             CREATE TABLE IF NOT EXISTS posts (
                 id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 user_id INT NOT NULL,
-                content VARCHAR(5000) NOT NULL,
-                img_url VARCHAR(500) NOT NULL,
+                content VARCHAR(5000),
+                img_url VARCHAR(500),
                 created_at BIGINT NOT NULL,
                 FOREIGN KEY (user_id) REFERENCES users(id)
             )

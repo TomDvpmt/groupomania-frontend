@@ -1,6 +1,6 @@
 const mysql = require("mysql2/promise");
 
-const connectToDb = async () => {
+const connectToDb = async (message) => {
     try{
         const connection = await mysql.createConnection({
             host: process.env.DB_HOST,
@@ -8,7 +8,7 @@ const connectToDb = async () => {
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
         });
-        console.log("========= Connexion à la base de données réussie. =========");
+        console.log(`========= Connexion à la base de données (${message}) =========`);
         return connection;
     }
     catch(error) {

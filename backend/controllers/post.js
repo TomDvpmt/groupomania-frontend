@@ -1,3 +1,6 @@
+const fs = require("fs");
+const { errorMonitor } = require("stream");
+
 const connectToDb = require("../database/db-connect-mysql");
 
 const close = (connection) => {
@@ -5,23 +8,30 @@ const close = (connection) => {
     console.log("========= Déconnexion de la base de données. =============");
 };
 
-const handleError = (error, message, status) => {
+/**
+ * @param {Response} res
+ * @param {String} message 
+ * @param {Number} status 
+ * @param {Error} error
+ */
+
+const handleError = (res, message, status, error) => {
     console.log(message, error);
     res.status(status).json({message: message});
 }
 
 exports.getAllPosts = (req, res, next) => {
-    connectToDb()
+    connectToDb("getAllPosts")
     .then(connection => {
         connection.execute(
             `
                 SELECT 
-                    posts.id, 
-                    posts.user_id, 
+                    posts.id AS post_id, 
+                    posts.user_id AS post_user_id, 
                     posts.content, 
                     posts.img_url, 
                     posts.created_at, 
-                    users.id, 
+                    users.id AS user_id, 
                     users.email
                 FROM posts
                 JOIN users
@@ -33,14 +43,15 @@ exports.getAllPosts = (req, res, next) => {
                 for(let i = 0 ; i < rows.length ; i++) {
                     results[i] = 
                         {
-                            id: rows[i].id,
-                            postUserId: rows[i].user_id,
+                            id: rows[i].post_id,
+                            postUserId: rows[i].post_user_id,
                             email: rows[i].email,
                             content: rows[i].content,
                             imgUrl: rows[i].img_url,
                             date: rows[i].created_at
                         };
-                }
+                };
+                close(connection);
                 return {
                     posts: results, 
                     admin: req.auth.admin === 1, 
@@ -48,23 +59,22 @@ exports.getAllPosts = (req, res, next) => {
                 };
             })
             .then((response) => {
-                close(connection);
                 res.status(200).json(response);
             })
             .catch(error => {
                 close(connection);
-                handleError(error, "Impossible de récupérer les données.", 400);
+                handleError(res, "Impossible de récupérer les données.", 400, error);
             } )
     })
     .catch(error => {
-        handleError(error, "Impossible de se connecter à la base de données.", 500);
+        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
     })
 };
 
 exports.getOnePost = (req, res, next) => {
     const postId = req.params.id;
 
-    connectToDb()
+    connectToDb("getOnePost")
     .then(connection => {
         connection.execute(`
             SELECT content, img_url
@@ -78,19 +88,20 @@ exports.getOnePost = (req, res, next) => {
                 content: content,
                 imgUrl: imgUrl
             };
+            close(connection);
             return response;
         })
         .then(response => {
-            close(connection);
             res.status(200).json(response);
         })
         .catch(error => {
-            handleError(error, "Impossible de récupérer les données du message.", 400)
+            close(connection);
+            handleError(res, "Impossible de récupérer les données du message.", 400, error)
         }
         )
     })
     .catch(error => {
-        handleError(error, "Impossible de se connecter à la base de données.", 500);
+        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
     })
 };
 
@@ -98,63 +109,67 @@ exports.createPost = (req, res, next) => {
 
     const userId = req.auth.userId;
     const content = req.body.content;
-    const imgUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
     const createdAt = Date.now();
-
-    if(!content && !imgUrl) {
-        res.status(400).json({message: "Le message ne peut pas être vide."})
-    }
-    else {
-        connectToDb()
-        .then(connection => {
-            connection.execute(
-                `
-                INSERT INTO posts (user_id, content, img_url, created_at)
-                VALUES (?, ?, ?, ?)
-                `,
-                [userId, content, imgUrl, createdAt]
-            )
-            .then(() => {
-                close(connection);
-                console.log("Message ajouté à la base de données.");
-                res.status(201).json();
-                
-            })
-            .catch(error => {
-                close(connection);
-                console.error("Impossible de publier le message :", error);
-                res.status(400).json({message: "Impossible de publier le message."});
-            })
+    connectToDb("createPost")
+    .then(connection => {
+        if(!req.file && !req.body.content) {
+            handleError(res, "Le message ne peut pas être vide.", 400);
+        }
+        const imgUrl = 
+            req.file ? 
+            `${req.protocol}://${req.get("host")}/images/${req.file.filename}` : 
+            "";
+        connection.execute(
+            `
+            INSERT INTO posts (user_id, content, img_url, created_at)
+            VALUES (?, ?, ?, ?)
+            `,
+            [userId, content, imgUrl, createdAt]
+        )
+        .then(() => {
+            close(connection);
+            console.log("Message ajouté à la base de données.");
+            res.status(201).json();
+            
         })
         .catch(error => {
-            handleError(error, "Impossible de se connecter à la base de données.", 500);
-        })
-        
-    }
+            close(connection);
+            handleError(res, "Impossible de publier le message.", 400, error);
+        }) 
+    })
+    .catch(error => {
+        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
+    })
 };
 
 exports.updatePost = (req, res, next) => {
-    const content = req.body.content;
     const postId = req.params.id;
-    connectToDb()
+    const content = req.body.content;
+    const prevImgUrl = req.body.imgUrl ? req.body.imgUrl : "";
+
+    connectToDb("updatePost")
     .then(connection => {
         if(req.file) {
-            const imgUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+            const newImgUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
             connection.execute(
                 `UPDATE posts
                 SET 
                     content = ?,
                     img_url = ?
                 WHERE id = ?`, 
-                [content, imgUrl, postId])
+                [content, newImgUrl, postId])
             .then(() => {
                 close(connection);
+                const formerFileName = prevImgUrl.split("/images/")[1];
+                prevImgUrl !== "" && fs.unlink(`images/${formerFileName}`, (error) => {
+                    if(error) handleError(res, "Chargement du fichier impossible.", 400, error);
+                })
                 console.log("Post mis à jour.")
                 res.status(200).json({message: "Message mis à jour."})
             })
             .catch(error => {
                 close(connection);
-                handleError(error, "Mise à jour du message impossible.", 400);
+                handleError(res, "Mise à jour du message impossible.", 400, error);
             })
         } else {
             connection.execute(
@@ -169,18 +184,41 @@ exports.updatePost = (req, res, next) => {
             })
             .catch((error) => {
                 close(connection);
-                handleError(error, "Mise à jour du message impossible.", 400);
+                handleError(res, "Mise à jour du message impossible.", 400, error);
             })
         }
     })
     .catch(error => {
-        handleError(error, "Impossible de se connecter à la base de données.", 500);
+        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
     })
     
 };
 
 exports.deletePost = (req, res, next) => {
-
+    const postId = req.params.id;
+    const imgUrl = req.body.imgUrl;
+    connectToDb("deletePost")
+        .then(connection => {
+            connection.execute(`
+                DELETE FROM posts
+                WHERE id = ?
+            `, [postId])
+            .then(() => {
+                close(connection);
+                if(imgUrl) {
+                    const fileName = imgUrl.split("/images/")[1];
+                    fs.unlink(`images/${fileName}`, (error) => {
+                        if(error) handleError(res, "Impossible de supprimer le fichier.", 400, error);
+                    });
+                }
+                res.status(200).json();
+            })
+            .catch(error => {
+                close(connection);
+                handleError(res, "Impossible de supprimer le message.", 400, error);
+            })
+        })
+        .catch(error => handleError(res, "Impossible de se connecter à la base de données.", 500, error));
 };
 
 exports.likePost = (req, res, next) => {

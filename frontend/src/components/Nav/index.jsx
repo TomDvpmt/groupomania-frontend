@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 
-const Nav = () => {
+const Nav = ({ page }) => {
     const navigate = useNavigate();
 
     const handleClick = () => {
@@ -13,6 +13,7 @@ const Nav = () => {
             <Link to="/login" onClick={handleClick}>
                 Déconnexion
             </Link>
+            {page === "UpdatePost" && <Link to="/">Revenir aux messages</Link>}
         </nav>
     );
 };

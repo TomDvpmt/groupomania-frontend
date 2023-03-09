@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { imgMimeTypes } from "../../utils";
 
-const { sanitize } = require("../../utils/user");
+const { sanitize } = require("../../utils");
 
 const PostForm = ({ token, hasNewPosts, setHasNewPosts }) => {
     const [errorMessage, setErrorMessage] = useState("");
@@ -9,16 +10,12 @@ const PostForm = ({ token, hasNewPosts, setHasNewPosts }) => {
         e.preventDefault();
         setErrorMessage("");
 
-        const mimeTypes = {
-            "image/jpg": "jpg",
-            "image/jpeg": "jpg",
-            "image/png": "png",
-            "image/bmp": "bmp",
-            "image/webp": "webp",
-        };
         const uploadedFile = e.target.imageFile.files[0];
 
-        if (!Object.keys(mimeTypes).includes(uploadedFile.type)) {
+        if (
+            uploadedFile &&
+            !Object.keys(imgMimeTypes).includes(uploadedFile.type)
+        ) {
             setErrorMessage(
                 "Seuls les formats .jpg, .jpeg, .png, .bpm et .webp sont acceptés."
             );
@@ -30,7 +27,7 @@ const PostForm = ({ token, hasNewPosts, setHasNewPosts }) => {
             formData.append("imageFile", uploadedFile);
             formData.append("content", sanitizedContent);
 
-            fetch(`${process.env.REACT_APP_BACKEND_URI}/API/post`, {
+            fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts`, {
                 method: "POST",
                 headers: {
                     Authorization: `BEARER ${token}`,
@@ -38,7 +35,7 @@ const PostForm = ({ token, hasNewPosts, setHasNewPosts }) => {
                 body: formData,
             })
                 .then((response) => {
-                    if (response.status !== 201) {
+                    if (response.status >= 400) {
                         response
                             .json()
                             .then(({ message }) => setErrorMessage(message));

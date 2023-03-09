@@ -8,7 +8,6 @@ import UpdatePost from "../UpdatePost";
 
 const App = () => {
     const [postId, setPostId] = useState(null);
-    console.log(postId);
 
     return (
         <React.Fragment>

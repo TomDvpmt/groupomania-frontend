@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { fetchCredentials } from "../../utils/user";
+import { fetchCredentials } from "../../utils";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -27,7 +27,7 @@ const Login = () => {
 
         fetchCredentials("login", loginData)
             .then((response) => {
-                if (response.status !== 200) {
+                if (response.status >= 400) {
                     response
                         .json()
                         .then(({ message }) => setErrorMessage(message));

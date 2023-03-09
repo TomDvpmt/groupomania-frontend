@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { sanitize } from "../../utils/user";
+import { sanitize } from "../../utils";
 import { useNavigate } from "react-router-dom";
+import { imgMimeTypes } from "../../utils";
 
 const UpdateFormPost = ({ postId, content, imgUrl, token }) => {
     const [errorMessage, setErrorMessage] = useState("");
@@ -9,18 +10,11 @@ const UpdateFormPost = ({ postId, content, imgUrl, token }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const mimeTypes = {
-            "image/jpg": "jpg",
-            "image/jpeg": "jpg",
-            "image/png": "png",
-            "image/bmp": "bmp",
-            "image/webp": "webp",
-        };
         const uploadedFile = e.target.imageFile.files[0];
 
         if (
             uploadedFile &&
-            !Object.keys(mimeTypes).includes(uploadedFile.type)
+            !Object.keys(imgMimeTypes).includes(uploadedFile.type)
         ) {
             setErrorMessage(
                 "Seuls les formats .jpg, .jpeg, .png, .bpm et .webp sont acceptés."
@@ -32,6 +26,7 @@ const UpdateFormPost = ({ postId, content, imgUrl, token }) => {
             const formData = new FormData();
             uploadedFile && formData.append("imageFile", uploadedFile);
             formData.append("content", sanitizedContent);
+            imgUrl && formData.append("imgUrl", imgUrl);
 
             fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}`, {
                 method: "PUT",
@@ -40,7 +35,15 @@ const UpdateFormPost = ({ postId, content, imgUrl, token }) => {
                 },
                 body: formData,
             })
-                .then(() => navigate("/"))
+                .then((response) => {
+                    if (response.status >= 400) {
+                        response
+                            .json()
+                            .then(({ message }) => setErrorMessage(message));
+                    } else {
+                        navigate("/");
+                    }
+                })
                 .catch((error) => console.log(error));
         }
     };
@@ -57,9 +60,11 @@ const UpdateFormPost = ({ postId, content, imgUrl, token }) => {
                     rows="10"
                     defaultValue={content}
                 ></textarea>
-                <img src={imgUrl} alt="Illustration du post" />
+                {imgUrl && <img src={imgUrl} alt="Illustration du post" />}
                 <br />
-                <label htmlFor="imageFile">Changer l'image : </label>
+                <label htmlFor="imageFile">
+                    {imgUrl ? "Changer l'image : " : "Joindre une image : "}
+                </label>
                 <input type="file" name="imageFile" />
                 <br />
                 <button>Mettre à jour</button>

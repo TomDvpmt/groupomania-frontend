@@ -63,43 +63,50 @@ const setupDbTables = async (connection, dbName) => {
     const usersExists = await tableExists(connection, dbName, "users");
     const postsExists = await tableExists(connection, dbName, "posts");
     const likesExists = await tableExists(connection, dbName, "likes");
+
     
-    if(!usersExists) {
-        await connection.execute(`
-            CREATE TABLE IF NOT EXISTS users (
-                id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                email VARCHAR(100) NOT NULL UNIQUE,
-                passwordHash VARCHAR(500) NOT NULL,
-                admin BOOLEAN DEFAULT 0
-            )
-        `);
-        console.log(`========= Table "users" créée. =========`);
-    } ;   
+    await connection.query(`
+        CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            email VARCHAR(100) NOT NULL UNIQUE,
+            passwordHash VARCHAR(500) NOT NULL,
+            admin BOOLEAN DEFAULT 0
+        )
+    `);
+    !usersExists && console.log(`========= Table "users" créée. =========`);   
         
-    if(!postsExists) {
-        await connection.execute(`
-            CREATE TABLE IF NOT EXISTS posts (
-                id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                user_id INT NOT NULL,
-                content VARCHAR(5000),
-                img_url VARCHAR(500),
-                created_at BIGINT NOT NULL,
-                FOREIGN KEY (user_id) REFERENCES users(id)
-            )
-        `);
-        console.log(`========= Table "posts" créée. =========`);
-    };
     
-    if(!likesExists) {
-        await connection.execute(`
-            CREATE TABLE IF NOT EXISTS likes (
-                user_id INT NOT NULL PRIMARY KEY,
-                post_id INT NOT NULL,
-                like_type CHAR(255)
-            )
-        `);
-        console.log(`========= Table "likes" créée. =========`);
-    };
+    await connection.query(`
+        CREATE TABLE IF NOT EXISTS posts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            content VARCHAR(5000),
+            img_url VARCHAR(500),
+            created_at BIGINT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+    `);
+    !postsExists && console.log(`========= Table "posts" créée. =========`);
+    
+    await connection.query(`
+        CREATE TABLE IF NOT EXISTS likes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT,
+            post_id INT,
+            like_value INT NOT NULL DEFAULT 0,
+            FOREIGN KEY (user_id) REFERENCES posts(user_id),
+            FOREIGN KEY (post_id) REFERENCES posts(id)
+        )
+    `);
+    !likesExists && console.log(`========= Table "likes" créée. =========`);
+
+    await connection.query(`
+        CREATE TRIGGER IF NOT EXISTS posts_before_delete
+        BEFORE DELETE ON posts
+        FOR EACH ROW
+        DELETE FROM likes
+        WHERE post_id = OLD.id
+    `);
 
     console.log("========= Tables vérifiées. =========== ");
 };

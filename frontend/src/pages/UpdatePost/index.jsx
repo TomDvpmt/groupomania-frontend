@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Nav from "../../components/Nav";
 import UpdateFormPost from "../../components/UpdatePostForm";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const UpdatePost = ({ postId }) => {
+const UpdatePost = () => {
     const [content, setContent] = useState("");
     const [imgUrl, setImgUrl] = useState("");
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
+
+    const postId = useParams().id;
 
     useEffect(() => {
         if (postId === null) navigate("/");

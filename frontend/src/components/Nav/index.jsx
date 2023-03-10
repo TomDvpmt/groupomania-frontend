@@ -1,19 +1,24 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Nav = ({ page }) => {
-    const navigate = useNavigate();
-
     const handleClick = () => {
         localStorage.setItem("token", null);
-        navigate("/login");
     };
 
     return (
         <nav>
-            <Link to="/login" onClick={handleClick}>
-                Déconnexion
-            </Link>
-            {page === "UpdatePost" && <Link to="/">Revenir aux messages</Link>}
+            <ul>
+                <li>
+                    <Link to="/login" onClick={handleClick}>
+                        Déconnexion
+                    </Link>
+                </li>
+                {page === "UpdatePost" && (
+                    <li>
+                        <Link to="/">Revenir aux messages</Link>
+                    </li>
+                )}
+            </ul>
         </nav>
     );
 };

@@ -4,7 +4,7 @@ import Nav from "../../components/Nav";
 import Post from "../../components/Post";
 import CreatePostForm from "../../components/CreatePostForm";
 
-const Home = ({ setPostId }) => {
+const Home = () => {
     const [posts, setPosts] = useState([]);
     const [hasNewPosts, setHasNewPosts] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
@@ -39,9 +39,10 @@ const Home = ({ setPostId }) => {
                             imgUrl={post.imgUrl}
                             content={post.content}
                             date={post.date}
+                            likes={post.likesCount}
+                            dislikes={post.dislikesCount}
                             admin={data.admin}
                             loggedUserId={data.loggedUserId}
-                            setPostId={setPostId}
                             setHasNewPosts={setHasNewPosts}
                         />
                     ));
@@ -52,7 +53,7 @@ const Home = ({ setPostId }) => {
                 console.error("Impossible d'afficher les messages :", error);
                 setErrorMessage("Impossible d'afficher les messages.");
             });
-    }, [hasNewPosts, token, navigate, setPostId]);
+    }, [hasNewPosts, token, navigate]);
 
     return (
         <React.Fragment>

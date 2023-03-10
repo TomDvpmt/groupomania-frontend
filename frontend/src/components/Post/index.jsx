@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../utils";
+import LikeButtons from "../LikeButtons";
 
 const Post = ({
     id,
@@ -9,19 +10,21 @@ const Post = ({
     content,
     imgUrl,
     date,
+    likes,
+    dislikes,
     admin,
     loggedUserId,
-    setPostId,
     setHasNewPosts,
 }) => {
     const [errorMessage, setErrorMessage] = useState("");
+    const [likesCount, setLikesCount] = useState(likes);
+    const [dislikesCount, setDislikesCount] = useState(dislikes);
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const formatedDate = formatDate(date);
 
     const handleUpdate = () => {
-        setPostId(id);
-        navigate(`/update`);
+        navigate(`/update/${id}`);
     };
 
     const handleDelete = () => {
@@ -61,8 +64,13 @@ const Post = ({
                 <p>{content}</p>
             </div>
             <div className="post_like-buttons">
-                <button>Like</button>
-                <button>Dislike</button>
+                <LikeButtons
+                    postId={id}
+                    likesCount={likesCount}
+                    dislikesCount={dislikesCount}
+                    setLikesCount={setLikesCount}
+                    setDislikesCount={setDislikesCount}
+                />
             </div>
             <div className="post__buttons">
                 {(admin || postUserId === loggedUserId) && (

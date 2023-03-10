@@ -70,12 +70,10 @@ exports.login = (req, res, next) => {
                 WHERE email = ?
             `, [email])
                 .then(([rows]) => {
+                    
                     const count = rows[0].count;
-                    if(count != 1) {
-                        close(connection);
-                        return res.status(401).json({message: "Email ou mot de passe invalide."});
-                    }
-                    else {
+
+                    if(count === 1) {
                         connection.execute(`
                             SELECT id, passwordHash, admin
                             FROM users
@@ -105,6 +103,10 @@ exports.login = (req, res, next) => {
                                 .catch(() => res.status(500).json({message: "Oops !"}))
                             })
                             .catch(() => console.log("============ Connexion à l'application impossible :", error));
+                    }
+                    else {
+                        close(connection);
+                        return res.status(401).json({message: "Email ou mot de passe invalide."});
                     }
                 })
                 .catch(error => {

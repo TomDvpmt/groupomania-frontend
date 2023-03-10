@@ -21,50 +21,73 @@ const handleError = (res, message, status, error) => {
 }
 
 exports.getAllPosts = (req, res, next) => {
+
+    const userId = req.auth.userId;
+
     connectToDb("getAllPosts")
     .then(connection => {
-        connection.execute(
-            `
-                SELECT 
-                    posts.id AS post_id, 
-                    posts.user_id AS post_user_id, 
-                    posts.content, 
-                    posts.img_url, 
-                    posts.created_at, 
-                    users.id AS user_id, 
-                    users.email
-                FROM posts
-                JOIN users
-                ON posts.user_id = users.id
-                ORDER BY created_at DESC
-            `, [])
-            .then(([rows]) => {
-                const results = [];
-                for(let i = 0 ; i < rows.length ; i++) {
-                    results[i] = 
-                        {
-                            id: rows[i].post_id,
-                            postUserId: rows[i].post_user_id,
-                            email: rows[i].email,
-                            content: rows[i].content,
-                            imgUrl: rows[i].img_url,
-                            date: rows[i].created_at
-                        };
-                };
-                close(connection);
-                return {
-                    posts: results, 
-                    admin: req.auth.admin === 1, 
-                    loggedUserId: req.auth.userId
-                };
-            })
-            .then((response) => {
-                res.status(200).json(response);
-            })
-            .catch(error => {
-                close(connection);
-                handleError(res, "Impossible de récupérer les données.", 400, error);
-            } )
+        connection.execute(`
+        SELECT id, email, content, img_url, created_at, likes_count, dislikes_count
+        FROM 
+            (SELECT 
+                posts.id, 
+                posts.user_id AS post_user_id, 
+                users.email,
+                posts.content, 
+                posts.img_url, 
+                posts.created_at, 
+                users.id AS user_id
+            FROM posts
+            JOIN users
+            ON posts.user_id = users.id) 
+            AS posts_users
+            LEFT JOIN 
+                (SELECT COUNT(*) AS likes_count, post_id
+                FROM likes
+                WHERE like_value = 1
+                GROUP BY post_id) 
+                AS likes_table
+            ON posts_users.id = likes_table.post_id
+            LEFT JOIN 
+                (SELECT COUNT(*) AS dislikes_count, post_id
+                FROM likes
+                WHERE like_value = -1
+                GROUP BY post_id)
+                AS dislikes_table
+            ON posts_users.id = dislikes_table.post_id
+        ORDER BY created_at DESC
+            `)
+        .then(([rows]) => {
+
+            const results = [];
+            
+            for(let i = 0 ; i < rows.length ; i++) {
+                results[i] =
+                    {
+                        id: rows[i].id,
+                        postUserId: rows[i].post_user_id,
+                        email: rows[i].email,
+                        content: rows[i].content,
+                        imgUrl: rows[i].img_url,
+                        date: rows[i].created_at,
+                        likesCount: rows[i].likes_count,
+                        dislikesCount: rows[i].dislikes_count,
+                    };
+            };
+            close(connection);
+            return {
+                posts: results, 
+                admin: req.auth.admin === 1, 
+                loggedUserId: req.auth.userId
+            };
+        })
+        .then((response) => {
+            res.status(200).json(response);
+        })
+        .catch(error => {
+            close(connection);
+            handleError(res, "Impossible de récupérer les données.", 400, error);
+        } )
     })
     .catch(error => {
         handleError(res, "Impossible de se connecter à la base de données.", 500, error);
@@ -222,5 +245,62 @@ exports.deletePost = (req, res, next) => {
 };
 
 exports.likePost = (req, res, next) => {
+    const postId = req.params.id;
+    const userId = req.auth.userId;
+    const likeValue = JSON.parse(req.body.likeValue);
 
+    connectToDb("like / dislike")
+    .then(connection => {
+        connection.execute(`
+            SELECT like_value
+            FROM likes
+            WHERE user_id = ? AND post_id = ?
+        `, [userId, postId])
+        .then(([rows]) => {
+            if(rows.length === 0) {
+                connection.execute(`
+                    INSERT INTO likes (user_id, post_id, like_value)
+                    VALUES (?, ?, ?)
+                `, [userId, postId, likeValue])
+                .then(() => {
+                    close(connection);
+                    res.status(201).json();
+                })
+                .catch(error => {
+                    close(connection);
+                    handleError(res, "Like / dislike impossible.", 400, error);
+                })
+            }
+            else {
+                const prevLikeValue = rows[0].like_value;
+                console.log("prevLikeValue :", prevLikeValue)
+                let newLikeValue;
+                if(prevLikeValue === 0 || prevLikeValue === null) {
+                    newLikeValue = likeValue;
+                }
+                else if (prevLikeValue === 1) {
+                    newLikeValue = likeValue === 1 ? 0 : -1;
+                }
+                else {
+                    newLikeValue = likeValue === 1 ? 1 : 0;
+                }
+                connection.execute(`
+                    UPDATE likes
+                    SET like_value = ?
+                    WHERE user_id = ? AND post_id = ?
+                `, [newLikeValue, userId, postId])
+                .then(() => {
+                    close(connection);
+                    res.status(200).json();
+                })
+                .catch(error => {
+                    close(connection);
+                    handleError(res, "Like / dislike impossible.", 400, error);
+                });
+            }
+        })
+    })
+    .catch(error => {
+        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
+    });
 };

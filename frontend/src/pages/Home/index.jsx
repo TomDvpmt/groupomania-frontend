@@ -4,6 +4,8 @@ import Nav from "../../components/Nav";
 import Post from "../../components/Post";
 import CreatePostForm from "../../components/CreatePostForm";
 
+import "./Home.css";
+
 const Home = () => {
     const [posts, setPosts] = useState([]);
     const [hasNewPosts, setHasNewPosts] = useState(0);

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../utils";
+import Comments from "../Comments";
 
 import "./Post.css";
 
@@ -160,6 +161,7 @@ const Post = ({
                 )}
             </div>
             {errorMessage && <p className="error-msg">{errorMessage}</p>}
+            <Comments postId={id} />
         </article>
     );
 };

@@ -1,5 +1,4 @@
 const fs = require("fs");
-const { errorMonitor } = require("stream");
 
 const connectToDb = require("../database/db-connect-mysql");
 

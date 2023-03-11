@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { formatDate } from "../../utils";
+import { deletePost } from "../../utils";
 
 const Comment = ({
+    id,
     admin,
     commentId,
     commentUserId,
@@ -16,38 +18,21 @@ const Comment = ({
 }) => {
     const [errorMessage, setErrorMessage] = useState("");
     const formatedDate = formatDate(date);
+    const token = localStorage.getItem("token");
+
+    console.log(
+        "admin :",
+        admin,
+        "commentUserId : ",
+        commentUserId,
+        "loggedUserId :",
+        loggedUserId
+    );
 
     const handleUpdate = () => {};
 
     const handleDelete = () => {
-        if (
-            !window.confirm(
-                "Êtes-vous sûr de vouloir supprimer ce commentaire ?"
-            )
-        ) {
-            return;
-        } else {
-            // fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${id}`, {
-            //     method: "DELETE",
-            //     headers: {
-            //         Authorization: `BEARER ${token}`,
-            //         "Content-type": "application/json",
-            //     },
-            //     body: JSON.stringify({ imgUrl: imgUrl }),
-            // })
-            //     .then((response) => {
-            //         if (response.status >= 400) {
-            //             response
-            //                 .json()
-            //                 .then(({ message }) => setErrorMessage(message));
-            //         } else {
-            //             setHasNewPosts((hasNewPosts) => hasNewPosts + 1);
-            //         }
-            //     })
-            //     .catch(() =>
-            //         setErrorMessage("Impossible de supprimer le message.")
-            //     );
-        }
+        deletePost(token, id, imgUrl, setHasNewComments, setErrorMessage);
     };
 
     return (

@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Comment from "../Comment";
-import Post from "../Post";
 
 import "./Comments.css";
 
-const Comments = ({ postId, setHasNewPosts }) => {
+const Comments = ({ postId }) => {
     const [comments, setComments] = useState([]);
     const [hasNewComments, setHasNewComments] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
@@ -27,61 +26,39 @@ const Comments = ({ postId, setHasNewPosts }) => {
                 if (data.posts.length === 0) {
                     return <p>Aucun message à afficher.</p>;
                 } else {
-                    return data.posts.map((result) =>
-                        result.parentId === 0 ? (
-                            <Post
-                                key={result.id}
-                                id={result.id}
-                                postUserId={result.postUserId}
-                                email={result.email}
-                                imgUrl={result.imgUrl}
-                                content={result.content}
-                                date={result.date}
-                                likes={
-                                    result.likesCount === null
-                                        ? 0
-                                        : result.likesCount
-                                }
-                                dislikes={
-                                    result.dislikesCount === null
-                                        ? 0
-                                        : result.dislikesCount
-                                }
-                                admin={data.admin}
-                                loggedUserId={data.loggedUserId}
-                                setHasNewPosts={setHasNewPosts}
-                            />
-                        ) : (
-                            <Comment
-                                key={result.id}
-                                id={result.id}
-                                commentUserId={result.postUserId}
-                                email={result.email}
-                                imgUrl={result.imgUrl}
-                                content={result.content}
-                                date={result.date}
-                                likes={
-                                    result.likesCount === null
-                                        ? 0
-                                        : result.likesCount
-                                }
-                                dislikes={
-                                    result.dislikesCount === null
-                                        ? 0
-                                        : result.dislikesCount
-                                }
-                                admin={data.admin}
-                                loggedUserId={data.loggedUserId}
-                                setHasNewComments={setHasNewComments}
-                            />
-                        )
-                    );
+                    return data.posts.map((result) => (
+                        <Comment
+                            key={result.id}
+                            id={result.id}
+                            commentUserId={result.commentUserId}
+                            email={result.email}
+                            imgUrl={result.imgUrl}
+                            content={result.content}
+                            date={result.date}
+                            likes={
+                                result.likesCount === null
+                                    ? 0
+                                    : result.likesCount
+                            }
+                            dislikes={
+                                result.dislikesCount === null
+                                    ? 0
+                                    : result.dislikesCount
+                            }
+                            admin={data.admin}
+                            loggedUserId={data.loggedUserId}
+                            setHasNewComments={setHasNewComments}
+                        />
+                    ));
                 }
             })
             .then((commentsList) => setComments(commentsList))
             .catch((error) => {
-                console.error("Impossible d'afficher les messages :", error);
-                setErrorMessage("Impossible d'afficher les messages.");
+                console.error(
+                    "Impossible d'afficher les commentaires :",
+                    error
+                );
+                setErrorMessage("Impossible d'afficher les commentaires.");
             });
     }, [postId, hasNewComments, token, navigate]);
 

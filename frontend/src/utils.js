@@ -1,3 +1,10 @@
+/**
+ *
+ * @param {String} endpoint
+ * @param {Object} credentialsData
+ * @returns {Response}
+ */
+
 exports.fetchCredentials = (endpoint, credentialsData) => {
     const response = fetch(
         `${process.env.REACT_APP_BACKEND_URI}/API/auth/${endpoint}`,
@@ -11,6 +18,12 @@ exports.fetchCredentials = (endpoint, credentialsData) => {
     );
     return response;
 };
+
+/**
+ *
+ * @param {String} input
+ * @returns {String}
+ */
 
 exports.sanitize = (input) => {
     const htmlCodes = {
@@ -35,6 +48,12 @@ exports.imgMimeTypes = {
     "image/webp": "webp",
 };
 
+/**
+ *
+ * @param {BigInt} timestamp
+ * @returns {String}
+ */
+
 exports.formatDate = (timestamp) => {
     const rawDate = new Date(timestamp);
     const hours =
@@ -44,4 +63,47 @@ exports.formatDate = (timestamp) => {
             ? `0${rawDate.getMinutes()}`
             : rawDate.getMinutes();
     return `Le ${rawDate.toLocaleDateString()} à ${hours}:${minutes}`;
+};
+
+/**
+ *
+ * @param {String} token
+ * @param {Number} postId
+ * @param {String} imgUrl
+ * @param {Function} setHasNewPosts
+ * @param {Function} setErrorMessage
+ * @returns {Response}
+ */
+
+exports.deletePost = (
+    token,
+    postId,
+    imgUrl,
+    setHasNewPosts,
+    setErrorMessage
+) => {
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce message ?")) {
+        return;
+    } else {
+        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `BEARER ${token}`,
+                "Content-type": "application/json",
+            },
+            body: JSON.stringify({ imgUrl: imgUrl }),
+        })
+            .then((response) => {
+                if (response.status >= 400) {
+                    response
+                        .json()
+                        .then(({ message }) => setErrorMessage(message));
+                } else {
+                    setHasNewPosts((hasNewPosts) => hasNewPosts + 1);
+                }
+            })
+            .catch(() =>
+                setErrorMessage("Impossible de supprimer le message.")
+            );
+    }
 };

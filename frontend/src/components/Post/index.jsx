@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../utils";
-
+import Comments from "../Comments";
 import "./Post.css";
 
 const Post = ({
@@ -24,15 +24,6 @@ const Post = ({
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const formatedDate = formatDate(date);
-
-    console.log(
-        "post id : ",
-        id,
-        "loggedUserId : ",
-        loggedUserId,
-        "postUserId : ",
-        postUserId
-    );
 
     const handleUpdate = () => {
         navigate(`/update/${id}`);
@@ -160,6 +151,8 @@ const Post = ({
                 )}
             </div>
             {errorMessage && <p className="error-msg">{errorMessage}</p>}
+            <h2>Commentaires : </h2>
+            <Comments postId={id} />
         </article>
     );
 };

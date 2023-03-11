@@ -13,7 +13,7 @@ const Home = () => {
     const token = localStorage.getItem("token");
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/all/0`, {
             method: "GET",
             headers: {
                 Authorization: `BEARER ${token}`,

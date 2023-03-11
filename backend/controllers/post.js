@@ -23,6 +23,7 @@ const handleError = (res, message, status, error) => {
 exports.getAllPosts = (req, res, next) => {
 
     const userId = req.auth.userId;
+    const parentId = req.params.parentId;
 
     connectToDb("getAllPosts")
     .then(connection => {
@@ -61,18 +62,31 @@ exports.getAllPosts = (req, res, next) => {
             	FROM likes
             	WHERE user_id = ?) AS user_likes_table
             ON posts_users.id = user_likes_table.post_id
-        WHERE parent_id = 0
+        WHERE parent_id = ?
         ORDER BY created_at DESC
-            `, [userId])
+            `, [userId, parentId])
         .then(([rows]) => {
 
             const results = [];
             
             for(let i = 0 ; i < rows.length ; i++) {
-                results[i] =
+                results[i] = rows[0].parent_id === 0 ?
                     {
                         id: rows[i].id,
+                        parentId: 0,
                         postUserId: rows[i].post_user_id,
+                        email: rows[i].email,
+                        content: rows[i].content,
+                        imgUrl: rows[i].img_url,
+                        date: rows[i].created_at,
+                        likesCount: rows[i].likes_count,
+                        dislikesCount: rows[i].dislikes_count,
+                        currentUserLikeValue: rows[i].current_user_like_value
+                    } :
+                    {
+                        id: rows[i].id,
+                        parentId: rows[0].parent_id,
+                        commentUserId: rows[i].post_user_id,
                         email: rows[i].email,
                         content: rows[i].content,
                         imgUrl: rows[i].img_url,
@@ -374,118 +388,118 @@ exports.getPostUserLike = (req, res, next) => {
     })
 }
 
-exports.getAllComments = (req, res, next) => {
-    const userId = req.auth.userId;
-    const postId = req.params.id;
+// exports.getAllComments = (req, res, next) => {
+//     const userId = req.auth.userId;
+//     const postId = req.params.id;
 
-    connectToDb("getAllComments")
-    .then(connection => {
-        connection.execute(`
-        SELECT comment_id, parent_id, comment_user_id, email, content, img_url, created_at, likes_count, dislikes_count, current_user_like_value
-        FROM 
-            (SELECT 
-                posts.id AS comment_id, 
-                posts.parent_id,
-                posts.user_id AS comment_user_id, 
-                users.email,
-                posts.content, 
-                posts.img_url, 
-                posts.created_at, 
-                users.id AS user_id
-            FROM posts
-            JOIN users
-            ON posts.user_id = users.id) 
-            AS posts_users
-            LEFT JOIN 
-                (SELECT COUNT(*) AS likes_count, post_id
-                FROM likes
-                WHERE like_value = 1
-                GROUP BY post_id) 
-                AS likes_table
-            ON posts_users.comment_id = likes_table.post_id
-            LEFT JOIN 
-                (SELECT COUNT(*) AS dislikes_count, post_id
-                FROM likes
-                WHERE like_value = -1
-                GROUP BY post_id)
-                AS dislikes_table
-            ON posts_users.comment_id = dislikes_table.post_id
-            LEFT JOIN
-            	(SELECT post_id, like_value AS current_user_like_value 
-            	FROM likes
-            	WHERE user_id = ?) AS user_likes_table
-            ON posts_users.comment_id = user_likes_table.post_id
-        WHERE parent_id = ?
-        ORDER BY created_at DESC
-        `, [userId, postId])
-        .then(([rows]) => {
-            const results = [];
+//     connectToDb("getAllComments")
+//     .then(connection => {
+//         connection.execute(`
+//         SELECT comment_id, parent_id, comment_user_id, email, content, img_url, created_at, likes_count, dislikes_count, current_user_like_value
+//         FROM 
+//             (SELECT 
+//                 posts.id AS comment_id, 
+//                 posts.parent_id,
+//                 posts.user_id AS comment_user_id, 
+//                 users.email,
+//                 posts.content, 
+//                 posts.img_url, 
+//                 posts.created_at, 
+//                 users.id AS user_id
+//             FROM posts
+//             JOIN users
+//             ON posts.user_id = users.id) 
+//             AS posts_users
+//             LEFT JOIN 
+//                 (SELECT COUNT(*) AS likes_count, post_id
+//                 FROM likes
+//                 WHERE like_value = 1
+//                 GROUP BY post_id) 
+//                 AS likes_table
+//             ON posts_users.comment_id = likes_table.post_id
+//             LEFT JOIN 
+//                 (SELECT COUNT(*) AS dislikes_count, post_id
+//                 FROM likes
+//                 WHERE like_value = -1
+//                 GROUP BY post_id)
+//                 AS dislikes_table
+//             ON posts_users.comment_id = dislikes_table.post_id
+//             LEFT JOIN
+//             	(SELECT post_id, like_value AS current_user_like_value 
+//             	FROM likes
+//             	WHERE user_id = ?) AS user_likes_table
+//             ON posts_users.comment_id = user_likes_table.post_id
+//         WHERE parent_id = ?
+//         ORDER BY created_at DESC
+//         `, [userId, postId])
+//         .then(([rows]) => {
+//             const results = [];
             
-            for(let i = 0 ; i < rows.length ; i++) {
-                results[i] =
-                    {
-                        commentId: rows[i].comment_id,
-                        commentUserId: rows[i].comment_user_id,
-                        email: rows[i].email,
-                        content: rows[i].content,
-                        imgUrl: rows[i].img_url,
-                        date: rows[i].created_at,
-                        likesCount: rows[i].likes_count,
-                        dislikesCount: rows[i].dislikes_count,
-                        currentUserLikeValue: rows[i].current_user_like_value
-                    };
-            };
-            close(connection);
-            return {
-                comments: results, 
-                admin: req.auth.admin === 1, 
-                loggedUserId: req.auth.userId
-            };
-        })
-        .then(results => res.status(200).json(results))
-        .catch(error => {
-            close(connection);
-            handleError(res, "Impossible de récupérer les commentaires.", 400, error);
-        });
-    })
-    .catch(error => {
-        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
-    });
-}
+//             for(let i = 0 ; i < rows.length ; i++) {
+//                 results[i] =
+//                     {
+//                         commentId: rows[i].comment_id,
+//                         commentUserId: rows[i].comment_user_id,
+//                         email: rows[i].email,
+//                         content: rows[i].content,
+//                         imgUrl: rows[i].img_url,
+//                         date: rows[i].created_at,
+//                         likesCount: rows[i].likes_count,
+//                         dislikesCount: rows[i].dislikes_count,
+//                         currentUserLikeValue: rows[i].current_user_like_value
+//                     };
+//             };
+//             close(connection);
+//             return {
+//                 comments: results, 
+//                 admin: req.auth.admin === 1, 
+//                 loggedUserId: req.auth.userId
+//             };
+//         })
+//         .then(results => res.status(200).json(results))
+//         .catch(error => {
+//             close(connection);
+//             handleError(res, "Impossible de récupérer les commentaires.", 400, error);
+//         });
+//     })
+//     .catch(error => {
+//         handleError(res, "Impossible de se connecter à la base de données.", 500, error);
+//     });
+// }
 
-exports.createComment = (req, res, next) => {
-    const userId = req.auth.userId;
-    const postId = req.params.id;
+// exports.createComment = (req, res, next) => {
+//     const userId = req.auth.userId;
+//     const postId = req.params.id;
 
-    const createdAt = Date.now();
-    connectToDb("createComment")
-    .then(connection => {
-        if(!req.file && !req.body.content) {
-            handleError(res, "Le message ne peut pas être vide.", 400);
-        }
-        const imgUrl = 
-            req.file ? 
-            `${req.protocol}://${req.get("host")}/images/${req.file.filename}` : 
-            "";
-        connection.execute(
-            `
-            INSERT INTO posts (parent_id, user_id, content, img_url, created_at)
-            VALUES (?, ?, ?, ?, ?)
-            `,
-            [postId, userId, content, imgUrl, createdAt]
-        )
-        .then(() => {
-            close(connection);
-            console.log("Commentaire ajouté à la base de données.");
-            res.status(201).json();
+//     const createdAt = Date.now();
+//     connectToDb("createComment")
+//     .then(connection => {
+//         if(!req.file && !req.body.content) {
+//             handleError(res, "Le message ne peut pas être vide.", 400);
+//         }
+//         const imgUrl = 
+//             req.file ? 
+//             `${req.protocol}://${req.get("host")}/images/${req.file.filename}` : 
+//             "";
+//         connection.execute(
+//             `
+//             INSERT INTO posts (parent_id, user_id, content, img_url, created_at)
+//             VALUES (?, ?, ?, ?, ?)
+//             `,
+//             [postId, userId, content, imgUrl, createdAt]
+//         )
+//         .then(() => {
+//             close(connection);
+//             console.log("Commentaire ajouté à la base de données.");
+//             res.status(201).json();
             
-        })
-        .catch(error => {
-            close(connection);
-            handleError(res, "Impossible de publier le commentaire.", 400, error);
-        }) 
-    })
-    .catch(error => {
-        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
-    })
-}
+//         })
+//         .catch(error => {
+//             close(connection);
+//             handleError(res, "Impossible de publier le commentaire.", 400, error);
+//         }) 
+//     })
+//     .catch(error => {
+//         handleError(res, "Impossible de se connecter à la base de données.", 500, error);
+//     })
+// }

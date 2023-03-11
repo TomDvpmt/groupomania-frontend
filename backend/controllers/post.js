@@ -273,7 +273,6 @@ exports.likePost = (req, res, next) => {
             }
             else {
                 const prevLikeValue = rows[0].like_value;
-                console.log("prevLikeValue :", prevLikeValue)
                 let newLikeValue;
                 if(prevLikeValue === 0 || prevLikeValue === null) {
                     newLikeValue = likeValue;

@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../utils";
-import LikeButtons from "../LikeButtons";
 
 const Post = ({
     id,
@@ -10,13 +9,14 @@ const Post = ({
     content,
     imgUrl,
     date,
-    // likes,
-    // dislikes,
-    currentUserLikeValue,
+    likes,
+    dislikes,
     admin,
     loggedUserId,
     setHasNewPosts,
 }) => {
+    const [likesCount, setLikesCount] = useState(likes);
+    const [dislikesCount, setDislikesCount] = useState(dislikes);
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
@@ -53,6 +53,42 @@ const Post = ({
         }
     };
 
+    const getPostLikes = (token, id) => {
+        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${id}/likes`, {
+            method: "GET",
+            headers: {
+                Authorization: `BEARER ${token}`,
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setLikesCount(data.likesCount === null ? 0 : data.likesCount);
+                setDislikesCount(
+                    data.dislikesCount === null ? 0 : data.dislikesCount
+                );
+            })
+            .catch((error) => console.log(error));
+    };
+
+    const handleLike = (e) => {
+        const clickValue = e.target.dataset.likevalue;
+
+        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${id}/like`, {
+            method: "PUT",
+            headers: {
+                Authorization: `BEARER ${token}`,
+                "Content-type": "application/json",
+            },
+            body: JSON.stringify({ likeValue: clickValue }),
+        })
+            .then(() => getPostLikes(token, id))
+            .catch((error) => console.log(error));
+    };
+
+    useEffect(() => {
+        getPostLikes(token, id);
+    }, []);
+
     return (
         <article className="post">
             <h3 className="post__user-address">
@@ -63,12 +99,12 @@ const Post = ({
                 <p>{content}</p>
             </div>
             <div className="post_like-buttons">
-                <LikeButtons
-                    postId={id}
-                    // likes={likes}
-                    // dislikes={dislikes}
-                    currentUserLikeValue={currentUserLikeValue}
-                />
+                <button onClick={handleLike} data-likevalue={1}>
+                    Like ({likesCount})
+                </button>
+                <button onClick={handleLike} data-likevalue={-1}>
+                    Dislike ({dislikesCount})
+                </button>
             </div>
             <div className="post__buttons">
                 {(admin || postUserId === loggedUserId) && (

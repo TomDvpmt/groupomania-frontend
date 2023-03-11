@@ -39,15 +39,14 @@ const Home = () => {
                             imgUrl={post.imgUrl}
                             content={post.content}
                             date={post.date}
-                            // likes={
-                            //     post.likesCount === null ? 0 : post.likesCount
-                            // }
-                            // dislikes={
-                            //     post.dislikesCount === null
-                            //         ? 0
-                            //         : post.dislikesCount
-                            // }
-                            currentUserLikeValue={post.currentUserLikeValue}
+                            likes={
+                                post.likesCount === null ? 0 : post.likesCount
+                            }
+                            dislikes={
+                                post.dislikesCount === null
+                                    ? 0
+                                    : post.dislikesCount
+                            }
                             admin={data.admin}
                             loggedUserId={data.loggedUserId}
                             setHasNewPosts={setHasNewPosts}

@@ -27,6 +27,7 @@ const Home = () => {
                 } else return response.json();
             })
             .then((data) => {
+                console.log("admin : ", data.admin);
                 if (data.posts.length === 0) {
                     return <p>Aucun message à afficher.</p>;
                 } else {

@@ -63,6 +63,7 @@ const setupDbTables = async (connection, dbName) => {
     const usersExists = await tableExists(connection, dbName, "users");
     const postsExists = await tableExists(connection, dbName, "posts");
     const likesExists = await tableExists(connection, dbName, "likes");
+    const commentsExists = await tableExists(connection, dbName, "comments");
 
     
     await connection.query(`
@@ -94,11 +95,25 @@ const setupDbTables = async (connection, dbName) => {
             user_id INT,
             post_id INT,
             like_value INT NOT NULL DEFAULT 0,
-            FOREIGN KEY (user_id) REFERENCES posts(user_id),
+            FOREIGN KEY (user_id) REFERENCES users(id),
             FOREIGN KEY (post_id) REFERENCES posts(id)
         )
     `);
     !likesExists && console.log(`========= Table "likes" créée. =========`);
+
+    await connection.query(`
+        CREATE TABLE IF NOT EXISTS comments (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT,
+            post_id INT,
+            content VARCHAR(5000),
+            img_url VARCHAR(500),
+            created_at BIGINT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            FOREIGN KEY (post_id) REFERENCES posts(id)
+        )
+    `);
+    !commentsExists && console.log(`========= Table "comments" créée. =========`)
 
     await connection.query(`
         CREATE TRIGGER IF NOT EXISTS posts_before_delete

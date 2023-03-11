@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../utils";
 
+import "./Post.css";
+
 const Post = ({
     id,
     postUserId,
@@ -22,6 +24,15 @@ const Post = ({
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const formatedDate = formatDate(date);
+
+    console.log(
+        "post id : ",
+        id,
+        "loggedUserId : ",
+        loggedUserId,
+        "postUserId : ",
+        postUserId
+    );
 
     const handleUpdate = () => {
         navigate(`/update/${id}`);
@@ -50,7 +61,9 @@ const Post = ({
                         setHasNewPosts((hasNewPosts) => hasNewPosts + 1);
                     }
                 })
-                .catch((error) => console.log(error));
+                .catch(() =>
+                    setErrorMessage("Impossible de supprimer le message.")
+                );
         }
     };
 
@@ -61,14 +74,22 @@ const Post = ({
                 Authorization: `BEARER ${token}`,
             },
         })
-            .then((response) => response.json())
+            .then((response) => {
+                if (response.status >= 400) {
+                    response
+                        .json()
+                        .then(({ message }) => setErrorMessage(message));
+                } else return response.json();
+            })
             .then((data) => {
                 setLikesCount(data.likesCount === null ? 0 : data.likesCount);
                 setDislikesCount(
                     data.dislikesCount === null ? 0 : data.dislikesCount
                 );
             })
-            .catch((error) => console.log(error));
+            .catch(() =>
+                setErrorMessage("Impossible d'afficher les likes / dislikes.")
+            );
     };
 
     const setUserLikeStatus = (token, id) => {
@@ -97,9 +118,15 @@ const Post = ({
             },
             body: JSON.stringify({ likeValue: clickValue }),
         })
-            .then(() => setPostLikes(token, id))
+            .then((response) => {
+                if (response.status >= 400) {
+                    response
+                        .json()
+                        .then(({ message }) => setErrorMessage(message));
+                } else setPostLikes(token, id);
+            })
             .then(() => setUserLikeStatus(token, id))
-            .catch((error) => console.log(error));
+            .catch((error) => setErrorMessage("Like / dislike impossible."));
     };
 
     useEffect(() => {

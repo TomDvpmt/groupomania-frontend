@@ -27,7 +27,7 @@ exports.getAllPosts = (req, res, next) => {
     connectToDb("getAllPosts")
     .then(connection => {
         connection.execute(`
-        SELECT id, email, content, img_url, created_at, likes_count, dislikes_count, current_user_like_value
+        SELECT id, post_user_id, email, content, img_url, created_at, likes_count, dislikes_count, current_user_like_value
         FROM 
             (SELECT 
                 posts.id, 
@@ -356,7 +356,12 @@ exports.getPostUserLike = (req, res, next) => {
             FROM likes
             WHERE user_id = ? AND post_id = ?
         `, [userId, postId])
-        .then(([rows]) => res.status(200).json(rows[0].like_value))
+        .then(([rows]) => {
+            if(rows.length === 0) {
+                res.status(200).json(0)
+            }
+            else res.status(200).json(rows[0].like_value)
+        } )
         .catch(error => {
             close(connection);
             handleError(res, "Impossible de récupérer les données (likes / dislikes).", 400, error);

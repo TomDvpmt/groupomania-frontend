@@ -27,7 +27,7 @@ exports.getAllPosts = (req, res, next) => {
     connectToDb("getAllPosts")
     .then(connection => {
         connection.execute(`
-        SELECT id, email, content, img_url, created_at, likes_count, dislikes_count
+        SELECT id, email, content, img_url, created_at, likes_count, dislikes_count, current_user_like_value
         FROM 
             (SELECT 
                 posts.id, 
@@ -55,8 +55,13 @@ exports.getAllPosts = (req, res, next) => {
                 GROUP BY post_id)
                 AS dislikes_table
             ON posts_users.id = dislikes_table.post_id
+            LEFT JOIN
+            	(SELECT post_id, like_value AS current_user_like_value 
+            	FROM likes
+            	WHERE user_id = ?) AS user_likes_table
+            ON posts_users.id = user_likes_table.post_id
         ORDER BY created_at DESC
-            `)
+            `, [userId])
         .then(([rows]) => {
 
             const results = [];
@@ -72,6 +77,7 @@ exports.getAllPosts = (req, res, next) => {
                         date: rows[i].created_at,
                         likesCount: rows[i].likes_count,
                         dislikesCount: rows[i].dislikes_count,
+                        currentUserLikeValue: rows[i].current_user_like_value
                     };
             };
             close(connection);
@@ -105,17 +111,11 @@ exports.getOnePost = (req, res, next) => {
             WHERE id = ?
         `, [postId])
         .then(([rows]) => {
-            const content = rows[0].content;
-            const imgUrl = rows[0].img_url;
-            const response = {
-                content: content,
-                imgUrl: imgUrl
-            };
+            res.status(200).json({
+                content: rows[0].content,
+                imgUrl: rows[0].img_url
+            });
             close(connection);
-            return response;
-        })
-        .then(response => {
-            res.status(200).json(response);
         })
         .catch(error => {
             close(connection);
@@ -249,7 +249,7 @@ exports.likePost = (req, res, next) => {
     const userId = req.auth.userId;
     const likeValue = JSON.parse(req.body.likeValue);
 
-    connectToDb("like / dislike")
+    connectToDb("likePost")
     .then(connection => {
         connection.execute(`
             SELECT like_value
@@ -304,3 +304,44 @@ exports.likePost = (req, res, next) => {
         handleError(res, "Impossible de se connecter à la base de données.", 500, error);
     });
 };
+
+exports.getPostLikes = (req, res, next) => {
+    const postId = req.params.id;
+
+    connectToDb("getPostLikes")
+    .then(connection => {
+        connection.execute(`
+        SELECT id, likes_count, dislikes_count
+        FROM posts
+        LEFT JOIN 
+            (SELECT COUNT(*) AS likes_count, post_id
+            FROM likes
+            WHERE like_value = 1
+            GROUP BY post_id) 
+            AS likes_table
+        ON posts.id = likes_table.post_id
+        LEFT JOIN 
+            (SELECT COUNT(*) AS dislikes_count, post_id
+            FROM likes
+            WHERE like_value = -1
+            GROUP BY post_id)
+            AS dislikes_table
+        ON posts.id = dislikes_table.post_id
+        WHERE id = ?
+        ORDER BY created_at DESC;
+        `, [postId])
+        .then(([rows]) => {
+            res.status(200).json({
+                likesCount: rows[0].likes_count,
+                dislikesCount: rows[0].dislikes_count
+            })
+        })
+        .catch(error => {
+            close(connection);
+            handleError(res, "Impossible de récupérer les données (likes / dislikes).", 400, error)
+        })
+    })
+    .catch(error => {
+        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
+    })
+}

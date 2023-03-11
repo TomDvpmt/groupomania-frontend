@@ -39,8 +39,15 @@ const Home = () => {
                             imgUrl={post.imgUrl}
                             content={post.content}
                             date={post.date}
-                            likes={post.likesCount}
-                            dislikes={post.dislikesCount}
+                            // likes={
+                            //     post.likesCount === null ? 0 : post.likesCount
+                            // }
+                            // dislikes={
+                            //     post.dislikesCount === null
+                            //         ? 0
+                            //         : post.dislikesCount
+                            // }
+                            currentUserLikeValue={post.currentUserLikeValue}
                             admin={data.admin}
                             loggedUserId={data.loggedUserId}
                             setHasNewPosts={setHasNewPosts}

@@ -10,15 +10,14 @@ const Post = ({
     content,
     imgUrl,
     date,
-    likes,
-    dislikes,
+    // likes,
+    // dislikes,
+    currentUserLikeValue,
     admin,
     loggedUserId,
     setHasNewPosts,
 }) => {
     const [errorMessage, setErrorMessage] = useState("");
-    const [likesCount, setLikesCount] = useState(likes);
-    const [dislikesCount, setDislikesCount] = useState(dislikes);
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const formatedDate = formatDate(date);
@@ -66,10 +65,9 @@ const Post = ({
             <div className="post_like-buttons">
                 <LikeButtons
                     postId={id}
-                    likesCount={likesCount}
-                    dislikesCount={dislikesCount}
-                    setLikesCount={setLikesCount}
-                    setDislikesCount={setDislikesCount}
+                    // likes={likes}
+                    // dislikes={dislikes}
+                    currentUserLikeValue={currentUserLikeValue}
                 />
             </div>
             <div className="post__buttons">

@@ -337,7 +337,29 @@ exports.getPostLikes = (req, res, next) => {
         })
         .catch(error => {
             close(connection);
-            handleError(res, "Impossible de récupérer les données (likes / dislikes).", 400, error)
+            handleError(res, "Impossible de récupérer les données (likes / dislikes).", 400, error);
+        })
+    })
+    .catch(error => {
+        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
+    })
+}
+
+exports.getPostUserLike = (req, res, next) => {
+    const postId = req.params.id;
+    const userId = req.auth.userId;
+
+    connectToDb("getPostUserLike")
+    .then(connection => {
+        connection.execute(`
+            SELECT like_value 
+            FROM likes
+            WHERE user_id = ? AND post_id = ?
+        `, [userId, postId])
+        .then(([rows]) => res.status(200).json(rows[0].like_value))
+        .catch(error => {
+            close(connection);
+            handleError(res, "Impossible de récupérer les données (likes / dislikes).", 400, error);
         })
     })
     .catch(error => {

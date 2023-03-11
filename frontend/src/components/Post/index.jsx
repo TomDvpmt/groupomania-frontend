@@ -17,6 +17,7 @@ const Post = ({
 }) => {
     const [likesCount, setLikesCount] = useState(likes);
     const [dislikesCount, setDislikesCount] = useState(dislikes);
+    const [likeStatus, setLikeStatus] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
@@ -53,7 +54,7 @@ const Post = ({
         }
     };
 
-    const getPostLikes = (token, id) => {
+    const setPostLikes = (token, id) => {
         fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${id}/likes`, {
             method: "GET",
             headers: {
@@ -70,6 +71,21 @@ const Post = ({
             .catch((error) => console.log(error));
     };
 
+    const setUserLikeStatus = (token, id) => {
+        fetch(
+            `${process.env.REACT_APP_BACKEND_URI}/API/posts/${id}/like/user`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `BEARER ${token}`,
+                },
+            }
+        )
+            .then((response) => response.json())
+            .then((data) => setLikeStatus(data))
+            .catch((error) => console.log(error));
+    };
+
     const handleLike = (e) => {
         const clickValue = e.target.dataset.likevalue;
 
@@ -81,13 +97,15 @@ const Post = ({
             },
             body: JSON.stringify({ likeValue: clickValue }),
         })
-            .then(() => getPostLikes(token, id))
+            .then(() => setPostLikes(token, id))
+            .then(() => setUserLikeStatus(token, id))
             .catch((error) => console.log(error));
     };
 
     useEffect(() => {
-        getPostLikes(token, id);
-    }, []);
+        setPostLikes(token, id);
+        setUserLikeStatus(token, id);
+    }, [id, token]);
 
     return (
         <article className="post">
@@ -100,10 +118,10 @@ const Post = ({
             </div>
             <div className="post_like-buttons">
                 <button onClick={handleLike} data-likevalue={1}>
-                    Like ({likesCount})
+                    Like ({likesCount}) {likeStatus === 1 && "(USER)"}
                 </button>
                 <button onClick={handleLike} data-likevalue={-1}>
-                    Dislike ({dislikesCount})
+                    Dislike ({dislikesCount}) {likeStatus === -1 && "(USER)"}
                 </button>
             </div>
             <div className="post__buttons">

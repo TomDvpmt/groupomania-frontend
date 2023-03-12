@@ -5,7 +5,7 @@ import CreateMessageForm from "../CreateMessageForm";
 
 import "./Comments.css";
 
-const Comments = ({ postId, showCommentForm, setShowCommentForm }) => {
+const Comments = ({ token, postId, showCommentForm, setShowCommentForm }) => {
     const [comments, setComments] = useState([]);
     const [hasNewComments, setHasNewComments] = useState(0);
     const [commentsNumber, setCommentsNumber] = useState(0);
@@ -13,9 +13,8 @@ const Comments = ({ postId, showCommentForm, setShowCommentForm }) => {
 
     const navigate = useNavigate();
 
-    const token = localStorage.getItem("token");
-
     useEffect(() => {
+        console.log("useEffect de Comments => getAllPosts");
         fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/all/${postId}`, {
             method: "GET",
             headers: {
@@ -31,25 +30,28 @@ const Comments = ({ postId, showCommentForm, setShowCommentForm }) => {
                     return data.results.map((result) => (
                         <Comment
                             key={result.id}
-                            id={result.id}
-                            commentUserId={result.commentUserId}
-                            email={result.email}
-                            imgUrl={result.imgUrl}
-                            content={result.content}
-                            date={result.date}
-                            modified={result.modified}
-                            likes={
-                                result.likesCount === null
-                                    ? 0
-                                    : result.likesCount
-                            }
-                            dislikes={
-                                result.dislikesCount === null
-                                    ? 0
-                                    : result.dislikesCount
-                            }
-                            admin={data.admin}
-                            loggedUserId={data.loggedUserId}
+                            commentData={{
+                                id: result.id,
+                                commentUserId: result.commentUserId,
+                                email: result.email,
+                                imgUrl: result.imgUrl,
+                                content: result.content,
+                                date: result.date,
+                                modified: result.modified,
+                                likes:
+                                    result.likesCount === null
+                                        ? 0
+                                        : result.likesCount,
+                                dislikes:
+                                    result.dislikesCount === null
+                                        ? 0
+                                        : result.dislikesCount,
+                            }}
+                            userData={{
+                                token: token,
+                                admin: data.admin,
+                                loggedUserId: data.loggedUserId,
+                            }}
                             setHasNewComments={setHasNewComments}
                         />
                     ));
@@ -76,6 +78,7 @@ const Comments = ({ postId, showCommentForm, setShowCommentForm }) => {
                     token={token}
                     parentId={postId}
                     setHasNewMessages={setHasNewComments}
+                    setMessages={setComments}
                 />
             )}
             {comments.length > 0 && (

@@ -1,15 +1,22 @@
-import React, { useState } from "react";
-import { sanitize, imgMimeTypes } from "../../utils/utils";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { imgMimeTypes, sanitize } from "../../utils/utils";
 
-const UpdateFormPost = ({ postId, content, imgUrl, token }) => {
+const UpdateForm = ({
+    token,
+    postId,
+    content,
+    setContent,
+    imgUrl,
+    setShowUpdateForm,
+}) => {
     const [errorMessage, setErrorMessage] = useState("");
-    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
-        e.preventDefault();
-
         const uploadedFile = e.target.imageFile.files[0];
+        const textInput = e.target.content.value;
+        const sanitizedContent = sanitize(textInput);
+
+        setContent(sanitizedContent);
 
         if (
             uploadedFile &&
@@ -19,9 +26,6 @@ const UpdateFormPost = ({ postId, content, imgUrl, token }) => {
                 "Seuls les formats .jpg, .jpeg, .png, .bpm et .webp sont acceptés."
             );
         } else {
-            const textInput = e.target.content.value;
-            const sanitizedContent = sanitize(textInput);
-
             const formData = new FormData();
             uploadedFile && formData.append("imageFile", uploadedFile);
             formData.append("content", sanitizedContent);
@@ -40,7 +44,7 @@ const UpdateFormPost = ({ postId, content, imgUrl, token }) => {
                             .json()
                             .then(({ message }) => setErrorMessage(message));
                     } else {
-                        navigate("/");
+                        setShowUpdateForm(false);
                     }
                 })
                 .catch((error) => console.log(error));
@@ -48,7 +52,7 @@ const UpdateFormPost = ({ postId, content, imgUrl, token }) => {
     };
 
     return (
-        <React.Fragment>
+        <>
             <form onSubmit={handleSubmit} encType="multipart/form-data">
                 <label htmlFor="content">Votre message : </label>
                 <br />
@@ -69,8 +73,8 @@ const UpdateFormPost = ({ postId, content, imgUrl, token }) => {
                 <button>Mettre à jour</button>
             </form>
             <p className="error-msg">{errorMessage}</p>
-        </React.Fragment>
+        </>
     );
 };
 
-export default UpdateFormPost;
+export default UpdateForm;

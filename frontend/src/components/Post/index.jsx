@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Comments from "../Comments";
+import UpdateForm from "../UpdateForm";
 import {
     formatDate,
     setUserLikeStatus,
@@ -10,41 +10,38 @@ import {
 } from "../../utils/utils";
 import "./Post.css";
 
-const Post = ({
-    id,
-    postUserId,
-    email,
-    content,
-    imgUrl,
-    date,
-    likes,
-    dislikes,
-    admin,
-    loggedUserId,
-    setHasNewPosts,
-}) => {
-    const [likesCount, setLikesCount] = useState(likes);
-    const [dislikesCount, setDislikesCount] = useState(dislikes);
+const Post = ({ postData, userData, setHasNewPosts }) => {
+    const [likesCount, setLikesCount] = useState(postData.likes);
+    const [dislikesCount, setDislikesCount] = useState(postData.dislikes);
     const [likeStatus, setLikeStatus] = useState(null);
     const [showCommentForm, setShowCommentForm] = useState(false);
+    const [showPostUpdateForm, setShowPostUpdateForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const navigate = useNavigate();
-    const token = localStorage.getItem("token");
-    const formatedDate = formatDate(date);
+    const [postContent, setPostContent] = useState(postData.content);
+
+    const token = userData.token;
+    const postId = postData.id;
+    const formatedDate = formatDate(postData.date);
 
     const handleUpdate = () => {
-        navigate(`/update/${id}`);
+        setShowPostUpdateForm((showPostUpdateForm) => !showPostUpdateForm);
     };
 
     const handleDelete = () => {
-        deletePost(token, id, imgUrl, setHasNewPosts, setErrorMessage);
+        deletePost(
+            token,
+            postId,
+            postData.imgUrl,
+            setHasNewPosts,
+            setErrorMessage
+        );
     };
 
     const handleLike = (e) => {
         setLike(
             e,
             token,
-            id,
+            postId,
             setPostLikes,
             setLikesCount,
             setDislikesCount,
@@ -61,22 +58,25 @@ const Post = ({
     useEffect(() => {
         setPostLikes(
             token,
-            id,
+            postId,
             setLikesCount,
             setDislikesCount,
             setErrorMessage
         );
-        setUserLikeStatus(token, id, setLikeStatus);
-    }, [id, token]);
+        setUserLikeStatus(token, postId, setLikeStatus);
+    }, [postId, token]);
 
     return (
         <article className="post">
             <h3 className="post__user-infos">
-                {email} | {formatedDate}
+                {postData.email} | {formatedDate} (
+                {postData.modified && "modifié"})
             </h3>
             <div className="post__content">
-                {imgUrl && <img src={imgUrl} alt="post illustration" />}
-                <p>{content}</p>
+                {postData.imgUrl && (
+                    <img src={postData.imgUrl} alt="post illustration" />
+                )}
+                <p>{postContent}</p>
             </div>
             <div className="post_like-buttons">
                 <button onClick={handleLike} data-likevalue={1}>
@@ -87,17 +87,29 @@ const Post = ({
                 </button>
             </div>
             <div className="post__buttons">
-                {(admin || postUserId === loggedUserId) && (
-                    <React.Fragment>
+                {(userData.admin ||
+                    postData.postUserId === userData.loggedUserId) && (
+                    <>
                         <button onClick={handleUpdate}>Modifier</button>
                         <button onClick={handleDelete}>Supprimer</button>
-                    </React.Fragment>
+                    </>
                 )}
             </div>
             <button onClick={handleReply}>Répondre</button>
+            {showPostUpdateForm && (
+                <UpdateForm
+                    token={token}
+                    postId={postId}
+                    content={postContent}
+                    setContent={setPostContent}
+                    imgUrl={postData.imgUrl}
+                    setShowUpdateForm={setShowPostUpdateForm}
+                />
+            )}
             {errorMessage && <p className="error-msg">{errorMessage}</p>}
             <Comments
-                postId={id}
+                token={token}
+                postId={postId}
                 showCommentForm={showCommentForm}
                 setShowCommentForm={setShowCommentForm}
             />

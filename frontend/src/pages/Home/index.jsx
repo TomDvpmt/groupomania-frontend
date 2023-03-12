@@ -15,6 +15,7 @@ const Home = () => {
     const token = localStorage.getItem("token");
 
     useEffect(() => {
+        console.log("===== useEffect de Home => getAllPosts ====");
         fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/all/0`, {
             method: "GET",
             headers: {
@@ -35,26 +36,29 @@ const Home = () => {
                     return data.results.map((result) => (
                         <Post
                             key={result.id}
-                            id={result.id}
-                            parentId={0}
-                            postUserId={result.postUserId}
-                            email={result.email}
-                            imgUrl={result.imgUrl}
-                            content={result.content}
-                            date={result.date}
-                            modified={result.modified}
-                            likes={
-                                result.likesCount === null
-                                    ? 0
-                                    : result.likesCount
-                            }
-                            dislikes={
-                                result.dislikesCount === null
-                                    ? 0
-                                    : result.dislikesCount
-                            }
-                            admin={data.admin}
-                            loggedUserId={data.loggedUserId}
+                            postData={{
+                                id: result.id,
+                                parentId: 0,
+                                postUserId: result.postUserId,
+                                email: result.email,
+                                imgUrl: result.imgUrl,
+                                content: result.content,
+                                date: result.date,
+                                modified: result.modified,
+                                likes:
+                                    result.likesCount === null
+                                        ? 0
+                                        : result.likesCount,
+                                dislikes:
+                                    result.dislikesCount === null
+                                        ? 0
+                                        : result.dislikesCount,
+                            }}
+                            userData={{
+                                token: token,
+                                admin: data.admin,
+                                loggedUserId: data.loggedUserId,
+                            }}
                             setHasNewPosts={setHasNewPosts}
                         />
                     ));

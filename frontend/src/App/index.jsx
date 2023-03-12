@@ -1,11 +1,12 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Header from "../../components/Header/index";
-import Login from "../Login/index";
-import SignUp from "../SignUp/index";
-import Home from "../Home/index";
-import UpdatePost from "../UpdatePost";
-import Error404 from "../Error404/Error404";
+import Header from "../components/Header/index";
+import Login from "../pages/Login/index";
+import SignUp from "../pages/SignUp/index";
+import Home from "../pages/Home/index";
+import UpdatePost from "../pages/UpdatePost";
+import Error404 from "../pages/Error404/Error404";
+import "./App.css";
 
 const App = () => {
     return (

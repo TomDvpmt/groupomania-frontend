@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Nav from "../../components/Nav";
 import Post from "../../components/Post";
-import CreatePostForm from "../../components/CreatePostForm";
+import CreateMessageForm from "../../components/CreateMessageForm";
 
 import "./Home.css";
 
@@ -15,7 +15,7 @@ const Home = () => {
     const token = localStorage.getItem("token");
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/all/0`, {
             method: "GET",
             headers: {
                 Authorization: `BEARER ${token}`,
@@ -29,26 +29,29 @@ const Home = () => {
                 } else return response.json();
             })
             .then((data) => {
-                console.log("admin : ", data.admin);
-                if (data.posts.length === 0) {
+                if (data.results.length === 0) {
                     return <p>Aucun message à afficher.</p>;
                 } else {
-                    return data.posts.map((post) => (
+                    return data.results.map((result) => (
                         <Post
-                            key={post.id}
-                            id={post.id}
-                            postUserId={post.postUserId}
-                            email={post.email}
-                            imgUrl={post.imgUrl}
-                            content={post.content}
-                            date={post.date}
+                            key={result.id}
+                            id={result.id}
+                            parentId={0}
+                            postUserId={result.postUserId}
+                            email={result.email}
+                            imgUrl={result.imgUrl}
+                            content={result.content}
+                            date={result.date}
+                            modified={result.modified}
                             likes={
-                                post.likesCount === null ? 0 : post.likesCount
+                                result.likesCount === null
+                                    ? 0
+                                    : result.likesCount
                             }
                             dislikes={
-                                post.dislikesCount === null
+                                result.dislikesCount === null
                                     ? 0
-                                    : post.dislikesCount
+                                    : result.dislikesCount
                             }
                             admin={data.admin}
                             loggedUserId={data.loggedUserId}
@@ -68,10 +71,10 @@ const Home = () => {
         <React.Fragment>
             <Nav page="Home" />
             <h2>Poster un message :</h2>
-            <CreatePostForm
+            <CreateMessageForm
                 token={token}
-                hasNewPosts={hasNewPosts}
-                setHasNewPosts={setHasNewPosts}
+                parentId={0}
+                setHasNewMessages={setHasNewPosts}
             />
             <h2>Messages :</h2>
             {posts}

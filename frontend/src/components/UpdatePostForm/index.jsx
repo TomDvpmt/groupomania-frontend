@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { sanitize } from "../../utils";
+import { sanitize, imgMimeTypes } from "../../utils/utils";
 import { useNavigate } from "react-router-dom";
-import { imgMimeTypes } from "../../utils";
 
 const UpdateFormPost = ({ postId, content, imgUrl, token }) => {
     const [errorMessage, setErrorMessage] = useState("");

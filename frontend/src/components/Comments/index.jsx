@@ -1,23 +1,93 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Comment from "../Comment";
+import CreateMessageForm from "../CreateMessageForm";
 
-const Comments = (postId) => {
+import "./Comments.css";
+
+const Comments = ({ postId, showCommentForm, setShowCommentForm }) => {
+    const [comments, setComments] = useState([]);
+    const [hasNewComments, setHasNewComments] = useState(0);
+    const [commentsNumber, setCommentsNumber] = useState(0);
+    const [errorMessage, setErrorMessage] = useState("");
+
+    const navigate = useNavigate();
+
     const token = localStorage.getItem("token");
-    const [comments, setComments] = useState(null);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/comments/${postId}`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/all/${postId}`, {
             method: "GET",
             headers: {
                 Authorization: `BEARER ${token}`,
             },
         })
-            .then((response) =>
-                response.json().then((data) => console.log(data))
-            )
-            .catch((error) => console.log(error));
-    }, [token, postId]);
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.results.length === 0) {
+                    return <p>Aucun message à afficher.</p>;
+                } else {
+                    setCommentsNumber(data.results.length);
+                    return data.results.map((result) => (
+                        <Comment
+                            key={result.id}
+                            id={result.id}
+                            commentUserId={result.commentUserId}
+                            email={result.email}
+                            imgUrl={result.imgUrl}
+                            content={result.content}
+                            date={result.date}
+                            modified={result.modified}
+                            likes={
+                                result.likesCount === null
+                                    ? 0
+                                    : result.likesCount
+                            }
+                            dislikes={
+                                result.dislikesCount === null
+                                    ? 0
+                                    : result.dislikesCount
+                            }
+                            admin={data.admin}
+                            loggedUserId={data.loggedUserId}
+                            setHasNewComments={setHasNewComments}
+                        />
+                    ));
+                }
+            })
+            .then((commentsList) => setComments(commentsList))
+            .catch((error) => {
+                console.error(
+                    "Impossible d'afficher les commentaires :",
+                    error
+                );
+                setErrorMessage("Impossible d'afficher les commentaires.");
+            });
+    }, [postId, hasNewComments, token, navigate]);
 
-    return <section>Comments</section>;
+    useEffect(() => {
+        setShowCommentForm(false);
+    }, [hasNewComments]);
+
+    return (
+        <>
+            {showCommentForm && (
+                <CreateMessageForm
+                    token={token}
+                    parentId={postId}
+                    setHasNewMessages={setHasNewComments}
+                />
+            )}
+            {comments.length > 0 && (
+                <h2>
+                    {commentsNumber} commentaire{commentsNumber > 1 ? "s" : ""}{" "}
+                    :{" "}
+                </h2>
+            )}
+            {comments.length > 0 && comments}
+            {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}
+        </>
+    );
 };
 
 export default Comments;

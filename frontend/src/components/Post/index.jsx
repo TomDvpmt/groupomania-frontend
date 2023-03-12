@@ -26,6 +26,7 @@ const Post = ({
     const [likesCount, setLikesCount] = useState(likes);
     const [dislikesCount, setDislikesCount] = useState(dislikes);
     const [likeStatus, setLikeStatus] = useState(null);
+    const [showCommentForm, setShowCommentForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
@@ -53,6 +54,10 @@ const Post = ({
         );
     };
 
+    const handleReply = () => {
+        setShowCommentForm((showCommentForm) => !showCommentForm);
+    };
+
     useEffect(() => {
         setPostLikes(
             token,
@@ -66,7 +71,7 @@ const Post = ({
 
     return (
         <article className="post">
-            <h3 className="post__user-address">
+            <h3 className="post__user-infos">
                 {email} | {formatedDate}
             </h3>
             <div className="post__content">
@@ -89,9 +94,13 @@ const Post = ({
                     </React.Fragment>
                 )}
             </div>
+            <button onClick={handleReply}>Répondre</button>
             {errorMessage && <p className="error-msg">{errorMessage}</p>}
-            <h2>Commentaires : </h2>
-            <Comments postId={id} />
+            <Comments
+                postId={id}
+                showCommentForm={showCommentForm}
+                setShowCommentForm={setShowCommentForm}
+            />
         </article>
     );
 };

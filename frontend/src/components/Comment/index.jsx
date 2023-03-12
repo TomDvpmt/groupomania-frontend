@@ -10,8 +10,6 @@ import {
 
 const Comment = ({
     id,
-    admin,
-    commentId,
     commentUserId,
     email,
     imgUrl,
@@ -19,6 +17,7 @@ const Comment = ({
     date,
     likes,
     dislikes,
+    admin,
     loggedUserId,
     setHasNewComments,
 }) => {
@@ -65,9 +64,11 @@ const Comment = ({
 
     return (
         <article className="comment">
-            <h3 className="comment__user-address">
-                {email} | {formatedDate}
-            </h3>
+            <header className="comment__header">
+                <h3 className="comment__user-infos">
+                    {email} | {formatedDate}
+                </h3>
+            </header>
             <div className="comment__content">
                 {imgUrl && <img src={imgUrl} alt="comment illustration" />}
                 <p>{content}</p>

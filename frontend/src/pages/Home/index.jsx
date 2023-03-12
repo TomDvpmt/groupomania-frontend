@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Nav from "../../components/Nav";
 import Post from "../../components/Post";
-import CreatePostForm from "../../components/CreatePostForm";
+import CreateMessageForm from "../../components/CreateMessageForm";
 
 const Home = () => {
     const [posts, setPosts] = useState([]);
@@ -34,11 +34,13 @@ const Home = () => {
                         <Post
                             key={result.id}
                             id={result.id}
+                            parentId={0}
                             postUserId={result.postUserId}
                             email={result.email}
                             imgUrl={result.imgUrl}
                             content={result.content}
                             date={result.date}
+                            modified={result.modified}
                             likes={
                                 result.likesCount === null
                                     ? 0
@@ -67,10 +69,10 @@ const Home = () => {
         <React.Fragment>
             <Nav page="Home" />
             <h2>Poster un message :</h2>
-            <CreatePostForm
+            <CreateMessageForm
                 token={token}
-                hasNewPosts={hasNewPosts}
-                setHasNewPosts={setHasNewPosts}
+                parentId={0}
+                setHasNewMessages={setHasNewPosts}
             />
             <h2>Messages :</h2>
             {posts}

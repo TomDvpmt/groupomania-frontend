@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { imgMimeTypes } from "../../utils/utils";
+import { imgMimeTypes, sanitize } from "../../utils/utils";
 
-const { sanitize } = require("../../utils/utils");
-
-const PostForm = ({ token, hasNewPosts, setHasNewPosts }) => {
+const CreateMessageForm = ({ token, parentId, setHasNewMessages }) => {
     const [errorMessage, setErrorMessage] = useState("");
 
     const handleSubmit = (e) => {
@@ -24,6 +22,7 @@ const PostForm = ({ token, hasNewPosts, setHasNewPosts }) => {
             const sanitizedContent = sanitize(textInput);
 
             const formData = new FormData();
+            formData.append("parentId", parentId);
             formData.append("imageFile", uploadedFile);
             formData.append("content", sanitizedContent);
 
@@ -40,7 +39,9 @@ const PostForm = ({ token, hasNewPosts, setHasNewPosts }) => {
                             .json()
                             .then(({ message }) => setErrorMessage(message));
                     } else {
-                        setHasNewPosts((hasNewPosts) => hasNewPosts + 1);
+                        setHasNewMessages(
+                            (hasNewMessages) => hasNewMessages + 1
+                        );
                     }
                 })
                 .catch((error) => {
@@ -52,7 +53,9 @@ const PostForm = ({ token, hasNewPosts, setHasNewPosts }) => {
     return (
         <React.Fragment>
             <form onSubmit={handleSubmit} encType="multipart/form-data">
-                <label htmlFor="content">Votre message : </label>
+                <label htmlFor="content">
+                    Votre {parentId === 0 ? "message" : "commentaire"} :{" "}
+                </label>
                 <br />
                 <textarea
                     name="content"
@@ -71,4 +74,4 @@ const PostForm = ({ token, hasNewPosts, setHasNewPosts }) => {
     );
 };
 
-export default PostForm;
+export default CreateMessageForm;

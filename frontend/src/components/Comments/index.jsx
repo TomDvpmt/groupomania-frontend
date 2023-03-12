@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Comment from "../Comment";
+import CreateMessageForm from "../CreateMessageForm";
 
 import "./Comments.css";
 
-const Comments = ({ postId }) => {
+const Comments = ({ postId, showCommentForm, setShowCommentForm }) => {
     const [comments, setComments] = useState([]);
     const [hasNewComments, setHasNewComments] = useState(0);
+    const [commentsNumber, setCommentsNumber] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
 
     const navigate = useNavigate();
@@ -25,6 +27,7 @@ const Comments = ({ postId }) => {
                 if (data.results.length === 0) {
                     return <p>Aucun message à afficher.</p>;
                 } else {
+                    setCommentsNumber(data.results.length);
                     return data.results.map((result) => (
                         <Comment
                             key={result.id}
@@ -34,6 +37,7 @@ const Comments = ({ postId }) => {
                             imgUrl={result.imgUrl}
                             content={result.content}
                             date={result.date}
+                            modified={result.modified}
                             likes={
                                 result.likesCount === null
                                     ? 0
@@ -61,9 +65,26 @@ const Comments = ({ postId }) => {
             });
     }, [postId, hasNewComments, token, navigate]);
 
+    useEffect(() => {
+        setShowCommentForm(false);
+    }, [hasNewComments]);
+
     return (
         <>
-            {comments}
+            {showCommentForm && (
+                <CreateMessageForm
+                    token={token}
+                    parentId={postId}
+                    setHasNewMessages={setHasNewComments}
+                />
+            )}
+            {comments.length > 0 && (
+                <h2>
+                    {commentsNumber} commentaire{commentsNumber > 1 ? "s" : ""}{" "}
+                    :{" "}
+                </h2>
+            )}
+            {comments.length > 0 && comments}
             {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}
         </>
     );

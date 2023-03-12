@@ -85,6 +85,7 @@ const setupDbTables = async (connection, dbName) => {
             content VARCHAR(5000),
             img_url VARCHAR(500),
             created_at BIGINT NOT NULL,
+            modified BOOLEAN DEFAULT 0,
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
     `);

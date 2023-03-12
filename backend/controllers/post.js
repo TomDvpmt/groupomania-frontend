@@ -28,7 +28,7 @@ exports.getAllPosts = (req, res, next) => {
     connectToDb("getAllPosts")
     .then(connection => {
         connection.execute(`
-        SELECT id, parent_id, post_user_id, email, content, img_url, created_at, likes_count, dislikes_count, current_user_like_value
+        SELECT id, parent_id, post_user_id, email, content, img_url, created_at, modified, likes_count, dislikes_count, current_user_like_value
         FROM 
             (SELECT 
                 posts.id, 
@@ -37,7 +37,8 @@ exports.getAllPosts = (req, res, next) => {
                 users.email,
                 posts.content, 
                 posts.img_url, 
-                posts.created_at, 
+                posts.created_at,
+                posts.modified, 
                 users.id AS user_id
             FROM posts
             JOIN users
@@ -79,6 +80,7 @@ exports.getAllPosts = (req, res, next) => {
                         content: rows[i].content,
                         imgUrl: rows[i].img_url,
                         date: rows[i].created_at,
+                        modified: rows[i].modified,
                         likesCount: rows[i].likes_count,
                         dislikesCount: rows[i].dislikes_count,
                         currentUserLikeValue: rows[i].current_user_like_value
@@ -91,6 +93,7 @@ exports.getAllPosts = (req, res, next) => {
                         content: rows[i].content,
                         imgUrl: rows[i].img_url,
                         date: rows[i].created_at,
+                        modified: rows[i].modified,
                         likesCount: rows[i].likes_count,
                         dislikesCount: rows[i].dislikes_count,
                         currentUserLikeValue: rows[i].current_user_like_value
@@ -122,14 +125,15 @@ exports.getOnePost = (req, res, next) => {
     connectToDb("getOnePost")
     .then(connection => {
         connection.execute(`
-            SELECT content, img_url
+            SELECT content, img_url, modified
             FROM posts
             WHERE id = ?
         `, [postId])
         .then(([rows]) => {
             res.status(200).json({
                 content: rows[0].content,
-                imgUrl: rows[0].img_url
+                imgUrl: rows[0].img_url,
+                modified: rows[0].modified
             });
             close(connection);
         })
@@ -148,6 +152,7 @@ exports.createPost = (req, res, next) => {
 
     const userId = req.auth.userId;
     const content = req.body.content;
+    const parentId = req.body.parentId;
     const createdAt = Date.now();
     connectToDb("createPost")
     .then(connection => {
@@ -160,10 +165,10 @@ exports.createPost = (req, res, next) => {
             "";
         connection.execute(
             `
-            INSERT INTO posts (user_id, content, img_url, created_at)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO posts (parent_id, user_id, content, img_url, created_at)
+            VALUES (?, ?, ?, ?, ?)
             `,
-            [userId, content, imgUrl, createdAt]
+            [parentId, userId, content, imgUrl, createdAt]
         )
         .then(() => {
             close(connection);
@@ -194,7 +199,8 @@ exports.updatePost = (req, res, next) => {
                 `UPDATE posts
                 SET 
                     content = ?,
-                    img_url = ?
+                    img_url = ?,
+                    modified = 1
                 WHERE id = ?`, 
                 [content, newImgUrl, postId])
             .then(() => {
@@ -213,7 +219,9 @@ exports.updatePost = (req, res, next) => {
         } else {
             connection.execute(
                 `UPDATE posts
-                SET content = ?
+                SET 
+                    content = ?,
+                    modified = 1
                 WHERE id = ?`, 
                 [content, postId])
             .then(() => {

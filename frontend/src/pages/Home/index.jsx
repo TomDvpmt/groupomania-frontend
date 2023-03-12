@@ -27,26 +27,27 @@ const Home = () => {
                 } else return response.json();
             })
             .then((data) => {
-                console.log("admin : ", data.admin);
-                if (data.posts.length === 0) {
+                if (data.results.length === 0) {
                     return <p>Aucun message à afficher.</p>;
                 } else {
-                    return data.posts.map((post) => (
+                    return data.results.map((result) => (
                         <Post
-                            key={post.id}
-                            id={post.id}
-                            postUserId={post.postUserId}
-                            email={post.email}
-                            imgUrl={post.imgUrl}
-                            content={post.content}
-                            date={post.date}
+                            key={result.id}
+                            id={result.id}
+                            postUserId={result.postUserId}
+                            email={result.email}
+                            imgUrl={result.imgUrl}
+                            content={result.content}
+                            date={result.date}
                             likes={
-                                post.likesCount === null ? 0 : post.likesCount
+                                result.likesCount === null
+                                    ? 0
+                                    : result.likesCount
                             }
                             dislikes={
-                                post.dislikesCount === null
+                                result.dislikesCount === null
                                     ? 0
-                                    : post.dislikesCount
+                                    : result.dislikesCount
                             }
                             admin={data.admin}
                             loggedUserId={data.loggedUserId}

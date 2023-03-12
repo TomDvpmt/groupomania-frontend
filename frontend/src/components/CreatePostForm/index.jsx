@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { imgMimeTypes } from "../../utils";
+import { imgMimeTypes } from "../../utils/utils";
 
-const { sanitize } = require("../../utils");
+const { sanitize } = require("../../utils/utils");
 
 const PostForm = ({ token, hasNewPosts, setHasNewPosts }) => {
     const [errorMessage, setErrorMessage] = useState("");

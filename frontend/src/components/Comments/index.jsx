@@ -22,11 +22,10 @@ const Comments = ({ postId }) => {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log("DATA : ", data);
-                if (data.posts.length === 0) {
+                if (data.results.length === 0) {
                     return <p>Aucun message à afficher.</p>;
                 } else {
-                    return data.posts.map((result) => (
+                    return data.results.map((result) => (
                         <Comment
                             key={result.id}
                             id={result.id}

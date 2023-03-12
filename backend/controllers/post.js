@@ -98,7 +98,7 @@ exports.getAllPosts = (req, res, next) => {
             };
             close(connection);
             return {
-                posts: results, 
+                results: results, 
                 admin: req.auth.admin === 1, 
                 loggedUserId: req.auth.userId
             };

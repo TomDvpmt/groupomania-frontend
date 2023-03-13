@@ -27,7 +27,7 @@ exports.getAllPosts = (req, res, next) => {
     connectToDb("getAllPosts")
     .then(connection => {
         connection.execute(`
-        SELECT id, parent_id, post_user_id, email, content, img_url, created_at, modified, likes_count, dislikes_count, current_user_like_value
+        SELECT DISTINCT id, parent_id, post_user_id, email, content, img_url, created_at, modified, likes_count, dislikes_count, current_user_like_value
         FROM 
             (SELECT 
                 posts.id, 
@@ -60,17 +60,19 @@ exports.getAllPosts = (req, res, next) => {
             LEFT JOIN
             	(SELECT post_id, like_value AS current_user_like_value 
             	FROM likes
-            	WHERE user_id = ?) AS user_likes_table
+            	WHERE user_id = ?
+                ) AS user_likes_table
             ON posts_users.id = user_likes_table.post_id
         WHERE parent_id = ?
         ORDER BY created_at DESC
             `, [userId, parentId])
         .then(([rows]) => {
-
             const results = [];
+
+            console.log(rows);
             
             for(let i = 0 ; i < rows.length ; i++) {
-                results[i] = rows[0].parent_id === 0 ?
+                results[i] = rows[i].parent_id === 0 ?
                     {
                         id: rows[i].id,
                         parentId: 0,
@@ -86,7 +88,7 @@ exports.getAllPosts = (req, res, next) => {
                     } :
                     {
                         id: rows[i].id,
-                        parentId: rows[0].parent_id,
+                        parentId: rows[i].parent_id,
                         commentUserId: rows[i].post_user_id,
                         email: rows[i].email,
                         content: rows[i].content,
@@ -247,8 +249,8 @@ exports.deletePost = (req, res, next) => {
         .then(connection => {
             connection.execute(`
                 DELETE FROM posts
-                WHERE id = ?
-            `, [postId])
+                WHERE id = ? OR parent_id = ?
+            `, [postId, postId])
             .then(() => {
                 close(connection);
                 if(imgUrl) {
@@ -270,61 +272,144 @@ exports.deletePost = (req, res, next) => {
 exports.likePost = (req, res, next) => {
     const postId = req.params.id;
     const userId = req.auth.userId;
-    const likeValue = JSON.parse(req.body.likeValue);
+    const clickValue = JSON.parse(req.body.clickValue);
 
     connectToDb("likePost")
-    .then(connection => {
-        connection.execute(`
-            SELECT like_value
-            FROM likes
-            WHERE user_id = ? AND post_id = ?
-        `, [userId, postId])
-        .then(([rows]) => {
-            if(rows.length === 0) {
-                connection.execute(`
-                    INSERT INTO likes (user_id, post_id, like_value)
-                    VALUES (?, ?, ?)
-                `, [userId, postId, likeValue])
-                .then(() => {
-                    close(connection);
-                    res.status(201).json();
-                })
-                .catch(error => {
-                    close(connection);
-                    handleError(res, "Like / dislike impossible.", 400, error);
-                })
-            }
-            else {
-                const prevLikeValue = rows[0].like_value;
-                let newLikeValue;
-                if(prevLikeValue === 0 || prevLikeValue === null) {
-                    newLikeValue = likeValue;
-                }
-                else if (prevLikeValue === 1) {
-                    newLikeValue = likeValue === 1 ? 0 : -1;
-                }
-                else {
-                    newLikeValue = likeValue === 1 ? 1 : 0;
-                }
-                connection.execute(`
-                    UPDATE likes
-                    SET like_value = ?
-                    WHERE user_id = ? AND post_id = ?
-                `, [newLikeValue, userId, postId])
-                .then(() => {
-                    close(connection);
-                    res.status(200).json();
-                })
-                .catch(error => {
-                    close(connection);
-                    handleError(res, "Like / dislike impossible.", 400, error);
+        .then((connection) => {
+            connection
+                .execute(
+                    `
+                    SELECT id, post_user_id, likes_count, dislikes_count, current_user_like_value
+                    FROM 
+                        (SELECT 
+                            posts.id, 
+                            posts.user_id AS post_user_id, 
+                            users.id AS user_id
+                        FROM posts
+                        JOIN users
+                        ON posts.user_id = users.id) 
+                        AS posts_users
+                        LEFT JOIN 
+                            (SELECT COUNT(*) AS likes_count, post_id
+                            FROM likes
+                            WHERE like_value = 1
+                            GROUP BY post_id) 
+                            AS likes_table
+                        ON posts_users.id = likes_table.post_id
+                        LEFT JOIN 
+                            (SELECT COUNT(*) AS dislikes_count, post_id
+                            FROM likes
+                            WHERE like_value = -1
+                            GROUP BY post_id)
+                            AS dislikes_table
+                        ON posts_users.id = dislikes_table.post_id
+                        LEFT JOIN
+                            (SELECT post_id, like_value AS current_user_like_value 
+                            FROM likes
+                            WHERE user_id = ?) AS user_likes_table
+                        ON posts_users.id = user_likes_table.post_id
+                    WHERE post_user_id = ? AND id = ? AND current_user_like_value IS NOT NULL
+                `,
+                    [userId, userId, postId]
+                )
+                .then(([rows]) => {
+                    if (rows.length === 0) {
+                        connection
+                            .execute(
+                                `
+                                    INSERT INTO likes (user_id, post_id, like_value)
+                                    VALUES (?, ?, ?)
+                                `,
+                                [userId, postId, clickValue]
+                            )
+                            .then(() => {
+                                close(connection);
+                                console.log("CAS : rows.length = 0")
+                                const dataToSend = {
+                                    newLikesCount: clickValue === 1 ? 1 : 0,
+                                    newDislikesCount: clickValue === -1 ? 1 : 0,
+                                    newUserLikeValue: clickValue,
+                                }
+                                console.log("dataToSend : ", dataToSend)
+                                res.status(201).json(dataToSend);
+                            })
+                            .catch((error) => {
+                                close(connection);
+                                handleError(
+                                    res,
+                                    "Like / dislike impossible.",
+                                    400,
+                                    error
+                                );
+                            });
+                    } else {
+
+                        const prevLikeValue = rows[0].currentUserLikeValue;
+                        const prevLikesCount = rows[0].likes_count;
+                        const prevDislikesCount = rows[0].dislikes_count;
+                        let likeValue;
+                        let likesCount = prevLikesCount;
+                        let dislikesCount = prevDislikesCount;
+
+                        if(prevLikeValue === 0) {
+                            likeValue = clickValue;
+                            likesCount = clickValue === 1 ? likesCount++ : likesCount;
+                            dislikesCount = clickValue === 1 ? dislikesCount : dislikesCount--;
+                        }
+                        else if(prevLikeValue === clickValue) {
+                            likeValue = 0
+                            likesCount = clickValue === 1 ? likesCount-- : likesCount;
+                            dislikesCount = clickValue === 1 ? dislikesCount : dislikesCount--;
+                        }
+                        else if(prevLikeValue === 1 && clickValue === -1) {
+                            likeValue = -1;
+                            likesCount = likesCount--;
+                            dislikesCount = dislikesCount++;
+                        }
+                        else if(prevLikeValue === -1 && clickValue === 1) {
+                            likeValue = 1;
+                            likesCount = likesCount++;
+                            dislikesCount = dislikesCount--;
+                        }
+
+                        connection
+                            .execute(
+                                `
+                                    UPDATE likes
+                                    SET like_value = ?
+                                    WHERE user_id = ? AND post_id = ?
+                                `,
+                                [likeValue, userId, postId]
+                            )
+                            .then(() => {
+                                close(connection);
+                                console.log("CAS : plusieurs rows")
+                                res.status(200).json({
+                                    newUserLikeValue: likeValue,
+                                    newLikesCount: likesCount,
+                                    newDislikesCount: dislikesCount
+                                });
+                            })
+                            .catch((error) => {
+                                close(connection);
+                                handleError(
+                                    res,
+                                    "Like / dislike impossible.",
+                                    400,
+                                    error
+                                );
+                            });
+                    }
                 });
-            }
         })
-    })
-    .catch(error => {
-        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
-    });
+        .catch((error) => {
+            handleError(
+                res,
+                "Impossible de se connecter à la base de données.",
+                500,
+                error
+            );
+        });
 };
 
 exports.getPostLikes = (req, res, next) => {

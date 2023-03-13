@@ -51,6 +51,8 @@ const Comments = ({ token, postId, showCommentForm, setShowCommentForm }) => {
                                 token: token,
                                 admin: data.admin,
                                 loggedUserId: data.loggedUserId,
+                                currentUserLikeValue:
+                                    result.currentUserLikeValue,
                             }}
                             setHasNewComments={setHasNewComments}
                         />
@@ -69,7 +71,7 @@ const Comments = ({ token, postId, showCommentForm, setShowCommentForm }) => {
 
     useEffect(() => {
         setShowCommentForm(false);
-    }, [hasNewComments]);
+    }, [hasNewComments, setShowCommentForm]);
 
     return (
         <>
@@ -82,12 +84,14 @@ const Comments = ({ token, postId, showCommentForm, setShowCommentForm }) => {
                 />
             )}
             {comments.length > 0 && (
-                <h2>
-                    {commentsNumber} commentaire{commentsNumber > 1 ? "s" : ""}{" "}
-                    :{" "}
-                </h2>
+                <>
+                    <h2>
+                        {commentsNumber} commentaire
+                        {commentsNumber > 1 ? "s" : ""} :{" "}
+                    </h2>
+                    {comments}
+                </>
             )}
-            {comments.length > 0 && comments}
             {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}
         </>
     );

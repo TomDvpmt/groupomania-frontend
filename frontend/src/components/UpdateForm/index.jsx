@@ -47,7 +47,9 @@ const UpdateForm = ({
                         setShowUpdateForm(false);
                     }
                 })
-                .catch((error) => console.log(error));
+                .catch((error) => {
+                    console.log("Impossible de modifier le message : ", error);
+                });
         }
     };
 

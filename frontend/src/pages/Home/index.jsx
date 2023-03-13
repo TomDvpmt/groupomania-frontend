@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Nav from "../../components/Nav";
 import Post from "../../components/Post";
 import CreateMessageForm from "../../components/CreateMessageForm";
 
@@ -58,6 +57,8 @@ const Home = () => {
                                 token: token,
                                 admin: data.admin,
                                 loggedUserId: data.loggedUserId,
+                                currentUserLikeValue:
+                                    result.currentUserLikeValue,
                             }}
                             setHasNewPosts={setHasNewPosts}
                         />
@@ -73,13 +74,12 @@ const Home = () => {
 
     return (
         <React.Fragment>
-            <Nav page="Home" />
             <h2>Poster un message :</h2>
-            <CreateMessageForm
+            {/* <CreateMessageForm
                 token={token}
                 parentId={0}
                 setHasNewMessages={setHasNewPosts}
-            />
+            /> */}
             <h2>Messages :</h2>
             {posts}
             {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}

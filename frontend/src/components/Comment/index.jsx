@@ -27,9 +27,6 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
     const [showCommentUpdateForm, setShowCommentUpdateForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-    console.log("loggedUserId : ", userData.loggedUserId);
-    console.log("commentData.authorId : ", commentData.authorId);
-
     const handleLike = (e) => {
         // setLike(
         //     e,
@@ -75,8 +72,8 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
         <article className="comment">
             <header className="comment__header">
                 <h3 className="comment__user-infos">
-                    {commentData.email} | {formatedDate} (
-                    {commentData.modified && "modifié"})
+                    {commentData.email} | {formatedDate}
+                    {commentData.modified && "(modifié)"}
                 </h3>
             </header>
             <div className="comment__content">

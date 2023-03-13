@@ -6,11 +6,11 @@ import { formatDate, deletePost } from "../../utils/utils";
 import "./Post.css";
 
 const Post = ({ postData, userData, setHasNewPosts }) => {
+    const token = userData.token;
     const postId = postData.id;
+
     const [postContent, setPostContent] = useState(postData.content);
     const formatedDate = formatDate(postData.date);
-
-    const token = userData.token;
 
     const [showCommentForm, setShowCommentForm] = useState(false);
     const [showPostUpdateForm, setShowPostUpdateForm] = useState(false);

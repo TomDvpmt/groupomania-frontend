@@ -15,6 +15,8 @@ const LikeButtons = ({
     const handleLike = (e) => {
         const clickValue = e.target.dataset.likevalue;
 
+        console.log("postId :", postId, "clickValue : ", clickValue);
+
         fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}/like`, {
             method: "PUT",
             headers: {
@@ -25,7 +27,7 @@ const LikeButtons = ({
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log("data : ", data);
+                console.log("data reçues dans les buttons : ", data);
                 setLikeStatus(data.newUserLikeValue);
                 setLikesCount(data.newLikesCount);
                 setDislikesCount(data.newDislikesCount);

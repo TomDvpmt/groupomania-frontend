@@ -29,6 +29,7 @@ const Home = () => {
                 } else return response.json();
             })
             .then((data) => {
+                console.log("HOME / data : ", data);
                 if (data.results.length === 0) {
                     return <p>Aucun message à afficher.</p>;
                 } else {
@@ -44,19 +45,15 @@ const Home = () => {
                                 content: result.content,
                                 date: result.date,
                                 modified: result.modified,
-                                likes:
-                                    result.likesCount === null
-                                        ? 0
-                                        : result.likesCount,
-                                dislikes:
-                                    result.dislikesCount === null
-                                        ? 0
-                                        : result.dislikesCount,
+                                likes: result.likes,
+                                dislikes: result.dislikes,
                             }}
                             userData={{
                                 token: token,
                                 admin: data.admin,
                                 loggedUserId: data.loggedUserId,
+                                currentUserLikeValue:
+                                    result.currentUserLikeValue,
                             }}
                             setHasNewPosts={setHasNewPosts}
                         />

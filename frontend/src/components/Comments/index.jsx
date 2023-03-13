@@ -41,14 +41,11 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
                                 content: result.content,
                                 date: result.date,
                                 modified: result.modified,
-                                likes:
-                                    result.likesCount === null
-                                        ? 0
-                                        : result.likesCount,
+                                likes: result.likes === null ? 0 : result.likes,
                                 dislikes:
-                                    result.dislikesCount === null
+                                    result.dislikes === null
                                         ? 0
-                                        : result.dislikesCount,
+                                        : result.dislikes,
                             }}
                             userData={{
                                 token: token,

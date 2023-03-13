@@ -7,6 +7,7 @@ import {
     setUserLikeStatus,
 } from "../../utils/utils";
 import UpdateForm from "../UpdateForm";
+import LikeButtons from "../LikeButtons";
 
 const Comment = ({ commentData, userData, setHasNewComments }) => {
     const commentId = commentData.id;
@@ -82,15 +83,22 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                 )}
                 <p>{commentContent}</p>
             </div>
-            {/* <div className="comment_like-buttons">
-                <button onClick={handleLike} data-likevalue={1}>
+            <div className="comment_like-buttons">
+                {/* <button onClick={handleLike} data-likevalue={1}>
                     Like ({commentLikesCount}) {commentLikeStatus === 1 && "👍"}
                 </button>
                 <button onClick={handleLike} data-likevalue={-1}>
                     Dislike ({commentDislikesCount}){" "}
                     {commentLikeStatus === -1 && "👎"}
-                </button>
-            </div> */}
+                </button> */}
+                <LikeButtons
+                    token={token}
+                    postId={commentId}
+                    likes={commentData.likes}
+                    dislikes={commentData.dislikes}
+                    currentUserLikeValue={userData.currentUserLikeValue}
+                />
+            </div>
             <div className="comment__buttons">
                 {(userData.admin ||
                     commentData.authorId === userData.loggedUserId) && (

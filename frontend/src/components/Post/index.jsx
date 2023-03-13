@@ -46,7 +46,7 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                 )}
                 <p>{postContent}</p>
             </div>
-            {/* <div className="post_like-buttons">
+            <div className="post_like-buttons">
                 {
                     <LikeButtons
                         token={token}
@@ -56,7 +56,7 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                         currentUserLikeValue={userData.currentUserLikeValue}
                     />
                 }
-            </div> */}
+            </div>
             <div className="post__buttons">
                 {(userData.admin ||
                     postData.postAuthorId === userData.loggedUserId) && (
@@ -75,6 +75,7 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                     setContent={setPostContent}
                     imgUrl={postData.imgUrl}
                     setShowUpdateForm={setShowPostUpdateForm}
+                    setHasNewMessages={setHasNewPosts}
                 />
             )}
             {errorMessage && <p className="error-msg">{errorMessage}</p>}

@@ -85,7 +85,7 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                 )}
                 <p>{commentContent}</p>
             </div>
-            <div className="comment_like-buttons">
+            {/* <div className="comment_like-buttons">
                 <button onClick={handleLike} data-likevalue={1}>
                     Like ({commentLikesCount}) {commentLikeStatus === 1 && "👍"}
                 </button>
@@ -93,7 +93,7 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                     Dislike ({commentDislikesCount}){" "}
                     {commentLikeStatus === -1 && "👎"}
                 </button>
-            </div>
+            </div> */}
             <div className="comment__buttons">
                 {(userData.admin ||
                     commentData.authorId === userData.loggedUserId) && (

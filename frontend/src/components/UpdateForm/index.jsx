@@ -8,6 +8,7 @@ const UpdateForm = ({
     setContent,
     imgUrl,
     setShowUpdateForm,
+    setHasNewMessages,
 }) => {
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -47,6 +48,9 @@ const UpdateForm = ({
                             .then(({ message }) => setErrorMessage(message));
                     } else {
                         setShowUpdateForm(false);
+                        setHasNewMessages(
+                            (hasNewMessages) => hasNewMessages + 1
+                        );
                     }
                 })
                 .catch((error) => {

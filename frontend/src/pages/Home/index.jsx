@@ -38,7 +38,7 @@ const Home = () => {
                             postData={{
                                 id: result.id,
                                 parentId: 0,
-                                postUserId: result.postUserId,
+                                postAuthorId: result.postAuthorId,
                                 email: result.email,
                                 imgUrl: result.imgUrl,
                                 content: result.content,
@@ -57,8 +57,6 @@ const Home = () => {
                                 token: token,
                                 admin: data.admin,
                                 loggedUserId: data.loggedUserId,
-                                currentUserLikeValue:
-                                    result.currentUserLikeValue,
                             }}
                             setHasNewPosts={setHasNewPosts}
                         />
@@ -75,11 +73,11 @@ const Home = () => {
     return (
         <React.Fragment>
             <h2>Poster un message :</h2>
-            {/* <CreateMessageForm
+            <CreateMessageForm
                 token={token}
                 parentId={0}
                 setHasNewMessages={setHasNewPosts}
-            /> */}
+            />
             <h2>Messages :</h2>
             {posts}
             {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}

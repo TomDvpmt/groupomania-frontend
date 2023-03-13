@@ -1,5 +1,6 @@
-const connectToDb = require("../database/db-connect-mysql");
 const fs = require("fs");
+
+const connectToDb = require("../database/db-connect-mysql");
 
 const close = (connection) => {
     connection.end();
@@ -20,47 +21,49 @@ const handleError = (res, message, status, error) => {
 
 exports.getAllComments = (req, res, next) => {
     const userId = req.auth.userId;
-    const postId = req.params.postId;
+    const parentId = req.params.postId;
 
     connectToDb("getAllComments")
     .then(connection => {
         connection.execute(`
-        SELECT id, comment_user_id, parent_post_id, email, content, img_url, created_at, likes_count, dislikes_count, current_user_like_value
-        FROM 
-            (SELECT 
-                comments.id, 
-                comments.user_id AS comment_user_id, 
-                comments.post_id AS parent_post_id,
-                users.email,
-                comments.content, 
-                comments.img_url, 
-                comments.created_at, 
-                users.id AS user_id
-            FROM comments
-            JOIN users
-            ON comments.user_id = users.id
-            WHERE comments.post_id = ?) 
-            AS comments_users
-            LEFT JOIN 
-                (SELECT COUNT(*) AS likes_count, post_id
-                FROM likes
-                WHERE like_value = 1
-                GROUP BY post_id) 
-                AS likes_table
-            ON comments_users.id = likes_table.post_id
-            LEFT JOIN 
-                (SELECT COUNT(*) AS dislikes_count, post_id
-                FROM likes
-                WHERE like_value = -1
-                GROUP BY post_id)
-                AS dislikes_table
-            ON comments_users.id = dislikes_table.post_id
-            LEFT JOIN
-            	(SELECT post_id, like_value AS current_user_like_value 
-            	FROM likes
-            	WHERE user_id = ?) AS user_likes_table
-            ON comments_users.id = user_likes_table.post_id
-        ORDER BY created_at DESC
+        // SELECT 
+        //     id, 
+        //     author_id, 
+        //     email, 
+        //     content, 
+        //     img_url, 
+        //     created_at, 
+        //     modified,
+        //     IFNULL(likes_count, 0) AS likes_count,
+        //     IFNULL(dislikes_count, 0) AS dislikes_count
+        // FROM
+        //     (SELECT 
+        //         comments.id, 
+        //         comments.author_id, 
+        //         users.email,
+        //         comments.content, 
+        //         comments.img_url, 
+        //         comments.created_at,
+        //         comments.modified
+        //     FROM comments
+        //     JOIN users
+        //     ON comments.author_id = users.id)
+        // AS comments_users
+        // LEFT JOIN 
+        //     (SELECT COUNT(*) AS likes_count, post_id
+        //     FROM likes
+        //     WHERE like_value = 1
+        //     GROUP BY post_id) 
+        // AS likes_table
+        // ON posts_users.id = likes_table.post_id
+        // LEFT JOIN
+        //     (SELECT COUNT(*) AS dislikes_count, post_id
+        //     FROM likes
+        //     WHERE like_value = -1
+        //     GROUP BY post_id )
+        // AS dislikes_table
+        // ON posts_users.id = dislikes_table.post_id
+        // ORDER BY created_at DESC
             `, [postId, userId])
         .then(([rows]) => {
 

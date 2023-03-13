@@ -57,17 +57,17 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                     />
                 }
             </div> */}
-            {/* <div className="post__buttons">
+            <div className="post__buttons">
                 {(userData.admin ||
-                    postData.postUserId === userData.loggedUserId) && (
+                    postData.postAuthorId === userData.loggedUserId) && (
                     <>
                         <button onClick={handleUpdate}>Modifier</button>
                         <button onClick={handleDelete}>Supprimer</button>
                     </>
                 )}
-            </div> */}
-            {/* <button onClick={handleReply}>Répondre</button> */}
-            {/* {showPostUpdateForm && (
+            </div>
+            <button onClick={handleReply}>Répondre</button>
+            {showPostUpdateForm && (
                 <UpdateForm
                     token={token}
                     postId={postId}
@@ -76,14 +76,14 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                     imgUrl={postData.imgUrl}
                     setShowUpdateForm={setShowPostUpdateForm}
                 />
-            )} */}
+            )}
             {errorMessage && <p className="error-msg">{errorMessage}</p>}
-            {/* <Comments
+            <Comments
                 token={token}
-                postId={postId}
+                parentId={postId}
                 showCommentForm={showCommentForm}
                 setShowCommentForm={setShowCommentForm}
-            /> */}
+            />
         </article>
     );
 };

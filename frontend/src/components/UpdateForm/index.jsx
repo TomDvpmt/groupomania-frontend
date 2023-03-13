@@ -12,6 +12,8 @@ const UpdateForm = ({
     const [errorMessage, setErrorMessage] = useState("");
 
     const handleSubmit = (e) => {
+        e.preventDefault();
+
         const uploadedFile = e.target.imageFile.files[0];
         const textInput = e.target.content.value;
         const sanitizedContent = sanitize(textInput);

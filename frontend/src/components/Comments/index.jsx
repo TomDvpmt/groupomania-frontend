@@ -5,7 +5,7 @@ import CreateMessageForm from "../CreateMessageForm";
 
 import "./Comments.css";
 
-const Comments = ({ token, postId, showCommentForm, setShowCommentForm }) => {
+const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
     const [comments, setComments] = useState([]);
     const [hasNewComments, setHasNewComments] = useState(0);
     const [commentsNumber, setCommentsNumber] = useState(0);
@@ -15,12 +15,15 @@ const Comments = ({ token, postId, showCommentForm, setShowCommentForm }) => {
 
     useEffect(() => {
         console.log("useEffect de Comments => getAllPosts");
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/all/${postId}`, {
-            method: "GET",
-            headers: {
-                Authorization: `BEARER ${token}`,
-            },
-        })
+        fetch(
+            `${process.env.REACT_APP_BACKEND_URI}/API/posts/all/${parentId}`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `BEARER ${token}`,
+                },
+            }
+        )
             .then((response) => response.json())
             .then((data) => {
                 if (data.results.length === 0) {
@@ -32,7 +35,7 @@ const Comments = ({ token, postId, showCommentForm, setShowCommentForm }) => {
                             key={result.id}
                             commentData={{
                                 id: result.id,
-                                commentUserId: result.commentUserId,
+                                authorId: result.authorId,
                                 email: result.email,
                                 imgUrl: result.imgUrl,
                                 content: result.content,
@@ -51,8 +54,6 @@ const Comments = ({ token, postId, showCommentForm, setShowCommentForm }) => {
                                 token: token,
                                 admin: data.admin,
                                 loggedUserId: data.loggedUserId,
-                                currentUserLikeValue:
-                                    result.currentUserLikeValue,
                             }}
                             setHasNewComments={setHasNewComments}
                         />
@@ -67,7 +68,7 @@ const Comments = ({ token, postId, showCommentForm, setShowCommentForm }) => {
                 );
                 setErrorMessage("Impossible d'afficher les commentaires.");
             });
-    }, [postId, hasNewComments, token, navigate]);
+    }, [parentId, hasNewComments, token, navigate]);
 
     useEffect(() => {
         setShowCommentForm(false);
@@ -78,7 +79,7 @@ const Comments = ({ token, postId, showCommentForm, setShowCommentForm }) => {
             {showCommentForm && (
                 <CreateMessageForm
                     token={token}
-                    parentId={postId}
+                    parentId={parentId}
                     setHasNewMessages={setHasNewComments}
                     setMessages={setComments}
                 />

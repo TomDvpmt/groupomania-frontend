@@ -27,80 +27,66 @@ exports.getAllPosts = (req, res, next) => {
     connectToDb("getAllPosts")
     .then(connection => {
         connection.execute(`
-        SELECT DISTINCT id, parent_id, post_user_id, email, content, img_url, created_at, modified, likes_count, dislikes_count, current_user_like_value
-        FROM 
+        SELECT 
+            id, 
+            parent_id
+            author_id, 
+            email, 
+            content, 
+            img_url, 
+            created_at, 
+            modified,
+            IFNULL(likes_count, 0) AS likes_count,
+            IFNULL(dislikes_count, 0) AS dislikes_count
+        FROM
             (SELECT 
                 posts.id, 
                 posts.parent_id,
-                posts.user_id AS post_user_id, 
+                posts.author_id, 
                 users.email,
                 posts.content, 
                 posts.img_url, 
                 posts.created_at,
-                posts.modified, 
-                users.id AS user_id
+                posts.modified
             FROM posts
             JOIN users
-            ON posts.user_id = users.id) 
-            AS posts_users
-            LEFT JOIN 
-                (SELECT COUNT(*) AS likes_count, post_id
-                FROM likes
-                WHERE like_value = 1
-                GROUP BY post_id) 
-                AS likes_table
-            ON posts_users.id = likes_table.post_id
-            LEFT JOIN 
-                (SELECT COUNT(*) AS dislikes_count, post_id
-                FROM likes
-                WHERE like_value = -1
-                GROUP BY post_id)
-                AS dislikes_table
-            ON posts_users.id = dislikes_table.post_id
-            LEFT JOIN
-            	(SELECT post_id, like_value AS current_user_like_value 
-            	FROM likes
-            	WHERE user_id = ?
-                ) AS user_likes_table
-            ON posts_users.id = user_likes_table.post_id
+            ON posts.author_id = users.id)
+        AS posts_users
+        LEFT JOIN 
+            (SELECT COUNT(*) AS likes_count, post_id
+            FROM likes
+            WHERE like_value = 1
+            GROUP BY post_id) 
+        AS likes_table
+        ON posts_users.id = likes_table.post_id
+        LEFT JOIN
+            (SELECT COUNT(*) AS dislikes_count, post_id
+            FROM likes
+            WHERE like_value = -1
+            GROUP BY post_id )
+        AS dislikes_table
+        ON posts_users.id = dislikes_table.post_id
         WHERE parent_id = ?
         ORDER BY created_at DESC
-            `, [userId, parentId])
+            `, [parentId])
         .then(([rows]) => {
             const results = [];
-
-            console.log(rows);
             
             for(let i = 0 ; i < rows.length ; i++) {
-                results[i] = rows[i].parent_id === 0 ?
+                results[i] = 
                     {
                         id: rows[i].id,
-                        parentId: 0,
-                        postUserId: rows[i].post_user_id,
+                        postAuthorId: rows[i].author_id,
                         email: rows[i].email,
                         content: rows[i].content,
                         imgUrl: rows[i].img_url,
                         date: rows[i].created_at,
                         modified: rows[i].modified,
-                        likesCount: rows[i].likes_count,
-                        dislikesCount: rows[i].dislikes_count,
-                        currentUserLikeValue: rows[i].current_user_like_value
-                    } :
-                    {
-                        id: rows[i].id,
-                        parentId: rows[i].parent_id,
-                        commentUserId: rows[i].post_user_id,
-                        email: rows[i].email,
-                        content: rows[i].content,
-                        imgUrl: rows[i].img_url,
-                        date: rows[i].created_at,
-                        modified: rows[i].modified,
-                        likesCount: rows[i].likes_count,
-                        dislikesCount: rows[i].dislikes_count,
-                        currentUserLikeValue: rows[i].current_user_like_value
-                    };
+                        likesCount: rows[i].likesCount,
+                        dislikesCount: rows[i].dislikesCount
+                    }
             };
-            close(connection);
+
             return {
                 results: results, 
                 admin: req.auth.admin === 1, 
@@ -166,7 +152,7 @@ exports.createPost = (req, res, next) => {
             "";
         connection.execute(
             `
-            INSERT INTO posts (parent_id, user_id, content, img_url, created_at)
+            INSERT INTO posts (parent_id, author_id, content, img_url, created_at)
             VALUES (?, ?, ?, ?, ?)
             `,
             [parentId, userId, content, imgUrl, createdAt]
@@ -480,84 +466,79 @@ exports.getPostUserLike = (req, res, next) => {
     })
 }
 
-// exports.getAllComments = (req, res, next) => {
-//     const userId = req.auth.userId;
-//     const postId = req.params.id;
+exports.getAllComments = (req, res, next) => {
+    const userId = req.auth.userId;
+    const postId = req.params.id;
 
-//     connectToDb("getAllComments")
-//     .then(connection => {
-//         connection.execute(`
-//         SELECT comment_id, parent_id, comment_user_id, email, content, img_url, created_at, likes_count, dislikes_count, current_user_like_value
-//         FROM 
-//             (SELECT 
-//                 posts.id AS comment_id, 
-//                 posts.parent_id,
-//                 posts.user_id AS comment_user_id, 
-//                 users.email,
-//                 posts.content, 
-//                 posts.img_url, 
-//                 posts.created_at, 
-//                 users.id AS user_id
-//             FROM posts
-//             JOIN users
-//             ON posts.user_id = users.id) 
-//             AS posts_users
-//             LEFT JOIN 
-//                 (SELECT COUNT(*) AS likes_count, post_id
-//                 FROM likes
-//                 WHERE like_value = 1
-//                 GROUP BY post_id) 
-//                 AS likes_table
-//             ON posts_users.comment_id = likes_table.post_id
-//             LEFT JOIN 
-//                 (SELECT COUNT(*) AS dislikes_count, post_id
-//                 FROM likes
-//                 WHERE like_value = -1
-//                 GROUP BY post_id)
-//                 AS dislikes_table
-//             ON posts_users.comment_id = dislikes_table.post_id
-//             LEFT JOIN
-//             	(SELECT post_id, like_value AS current_user_like_value 
-//             	FROM likes
-//             	WHERE user_id = ?) AS user_likes_table
-//             ON posts_users.comment_id = user_likes_table.post_id
-//         WHERE parent_id = ?
-//         ORDER BY created_at DESC
-//         `, [userId, postId])
-//         .then(([rows]) => {
-//             const results = [];
+    connectToDb("getAllComments")
+    .then(connection => {
+        connection.execute(`
+        SELECT comment_id, parent_id, comment_author_id, email, content, img_url, created_at, likes_count, dislikes_count
+        FROM 
+            (SELECT 
+                posts.id AS comment_id, 
+                posts.parent_id,
+                posts.author_id AS comment_author_id, 
+                users.email,
+                posts.content, 
+                posts.img_url, 
+                posts.created_at, 
+                users.id AS user_id
+            FROM posts
+            JOIN users
+            ON posts.author_id = users.id) 
+            AS posts_users
+            LEFT JOIN 
+                (SELECT COUNT(*) AS likes_count, post_id
+                FROM likes
+                WHERE like_value = 1
+                GROUP BY post_id) 
+                AS likes_table
+            ON posts_users.comment_id = likes_table.post_id
+            LEFT JOIN 
+                (SELECT COUNT(*) AS dislikes_count, post_id
+                FROM likes
+                WHERE like_value = -1
+                GROUP BY post_id)
+                AS dislikes_table
+            ON posts_users.comment_id = dislikes_table.post_id
+        WHERE parent_id = ?
+        ORDER BY created_at DESC
+        `, [postId])
+        .then(([rows]) => {
+            const results = [];
             
-//             for(let i = 0 ; i < rows.length ; i++) {
-//                 results[i] =
-//                     {
-//                         commentId: rows[i].comment_id,
-//                         commentUserId: rows[i].comment_user_id,
-//                         email: rows[i].email,
-//                         content: rows[i].content,
-//                         imgUrl: rows[i].img_url,
-//                         date: rows[i].created_at,
-//                         likesCount: rows[i].likes_count,
-//                         dislikesCount: rows[i].dislikes_count,
-//                         currentUserLikeValue: rows[i].current_user_like_value
-//                     };
-//             };
-//             close(connection);
-//             return {
-//                 comments: results, 
-//                 admin: req.auth.admin === 1, 
-//                 loggedUserId: req.auth.userId
-//             };
-//         })
-//         .then(results => res.status(200).json(results))
-//         .catch(error => {
-//             close(connection);
-//             handleError(res, "Impossible de récupérer les commentaires.", 400, error);
-//         });
-//     })
-//     .catch(error => {
-//         handleError(res, "Impossible de se connecter à la base de données.", 500, error);
-//     });
-// }
+            for(let i = 0 ; i < rows.length ; i++) {
+                results[i] =
+                    {
+                        commentId: rows[i].comment_id,
+                        commentUserId: rows[i].comment_user_id,
+                        email: rows[i].email,
+                        content: rows[i].content,
+                        imgUrl: rows[i].img_url,
+                        date: rows[i].created_at,
+                        likesCount: rows[i].likes_count,
+                        dislikesCount: rows[i].dislikes_count,
+                        currentUserLikeValue: rows[i].current_user_like_value
+                    };
+            };
+            close(connection);
+            return {
+                comments: results, 
+                admin: req.auth.admin === 1, 
+                loggedUserId: req.auth.userId
+            };
+        })
+        .then(results => res.status(200).json(results))
+        .catch(error => {
+            close(connection);
+            handleError(res, "Impossible de récupérer les commentaires.", 400, error);
+        });
+    })
+    .catch(error => {
+        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
+    });
+}
 
 // exports.createComment = (req, res, next) => {
 //     const userId = req.auth.userId;

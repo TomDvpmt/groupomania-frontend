@@ -80,13 +80,13 @@ const setupDbTables = async (connection, dbName) => {
     await connection.query(`
         CREATE TABLE IF NOT EXISTS posts (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            parent_id INT NOT NULL DEFAULT 0,
-            user_id INT NOT NULL,
+            parent_id INT DEFAULT 0,
+            author_id INT NOT NULL,
             content VARCHAR(5000),
             img_url VARCHAR(500),
             created_at BIGINT NOT NULL,
             modified BOOLEAN DEFAULT 0,
-            FOREIGN KEY (user_id) REFERENCES users(id)
+            FOREIGN KEY (author_id) REFERENCES users(id)
         )
     `);
     !postsExists && console.log(`========= Table "posts" créée. =========`);
@@ -106,13 +106,13 @@ const setupDbTables = async (connection, dbName) => {
     // await connection.query(`
     //     CREATE TABLE IF NOT EXISTS comments (
     //         id INT AUTO_INCREMENT PRIMARY KEY,
-    //         user_id INT,
-    //         post_id INT,
+    //         parent_id INT,
+    //         author_id INT,
     //         content VARCHAR(5000),
     //         img_url VARCHAR(500),
     //         created_at BIGINT NOT NULL,
-    //         FOREIGN KEY (user_id) REFERENCES users(id),
-    //         FOREIGN KEY (post_id) REFERENCES posts(id)
+    //         FOREIGN KEY (author_id) REFERENCES users(id),
+    //         FOREIGN KEY (parent_id) REFERENCES posts(id)
     //     )
     // `);
     // !commentsExists && console.log(`========= Table "comments" créée. =========`)

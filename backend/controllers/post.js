@@ -24,12 +24,12 @@ exports.getAllPosts = (req, res, next) => {
     const userId = req.auth.userId;
     const parentId = req.params.parentId;
 
-    connectToDb("getAllPosts")
+    connectToDb("getAllPosts" + parentId === 0 ? "posts" : "comments")
     .then(connection => {
         connection.execute(`
         SELECT 
             id, 
-            parent_id
+            parent_id,
             author_id, 
             email, 
             content, 
@@ -76,6 +76,7 @@ exports.getAllPosts = (req, res, next) => {
                 results[i] = 
                     {
                         id: rows[i].id,
+                        parentId: rows[0].parent_id,
                         postAuthorId: rows[i].author_id,
                         email: rows[i].email,
                         content: rows[i].content,
@@ -86,7 +87,7 @@ exports.getAllPosts = (req, res, next) => {
                         dislikesCount: rows[i].dislikesCount
                     }
             };
-
+            close(connection);
             return {
                 results: results, 
                 admin: req.auth.admin === 1, 

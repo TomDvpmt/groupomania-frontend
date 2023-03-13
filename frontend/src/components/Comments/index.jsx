@@ -26,6 +26,7 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
         )
             .then((response) => response.json())
             .then((data) => {
+                console.log(data);
                 if (data.results.length === 0) {
                     return <p>Aucun message à afficher.</p>;
                 } else {
@@ -35,7 +36,7 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
                             key={result.id}
                             commentData={{
                                 id: result.id,
-                                authorId: result.authorId,
+                                authorId: result.postAuthorId,
                                 email: result.email,
                                 imgUrl: result.imgUrl,
                                 content: result.content,

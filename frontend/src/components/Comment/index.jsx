@@ -27,6 +27,9 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
     const [showCommentUpdateForm, setShowCommentUpdateForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
+    console.log("loggedUserId : ", userData.loggedUserId);
+    console.log("commentData.authorId : ", commentData.authorId);
+
     const handleLike = (e) => {
         // setLike(
         //     e,
@@ -93,7 +96,7 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
             </div>
             <div className="comment__buttons">
                 {(userData.admin ||
-                    commentData.commentUserId === userData.loggedUserId) && (
+                    commentData.authorId === userData.loggedUserId) && (
                     <React.Fragment>
                         <button onClick={handleUpdate}>Modifier</button>
                         <button onClick={handleDelete}>Supprimer</button>

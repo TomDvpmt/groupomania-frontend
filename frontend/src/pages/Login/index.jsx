@@ -42,7 +42,7 @@ const Login = () => {
     };
 
     return (
-        <React.Fragment>
+        <main>
             <h1>Connexion</h1>
             <form onSubmit={handleSubmit}>
                 <input
@@ -65,7 +65,7 @@ const Login = () => {
             </form>
             {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}
             <Link to="/signup">Créer un compte</Link>
-        </React.Fragment>
+        </main>
     );
 };
 

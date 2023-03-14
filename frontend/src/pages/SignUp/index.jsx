@@ -51,7 +51,7 @@ const SignUp = () => {
     };
 
     return (
-        <React.Fragment>
+        <main>
             <h1>Créer un compte</h1>
             <form onSubmit={handleSubmit}>
                 <input
@@ -84,7 +84,7 @@ const SignUp = () => {
                 )}
             </form>
             <Link to="/login">Déjà un compte ? S'identifier</Link>
-        </React.Fragment>
+        </main>
     );
 };
 

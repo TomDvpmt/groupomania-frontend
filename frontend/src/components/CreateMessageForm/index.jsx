@@ -42,6 +42,7 @@ const CreateMessageForm = ({ token, parentId, setHasNewMessages }) => {
                         setHasNewMessages(
                             (hasNewMessages) => hasNewMessages + 1
                         );
+                        e.target.content.value = "";
                     }
                 })
                 .catch((error) => {

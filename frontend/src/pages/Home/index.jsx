@@ -68,7 +68,7 @@ const Home = () => {
     }, [hasNewPosts, token, navigate]);
 
     return (
-        <React.Fragment>
+        <main>
             <h2>Poster un message :</h2>
             <CreateMessageForm
                 token={token}
@@ -78,7 +78,7 @@ const Home = () => {
             <h2>Messages :</h2>
             {posts}
             {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}
-        </React.Fragment>
+        </main>
     );
 };
 

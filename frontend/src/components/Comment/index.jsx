@@ -1,11 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-    formatDate,
-    deletePost,
-    setLike,
-    setPostLikes,
-    setUserLikeStatus,
-} from "../../utils/utils";
+import React, { useState } from "react";
+import { formatDate, deletePost } from "../../utils/utils";
 import UpdateForm from "../UpdateForm";
 import LikeButtons from "../LikeButtons";
 
@@ -13,34 +7,11 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
     const commentId = commentData.id;
     const formatedDate = formatDate(commentData.date);
     const [commentContent, setCommentContent] = useState(commentData.content);
-    const [commentLikesCount, setCommentLikesCount] = useState(
-        commentData.likes
-    );
-    const [commentDislikesCount, setCommentDislikesCount] = useState(
-        commentData.dislikes
-    );
 
     const token = userData.token;
-    const [commentLikeStatus, setCommentLikeStatus] = useState(
-        userData.currentUserLikeValue
-    );
 
     const [showCommentUpdateForm, setShowCommentUpdateForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-
-    const handleLike = (e) => {
-        // setLike(
-        //     e,
-        //     token,
-        //     commentId,
-        //     setPostLikes,
-        //     setCommentLikesCount,
-        //     setCommentDislikesCount,
-        //     setUserLikeStatus,
-        //     setCommentLikeStatus,
-        //     setErrorMessage
-        // );
-    };
 
     const handleUpdate = () => {
         setShowCommentUpdateForm(
@@ -58,17 +29,6 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
         );
     };
 
-    useEffect(() => {
-        // setPostLikes(
-        //     token,
-        //     commentId,
-        //     setCommentLikesCount,
-        //     setCommentDislikesCount,
-        //     setErrorMessage
-        // );
-        // setUserLikeStatus(token, commentId, setCommentLikeStatus);
-    }, [commentId, token]);
-
     return (
         <article className="comment">
             <header className="comment__header">
@@ -84,13 +44,6 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                 <p>{commentContent}</p>
             </div>
             <div className="comment_like-buttons">
-                {/* <button onClick={handleLike} data-likevalue={1}>
-                    Like ({commentLikesCount}) {commentLikeStatus === 1 && "👍"}
-                </button>
-                <button onClick={handleLike} data-likevalue={-1}>
-                    Dislike ({commentDislikesCount}){" "}
-                    {commentLikeStatus === -1 && "👎"}
-                </button> */}
                 <LikeButtons
                     token={token}
                     postId={commentId}

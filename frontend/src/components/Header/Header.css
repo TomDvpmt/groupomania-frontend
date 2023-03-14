@@ -7,3 +7,7 @@
     display: block;
     margin: auto;
 }
+
+.header nav {
+    border-top: 1px solid black;
+}

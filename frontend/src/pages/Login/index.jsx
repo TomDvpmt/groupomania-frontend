@@ -1,6 +1,9 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { fetchCredentials } from "../../utils/utils";
+import { TextField, Link, Box, Typography, Container } from "@mui/material";
+import { myTheme } from "../../utils/theme";
+import SubmitButton from "../../components/Buttons/SubmitButton";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -42,30 +45,53 @@ const Login = () => {
     };
 
     return (
-        <main>
-            <h1>Connexion</h1>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Entrez votre adresse e-mail"
-                    value={email}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Entrez votre mot de passe"
-                    value={password}
-                    onChange={handleChange}
-                    required
-                />
-                <button>Login</button>
-            </form>
-            {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}
-            <Link to="/signup">Créer un compte</Link>
-        </main>
+        <Container component="main" maxWidth="xs">
+            <Box sx={myTheme.form}>
+                <Typography variant="h4" component="h1">
+                    Connexion
+                </Typography>
+                <Box
+                    component="form"
+                    noValidate
+                    sx={{ mt: 2 }}
+                    onSubmit={handleSubmit}
+                >
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="email"
+                        name="email"
+                        type="email"
+                        label="Adresse e-mail"
+                        autoComplete="email"
+                        autoFocus
+                        value={email}
+                        onChange={handleChange}
+                    />
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="password"
+                        name="password"
+                        type="password"
+                        label="Mot de passe"
+                        value={password}
+                        onChange={handleChange}
+                    />
+                    <SubmitButton text="Se connecter" />
+                    {errorMessage !== "" && (
+                        <Typography className="error-msg">
+                            {errorMessage}
+                        </Typography>
+                    )}
+                    <Link component={RouterLink} to="/signup" variant="body2">
+                        Créer un compte
+                    </Link>
+                </Box>
+            </Box>
+        </Container>
     );
 };
 

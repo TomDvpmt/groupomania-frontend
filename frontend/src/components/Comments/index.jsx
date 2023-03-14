@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Comment from "../Comment";
+import Comment from "../Cards/Comment";
 import CreateMessageForm from "../CreateMessageForm";
-
-import "./Comments.css";
 
 const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
     const [comments, setComments] = useState([]);

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Stack } from "@mui/material";
 
 const LikeButtons = ({
     token,
@@ -39,7 +40,7 @@ const LikeButtons = ({
     };
 
     return (
-        <>
+        <Stack direction="row">
             <button onClick={handleLike} data-likevalue={1}>
                 Like ({likesCount}) {likeStatus === 1 && "👍"}
             </button>
@@ -47,7 +48,7 @@ const LikeButtons = ({
                 Dislike ({dislikesCount}) {likeStatus === -1 && "👎"}
             </button>
             {errorMessage && <p>{errorMessage}</p>}
-        </>
+        </Stack>
     );
 };
 

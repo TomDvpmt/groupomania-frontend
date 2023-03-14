@@ -180,40 +180,40 @@ exports.setUserLikeStatus = (token, postId, setLikeStatus) => {
         .catch((error) => console.log(error));
 };
 
-/**
- *
- * @param {String} token
- * @param {Number} postId
- * @param {import("react").SetStateAction} setLikesCount
- * @param {import("react").SetStateAction} setDislikesCount
- * @param {import("react").SetStateAction} setErrorMessage
- */
+// /**
+//  *
+//  * @param {String} token
+//  * @param {Number} postId
+//  * @param {import("react").SetStateAction} setLikesCount
+//  * @param {import("react").SetStateAction} setDislikesCount
+//  * @param {import("react").SetStateAction} setErrorMessage
+//  */
 
-exports.setPostLikes = (
-    token,
-    postId,
-    setLikesCount,
-    setDislikesCount,
-    setErrorMessage
-) => {
-    fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}/likes`, {
-        method: "GET",
-        headers: {
-            Authorization: `BEARER ${token}`,
-        },
-    })
-        .then((response) => {
-            if (response.status >= 400) {
-                response.json().then(({ message }) => setErrorMessage(message));
-            } else return response.json();
-        })
-        .then((data) => {
-            setLikesCount(data.likesCount === null ? 0 : data.likesCount);
-            setDislikesCount(
-                data.dislikesCount === null ? 0 : data.dislikesCount
-            );
-        })
-        .catch((error) =>
-            setErrorMessage("Impossible d'afficher les likes / dislikes.")
-        );
-};
+// exports.setPostLikes = (
+//     token,
+//     postId,
+//     setLikesCount,
+//     setDislikesCount,
+//     setErrorMessage
+// ) => {
+//     fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}/likes`, {
+//         method: "GET",
+//         headers: {
+//             Authorization: `BEARER ${token}`,
+//         },
+//     })
+//         .then((response) => {
+//             if (response.status >= 400) {
+//                 response.json().then(({ message }) => setErrorMessage(message));
+//             } else return response.json();
+//         })
+//         .then((data) => {
+//             setLikesCount(data.likesCount === null ? 0 : data.likesCount);
+//             setDislikesCount(
+//                 data.dislikesCount === null ? 0 : data.dislikesCount
+//             );
+//         })
+//         .catch((error) =>
+//             setErrorMessage("Impossible d'afficher les likes / dislikes.")
+//         );
+// };

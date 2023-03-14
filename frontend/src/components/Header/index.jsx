@@ -1,6 +1,9 @@
 import logo from "../../assets/brand/icon-left-font.svg";
-import { Link } from "react-router-dom";
-import "./Header.css";
+import { Link as RouterLink } from "react-router-dom";
+import { Container } from "@mui/material";
+
+import { Box, Toolbar, Button } from "@mui/material";
+import { myTheme } from "../../utils/theme";
 
 const Header = ({ nav }) => {
     const handleClick = () => {
@@ -8,20 +11,30 @@ const Header = ({ nav }) => {
     };
 
     return (
-        <header className="header">
-            <img className="header__logo" src={logo} alt="Groupomania logo" />
+        <Box component="header">
+            <Container
+                component="img"
+                sx={{ width: "50%" }}
+                src={logo}
+                alt="Groupomania logo"
+            />
             {nav && (
-                <nav>
-                    <ul>
-                        <li>
-                            <Link to="/login" onClick={handleClick}>
-                                Déconnexion
-                            </Link>
-                        </li>
-                    </ul>
-                </nav>
+                <Toolbar
+                    component="nav"
+                    sx={{
+                        bgcolor: myTheme.palette.secondary.main,
+                    }}
+                >
+                    <Button
+                        component={RouterLink}
+                        to="/login"
+                        onClick={handleClick}
+                    >
+                        Déconnexion
+                    </Button>
+                </Toolbar>
             )}
-        </header>
+        </Box>
     );
 };
 

@@ -1,7 +1,16 @@
 import React, { useState } from "react";
-import { formatDate, deletePost } from "../../utils/utils";
-import UpdateForm from "../UpdateForm";
-import LikeButtons from "../LikeButtons";
+import { formatDate, deletePost } from "../../../utils/utils";
+import UpdateForm from "../../UpdateForm";
+import LikeButtons from "../../Buttons/LikeButtons";
+import {
+    Box,
+    Card,
+    CardActions,
+    CardContent,
+    CardMedia,
+    Button,
+    Typography,
+} from "@mui/material";
 
 const Comment = ({ commentData, userData, setHasNewComments }) => {
     const commentId = commentData.id;
@@ -30,20 +39,20 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
     };
 
     return (
-        <article className="comment">
-            <header className="comment__header">
-                <h3 className="comment__user-infos">
+        <Card component="article">
+            <header>
+                <h3>
                     {commentData.email} | {formatedDate}
                     {commentData.modified && "(modifié)"}
                 </h3>
             </header>
-            <div className="comment__content">
+            <div>
                 {commentData.imgUrl && (
                     <img src={commentData.imgUrl} alt="comment illustration" />
                 )}
                 <p>{commentContent}</p>
             </div>
-            <div className="comment_like-buttons">
+            <div>
                 <LikeButtons
                     token={token}
                     postId={commentId}
@@ -52,7 +61,7 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                     currentUserLikeValue={userData.currentUserLikeValue}
                 />
             </div>
-            <div className="comment__buttons">
+            <div>
                 {(userData.admin ||
                     commentData.authorId === userData.loggedUserId) && (
                     <React.Fragment>
@@ -61,7 +70,7 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                     </React.Fragment>
                 )}
             </div>
-            {errorMessage && <p className="error-msg">{errorMessage}</p>}
+            {errorMessage && <p>{errorMessage}</p>}
             {showCommentUpdateForm && (
                 <UpdateForm
                     token={token}
@@ -73,7 +82,7 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                     setHasNewMessages={setHasNewComments}
                 />
             )}
-        </article>
+        </Card>
     );
 };
 

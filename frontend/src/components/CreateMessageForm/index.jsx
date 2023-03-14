@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import { imgMimeTypes, sanitize } from "../../utils/utils";
+import { Box, TextField, Button, Typography } from "@mui/material";
+import { myTheme } from "../../utils/theme";
 
 const CreateMessageForm = ({ token, parentId, setHasNewMessages }) => {
     const [errorMessage, setErrorMessage] = useState("");
+    const [content, setContent] = useState("");
+
+    const handleChange = (e) => {
+        setContent(e.target.value);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -18,8 +25,7 @@ const CreateMessageForm = ({ token, parentId, setHasNewMessages }) => {
                 "Seuls les formats .jpg, .jpeg, .png, .bpm et .webp sont acceptés."
             );
         } else {
-            const textInput = e.target.content.value;
-            const sanitizedContent = sanitize(textInput);
+            const sanitizedContent = sanitize(content);
 
             const formData = new FormData();
             formData.append("parentId", parentId);
@@ -42,7 +48,7 @@ const CreateMessageForm = ({ token, parentId, setHasNewMessages }) => {
                         setHasNewMessages(
                             (hasNewMessages) => hasNewMessages + 1
                         );
-                        e.target.content.value = "";
+                        setContent("");
                     }
                 })
                 .catch((error) => {
@@ -53,23 +59,35 @@ const CreateMessageForm = ({ token, parentId, setHasNewMessages }) => {
     };
     return (
         <React.Fragment>
-            <form onSubmit={handleSubmit} encType="multipart/form-data">
-                <label htmlFor="content">
-                    Votre {parentId === 0 ? "message" : "commentaire"} :{" "}
-                </label>
-                <br />
-                <textarea
+            <Box
+                component="form"
+                sx={myTheme.form}
+                onSubmit={handleSubmit}
+                encType="multipart/form-data"
+            >
+                <TextField
+                    multiline
+                    label={`Votre ${
+                        parentId === 0 ? "message" : "commentaire"
+                    } :${" "}`}
                     name="content"
                     id="content"
-                    cols="30"
-                    rows="10"
-                ></textarea>
-                <br />
-                <label htmlFor="imageFile">Ajouter une image : </label>
-                <input type="file" name="imageFile" />
-                <br />
-                <button>Envoyer</button>
-            </form>
+                    fullWidth
+                    minRows={8}
+                    margin="normal"
+                    value={content}
+                    onChange={handleChange}
+                />
+                <Button
+                    component="label"
+                    variant="text"
+                    sx={{ alignSelf: "start", mb: 2 }}
+                >
+                    Ajouter une image
+                    <input hidden type="file" name="imageFile" />
+                </Button>
+                <Button variant="contained">Envoyer</Button>
+            </Box>
             {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}
         </React.Fragment>
     );

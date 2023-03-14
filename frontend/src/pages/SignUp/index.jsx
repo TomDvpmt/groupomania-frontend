@@ -1,6 +1,10 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { fetchCredentials } from "../../utils/utils";
+
+import { Container, Box, TextField, Typography, Link } from "@mui/material";
+import { myTheme } from "../../utils/theme";
+import SubmitButton from "../../components/Buttons/SubmitButton";
 
 const SignUp = () => {
     const [email, setEmail] = useState("");
@@ -51,40 +55,60 @@ const SignUp = () => {
     };
 
     return (
-        <main>
-            <h1>Créer un compte</h1>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Entrez votre adresse e-mail"
-                    value={email}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Entrez votre mot de passe"
-                    value={password}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="password"
-                    name="passwordConfirm"
-                    placeholder="Confirmez votre mot de passe"
-                    value={passwordConfirm}
-                    onChange={handleChange}
-                    required
-                />
-                <button>Sign up</button>
-                {errorMessage !== "" && (
-                    <p className="error-msg">{errorMessage}</p>
-                )}
-            </form>
-            <Link to="/login">Déjà un compte ? S'identifier</Link>
-        </main>
+        <Container component="main" maxWidth="xs">
+            <Box sx={myTheme.form}>
+                <Typography component="h1" variant="h4">
+                    Créer un compte
+                </Typography>
+                <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    sx={{
+                        mt: 2,
+                    }}
+                    noValidate
+                >
+                    <TextField
+                        type="email"
+                        name="email"
+                        label="Votre adresse e-mail"
+                        value={email}
+                        onChange={handleChange}
+                        required
+                        fullWidth
+                        margin="normal"
+                        autoFocus
+                    />
+                    <TextField
+                        type="password"
+                        name="password"
+                        label="Votre mot de passe"
+                        value={password}
+                        onChange={handleChange}
+                        required
+                        fullWidth
+                        margin="normal"
+                    />
+                    <TextField
+                        type="password"
+                        name="passwordConfirm"
+                        label="Confirmez votre mot de passe"
+                        value={passwordConfirm}
+                        onChange={handleChange}
+                        required
+                        fullWidth
+                        margin="normal"
+                    />
+                    <SubmitButton text="S'enregistrer" />
+                    {errorMessage !== "" && (
+                        <p className="error-msg">{errorMessage}</p>
+                    )}
+                    <Link component={RouterLink} to="/login" variant="body2">
+                        Déjà un compte ? S'identifier
+                    </Link>
+                </Box>
+            </Box>
+        </Container>
     );
 };
 

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Post from "../../components/Post";
+import Post from "../../components/Cards/Post";
 import CreateMessageForm from "../../components/CreateMessageForm";
-
-import "./Home.css";
+import { Container, Box, Typography } from "@mui/material";
 
 const Home = () => {
     const [posts, setPosts] = useState([]);
@@ -68,17 +67,35 @@ const Home = () => {
     }, [hasNewPosts, token, navigate]);
 
     return (
-        <main>
-            <h2>Poster un message :</h2>
-            <CreateMessageForm
-                token={token}
-                parentId={0}
-                setHasNewMessages={setHasNewPosts}
-            />
-            <h2>Messages :</h2>
-            {posts}
-            {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}
-        </main>
+        <Container component="main">
+            <Box
+                sx={{
+                    marginTop: 8,
+                }}
+            >
+                <Typography component="h2" variant="h4">
+                    Poster un message :
+                </Typography>
+                <CreateMessageForm
+                    token={token}
+                    parentId={0}
+                    setHasNewMessages={setHasNewPosts}
+                />
+            </Box>
+            <Box
+                sx={{
+                    marginTop: 8,
+                }}
+            >
+                <Typography component="h2" variant="h4">
+                    Messages :
+                </Typography>
+                {posts}
+                {errorMessage !== "" && (
+                    <p className="error-msg">{errorMessage}</p>
+                )}
+            </Box>
+        </Container>
     );
 };
 

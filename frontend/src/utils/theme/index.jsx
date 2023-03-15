@@ -11,12 +11,15 @@ export const myTheme = createTheme({
         tertiary: {
             main: "#4E5166",
         },
+        error: {
+            main: "#FF0000",
+        },
     },
     typography: {
         fontFamily: "Lato, Helvetica Neue, Arial, sans-serif",
     },
     form: {
-        mb: 8,
+        margin: "1rem",
         display: "flex",
         flexDirection: "column",
     },
@@ -35,5 +38,8 @@ export const myTheme = createTheme({
                 },
             },
         },
+    },
+    maxWidth: {
+        desktop: 800,
     },
 });

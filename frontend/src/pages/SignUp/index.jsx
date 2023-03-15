@@ -5,6 +5,7 @@ import { fetchCredentials } from "../../utils/utils";
 import { Container, Box, TextField, Typography, Link } from "@mui/material";
 import { myTheme } from "../../utils/theme";
 import SubmitButton from "../../components/Buttons/SubmitButton";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const SignUp = () => {
     const [email, setEmail] = useState("");
@@ -100,8 +101,8 @@ const SignUp = () => {
                         margin="normal"
                     />
                     <SubmitButton text="S'enregistrer" />
-                    {errorMessage !== "" && (
-                        <p className="error-msg">{errorMessage}</p>
+                    {errorMessage && (
+                        <ErrorMessage errorMessage={errorMessage} />
                     )}
                     <Link component={RouterLink} to="/login" variant="body2">
                         Déjà un compte ? S'identifier

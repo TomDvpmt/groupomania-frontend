@@ -1,14 +1,22 @@
 import React, { useState } from "react";
+import ErrorMessage from "../ErrorMessage";
 import { imgMimeTypes, sanitize } from "../../utils/utils";
 import { Box, TextField, Button, Typography } from "@mui/material";
 import { myTheme } from "../../utils/theme";
 
-const CreateMessageForm = ({ token, parentId, setHasNewMessages }) => {
+const CreateMessageForm = ({ isReply, token, parentId, setHasNewMessages }) => {
     const [errorMessage, setErrorMessage] = useState("");
     const [content, setContent] = useState("");
+    const [chosenFile, setChosenFile] = useState("");
 
-    const handleChange = (e) => {
+    const handleContentChange = (e) => {
         setContent(e.target.value);
+    };
+
+    const handleFileChange = (e) => {
+        e.target.files[0]
+            ? setChosenFile(`Image choisie : "${e.target.files[0].name}"`)
+            : setChosenFile("");
     };
 
     const handleSubmit = (e) => {
@@ -49,6 +57,7 @@ const CreateMessageForm = ({ token, parentId, setHasNewMessages }) => {
                             (hasNewMessages) => hasNewMessages + 1
                         );
                         setContent("");
+                        setChosenFile("");
                     }
                 })
                 .catch((error) => {
@@ -58,38 +67,56 @@ const CreateMessageForm = ({ token, parentId, setHasNewMessages }) => {
         }
     };
     return (
-        <React.Fragment>
+        <Box
+            component="form"
+            sx={myTheme.form}
+            onSubmit={handleSubmit}
+            encType="multipart/form-data"
+        >
+            <TextField
+                multiline
+                autoFocus={isReply}
+                label={`Votre ${
+                    parentId === 0 ? "message" : "commentaire"
+                } :${" "}`}
+                name="content"
+                id="content"
+                fullWidth
+                minRows={8}
+                margin="normal"
+                value={content}
+                onChange={handleContentChange}
+            />
             <Box
-                component="form"
-                sx={myTheme.form}
-                onSubmit={handleSubmit}
-                encType="multipart/form-data"
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    mb: 2,
+                }}
             >
-                <TextField
-                    multiline
-                    label={`Votre ${
-                        parentId === 0 ? "message" : "commentaire"
-                    } :${" "}`}
-                    name="content"
-                    id="content"
-                    fullWidth
-                    minRows={8}
-                    margin="normal"
-                    value={content}
-                    onChange={handleChange}
-                />
                 <Button
                     component="label"
                     variant="text"
-                    sx={{ alignSelf: "start", mb: 2 }}
+                    sx={{ alignSelf: "start" }}
                 >
                     Ajouter une image
-                    <input hidden type="file" name="imageFile" />
+                    <input
+                        hidden
+                        type="file"
+                        name="imageFile"
+                        onChange={handleFileChange}
+                    />
                 </Button>
-                <Button variant="contained">Envoyer</Button>
+                <Typography variant="body2">{chosenFile}</Typography>
             </Box>
-            {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}
-        </React.Fragment>
+            <Button type="submit" variant="contained">
+                Envoyer
+            </Button>
+            {errorMessage !== "" && (
+                <ErrorMessage errorMessage={errorMessage} />
+            )}
+        </Box>
     );
 };
 

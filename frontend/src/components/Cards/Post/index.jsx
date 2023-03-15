@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import Comments from "../../Comments";
 import UpdateForm from "../../UpdateForm";
 import LikeButtons from "../../Buttons/LikeButtons";
+import ErrorMessage from "../../ErrorMessage";
 import { formatDate, deletePost } from "../../../utils/utils";
 import {
     Box,
-    Container,
     Stack,
     Card,
     CardHeader,
@@ -48,7 +48,9 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
     return (
         <Card component="article" sx={{ mb: 3 }}>
             <CardHeader
+                component="header"
                 title={postData.email}
+                titleTypographyProps={{ variant: "h6", fontWeight: "bold" }}
                 subheader={`${formatedDate}${
                     postData.modified === 1 ? " (modifié)" : ""
                 }`}
@@ -65,11 +67,9 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
             <CardContent>
                 <Typography paragraph>{postContent}</Typography>
             </CardContent>
-            <CardMedia>
-                {postData.imgUrl && (
-                    <img src={postData.imgUrl} alt="post illustration" />
-                )}
-            </CardMedia>
+            {postData.imgUrl && (
+                <CardMedia image={postData.imgUrl} component="img" />
+            )}
             <CardActions>
                 <Box
                     display="flex"
@@ -101,19 +101,20 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                         Répondre
                     </Button>
                 </Box>
-                {showPostUpdateForm && (
-                    <UpdateForm
-                        token={token}
-                        postId={postId}
-                        content={postContent}
-                        setContent={setPostContent}
-                        imgUrl={postData.imgUrl}
-                        setShowUpdateForm={setShowPostUpdateForm}
-                        setHasNewMessages={setHasNewPosts}
-                    />
-                )}
-                {errorMessage && <p>{errorMessage}</p>}
             </CardActions>
+            {showPostUpdateForm && (
+                <UpdateForm
+                    token={token}
+                    postId={postId}
+                    parentId={0}
+                    prevContent={postContent}
+                    setMessageContent={setPostContent}
+                    imgUrl={postData.imgUrl}
+                    setShowUpdateForm={setShowPostUpdateForm}
+                    setHasNewMessages={setHasNewPosts}
+                />
+            )}
+            {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
             <Comments
                 token={token}
                 parentId={postId}

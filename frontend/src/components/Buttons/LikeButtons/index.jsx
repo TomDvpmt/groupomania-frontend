@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Stack } from "@mui/material";
+import ErrorMessage from "../../ErrorMessage";
+import { Stack, Button } from "@mui/material";
+import {
+    ThumbUpAltOutlined,
+    ThumbUp,
+    ThumbDownAltOutlined,
+    ThumbDown,
+} from "@mui/icons-material";
 
 const LikeButtons = ({
     token,
@@ -13,10 +20,8 @@ const LikeButtons = ({
     const [likeStatus, setLikeStatus] = useState(currentUserLikeValue);
     const [errorMessage, setErrorMessage] = useState("");
 
-    const handleLike = (e) => {
-        const clickValue = e.target.dataset.likevalue;
-
-        console.log("postId :", postId, "clickValue : ", clickValue);
+    const changeLike = (clickValue) => {
+        setErrorMessage("");
 
         fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}/like`, {
             method: "PUT",
@@ -39,16 +44,46 @@ const LikeButtons = ({
             });
     };
 
+    const handleLike = () => {
+        changeLike(1);
+    };
+
+    const handleDislike = () => {
+        changeLike(-1);
+    };
+
     return (
-        <Stack direction="row">
-            <button onClick={handleLike} data-likevalue={1}>
-                Like ({likesCount}) {likeStatus === 1 && "👍"}
-            </button>
-            <button onClick={handleLike} data-likevalue={-1}>
-                Dislike ({dislikesCount}) {likeStatus === -1 && "👎"}
-            </button>
-            {errorMessage && <p>{errorMessage}</p>}
-        </Stack>
+        <>
+            <Stack direction="row">
+                <Button
+                    variant="text"
+                    onClick={handleLike}
+                    sx={{
+                        display: "flex",
+                        gap: 1,
+                    }}
+                >
+                    {likeStatus === 1 ? <ThumbUp /> : <ThumbUpAltOutlined />}
+                    {likesCount}
+                </Button>
+                <Button
+                    variant="text"
+                    onClick={handleDislike}
+                    sx={{
+                        display: "flex",
+                        gap: 1,
+                    }}
+                >
+                    {likeStatus === -1 ? (
+                        <ThumbDown />
+                    ) : (
+                        <ThumbDownAltOutlined />
+                    )}
+                    {dislikesCount}
+                </Button>
+            </Stack>
+            {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
+        </>
     );
 };
 

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Comment from "../Cards/Comment";
 import CreateMessageForm from "../CreateMessageForm";
+import ErrorMessage from "../ErrorMessage";
+import { Box, Typography, Stack } from "@mui/material";
 
 const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
     const [comments, setComments] = useState([]);
@@ -33,6 +35,7 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
                             key={result.id}
                             commentData={{
                                 id: result.id,
+                                parentId: parentId,
                                 authorId: result.postAuthorId,
                                 email: result.email,
                                 imgUrl: result.imgUrl,
@@ -73,6 +76,7 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
         <>
             {showCommentForm && (
                 <CreateMessageForm
+                    isReply={true}
                     token={token}
                     parentId={parentId}
                     setHasNewMessages={setHasNewComments}
@@ -80,15 +84,15 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
                 />
             )}
             {comments.length > 0 && (
-                <>
-                    <h2>
+                <Box padding="2rem 2rem 2rem 6rem">
+                    <Typography component="h2" variant="h5" gutterBottom>
                         {commentsNumber} commentaire
                         {commentsNumber > 1 ? "s" : ""} :{" "}
-                    </h2>
-                    {comments}
-                </>
+                    </Typography>
+                    <Stack spacing={2}>{comments}</Stack>
+                </Box>
             )}
-            {errorMessage !== "" && <p className="error-msg">{errorMessage}</p>}
+            {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
         </>
     );
 };

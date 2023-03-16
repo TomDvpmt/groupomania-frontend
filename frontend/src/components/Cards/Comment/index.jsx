@@ -4,7 +4,6 @@ import UpdateForm from "../../UpdateForm";
 import LikeButtons from "../../Buttons/LikeButtons";
 import ErrorMessage from "../../ErrorMessage";
 import {
-    Box,
     Card,
     CardHeader,
     CardActions,
@@ -14,8 +13,15 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
+import PropTypes from "prop-types";
 
 const Comment = ({ commentData, userData, setHasNewComments }) => {
+    Comment.propTypes = {
+        commentData: PropTypes.object,
+        userData: PropTypes.object,
+        setHasNewComments: PropTypes.func,
+    };
+
     const commentId = commentData.id;
     const parentId = commentData.parentId;
     const formatedDate = formatDate(commentData.date);
@@ -48,40 +54,41 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                 backgroundColor: "#F5F5F5",
             }}
         >
-            <CardHeader
-                component="header"
-                title={commentData.email}
-                titleTypographyProps={{
-                    fontSize: "1rem",
-                    variant: "h6",
-                    fontWeight: "bold",
-                }}
-                subheader={`${formatedDate}${
-                    commentData.modified === 1 ? " (modifié)" : ""
-                }`}
-                subheaderTypographyProps={{
-                    fontSize: ".8rem",
-                }}
-                action={
-                    <LikeButtons
-                        token={token}
-                        postId={commentId}
-                        likes={commentData.likes}
-                        dislikes={commentData.dislikes}
-                        currentUserLikeValue={userData.currentUserLikeValue}
-                    />
-                }
-            />
-            <CardContent>
-                <Typography paragraph fontSize=".9rem">
-                    {commentContent}
-                </Typography>
-            </CardContent>
-            {commentData.imgUrl && (
-                <CardMedia component="img" image={commentData.imgUrl} />
-            )}
-            {userData.admin ||
-                (commentData.authorId === userData.loggedUserId && (
+            <>
+                <CardHeader
+                    component="header"
+                    title={commentData.email}
+                    titleTypographyProps={{
+                        fontSize: "1rem",
+                        variant: "h6",
+                        fontWeight: "bold",
+                    }}
+                    subheader={`${formatedDate}${
+                        commentData.modified === 1 ? " (modifié)" : ""
+                    }`}
+                    subheaderTypographyProps={{
+                        fontSize: ".8rem",
+                    }}
+                    action={
+                        <LikeButtons
+                            token={token}
+                            postId={commentId}
+                            likes={commentData.likes}
+                            dislikes={commentData.dislikes}
+                            currentUserLikeValue={userData.currentUserLikeValue}
+                        />
+                    }
+                />
+                <CardContent>
+                    <Typography paragraph fontSize=".9rem">
+                        {commentContent}
+                    </Typography>
+                </CardContent>
+                {commentData.imgUrl && (
+                    <CardMedia component="img" image={commentData.imgUrl} />
+                )}
+                {userData.admin === true ||
+                commentData.authorId === userData.loggedUserId ? (
                     <CardActions>
                         <Stack direction="row" spacing={1}>
                             <Button variant="outlined" onClick={handleUpdate}>
@@ -92,20 +99,21 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                             </Button>
                         </Stack>
                     </CardActions>
-                ))}
-            {showCommentUpdateForm && (
-                <UpdateForm
-                    token={token}
-                    postId={commentId}
-                    parentId={parentId}
-                    prevContent={commentContent}
-                    setCommentContent={setCommentContent}
-                    imgUrl={commentData.imgUrl}
-                    setShowUpdateForm={setShowCommentUpdateForm}
-                    setHasNewMessages={setHasNewComments}
-                />
-            )}
-            {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
+                ) : null}
+                {showCommentUpdateForm && (
+                    <UpdateForm
+                        token={token}
+                        postId={commentId}
+                        parentId={parentId}
+                        prevContent={commentContent}
+                        setMessageContent={setCommentContent}
+                        imgUrl={commentData.imgUrl}
+                        setShowUpdateForm={setShowCommentUpdateForm}
+                        setHasNewMessages={setHasNewComments}
+                    />
+                )}
+                {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
+            </>
         </Card>
     );
 };

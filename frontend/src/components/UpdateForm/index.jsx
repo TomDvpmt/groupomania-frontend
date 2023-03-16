@@ -3,6 +3,7 @@ import { imgMimeTypes, sanitize } from "../../utils/utils";
 import ErrorMessage from "../ErrorMessage";
 import { Box, TextField, Button, Typography } from "@mui/material";
 import { myTheme } from "../../utils/theme";
+import PropTypes from "prop-types";
 
 const UpdateForm = ({
     token,
@@ -14,6 +15,17 @@ const UpdateForm = ({
     setShowUpdateForm,
     setHasNewMessages,
 }) => {
+    UpdateForm.propTypes = {
+        token: PropTypes.string,
+        postId: PropTypes.number,
+        parentId: PropTypes.number,
+        prevContent: PropTypes.string,
+        setMessageContent: PropTypes.func,
+        imgUrl: PropTypes.string,
+        setShowUpdateForm: PropTypes.func,
+        setHasNewMessages: PropTypes.func,
+    };
+
     const [updateContent, setUpdateContent] = useState(prevContent);
     const [chosenFile, setChosenFile] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -28,7 +40,35 @@ const UpdateForm = ({
             : setChosenFile("");
     };
 
-    const handleFileDelete = (e) => {};
+    const handleFileDelete = () => {
+        const content = updateContent;
+        const formData = new FormData();
+
+        formData.append("content", content);
+        formData.append("imgUrl", imgUrl);
+        formData.append("deleteImg", true);
+
+        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}`, {
+            method: "PUT",
+            headers: {
+                Authorization: `BEARER ${token}`,
+            },
+            body: formData,
+        })
+            .then((response) => {
+                if (response.status >= 400) {
+                    response
+                        .json()
+                        .then(({ message }) => setErrorMessage(message));
+                } else {
+                    setShowUpdateForm(false);
+                    setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
+                }
+            })
+            .catch((error) => {
+                console.log("Impossible de modifier le message : ", error);
+            });
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -78,31 +118,32 @@ const UpdateForm = ({
 
     return (
         <Box
+            id="update-form"
             component="form"
             sx={myTheme.form}
             onSubmit={handleSubmit}
             encType="multipart/form-data"
         >
             <TextField
+                margin="normal"
+                fullWidth
                 multiline
+                rows={15}
                 autoFocus
                 label={`Votre ${
                     parentId === 0 ? "message" : "commentaire"
                 } :${" "}`}
                 name="content"
                 id="content"
-                fullWidth
-                minRows={8}
-                margin="normal"
                 value={updateContent}
                 onChange={handleContentChange}
             />
             <Box
                 sx={{
+                    mb: 2,
                     display: "flex",
                     alignItems: "center",
                     gap: 1,
-                    mb: 2,
                 }}
             >
                 <Button component="label" variant="text" size="small">
@@ -116,7 +157,6 @@ const UpdateForm = ({
                 </Button>
                 {imgUrl && (
                     <Button
-                        component="label"
                         variant="text"
                         size="small"
                         onClick={handleFileDelete}

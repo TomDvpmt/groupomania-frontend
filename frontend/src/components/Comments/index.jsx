@@ -4,8 +4,16 @@ import Comment from "../Cards/Comment";
 import CreateMessageForm from "../CreateMessageForm";
 import ErrorMessage from "../ErrorMessage";
 import { Box, Typography, Stack } from "@mui/material";
+import PropTypes from "prop-types";
 
 const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
+    Comments.propTypes = {
+        token: PropTypes.string,
+        parentId: PropTypes.number,
+        showCommentForm: PropTypes.bool,
+        setShowCommentForm: PropTypes.func,
+    };
+
     const [comments, setComments] = useState([]);
     const [hasNewComments, setHasNewComments] = useState(0);
     const [commentsNumber, setCommentsNumber] = useState(0);

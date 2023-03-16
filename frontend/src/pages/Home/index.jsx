@@ -15,7 +15,8 @@ const Home = () => {
     const token = localStorage.getItem("token");
 
     useEffect(() => {
-        console.log("===== useEffect de Home => getAllPosts ====");
+        if (!token || token === "null") navigate("/login");
+
         fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/all/0`, {
             method: "GET",
             headers: {
@@ -26,11 +27,10 @@ const Home = () => {
                 if (response.status === 401) {
                     localStorage.setItem("token", null);
                     console.error("Non autorisé.");
-                    navigate("/login");
+                    // navigate("/login");
                 } else return response.json();
             })
             .then((data) => {
-                console.log("HOME / data : ", data);
                 if (data.results.length === 0) {
                     return <p>Aucun message à afficher.</p>;
                 } else {

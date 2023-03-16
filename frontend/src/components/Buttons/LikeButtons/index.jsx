@@ -7,6 +7,7 @@ import {
     ThumbDownAltOutlined,
     ThumbDown,
 } from "@mui/icons-material";
+import PropTypes from "prop-types";
 
 const LikeButtons = ({
     token,
@@ -15,6 +16,14 @@ const LikeButtons = ({
     dislikes,
     currentUserLikeValue,
 }) => {
+    LikeButtons.propTypes = {
+        token: PropTypes.string,
+        postId: PropTypes.number,
+        likes: PropTypes.number,
+        dislikes: PropTypes.number,
+        currentUserLikeValue: PropTypes.number,
+    };
+
     const [likesCount, setLikesCount] = useState(likes);
     const [dislikesCount, setDislikesCount] = useState(dislikes);
     const [likeStatus, setLikeStatus] = useState(currentUserLikeValue);

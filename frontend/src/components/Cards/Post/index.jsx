@@ -15,8 +15,15 @@ import {
     Button,
     Typography,
 } from "@mui/material";
+import PropTypes from "prop-types";
 
 const Post = ({ postData, userData, setHasNewPosts }) => {
+    Post.propTypes = {
+        postData: PropTypes.object,
+        userData: PropTypes.object,
+        setHasNewPosts: PropTypes.func,
+    };
+
     const token = userData.token;
     const postId = postData.id;
 

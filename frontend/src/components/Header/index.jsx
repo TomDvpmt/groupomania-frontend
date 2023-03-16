@@ -1,11 +1,16 @@
 import logo from "../../assets/brand/icon-left-font.svg";
-import { Link as RouterLink } from "react-router-dom";
-import { Container } from "@mui/material";
+import { Link } from "react-router-dom";
 
 import { Box, Toolbar, Button } from "@mui/material";
 import { myTheme } from "../../utils/theme";
 
+import PropTypes from "prop-types";
+
 const Header = ({ nav }) => {
+    Header.propTypes = {
+        nav: PropTypes.bool,
+    };
+
     const handleClick = () => {
         localStorage.setItem("token", null);
     };
@@ -25,7 +30,7 @@ const Header = ({ nav }) => {
                 >
                     <Box flexGrow="1" maxWidth={myTheme.maxWidth.desktop}>
                         <Button
-                            component={RouterLink}
+                            component={Link}
                             to="/login"
                             onClick={handleClick}
                             sx={{ paddingLeft: 2 }}

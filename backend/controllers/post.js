@@ -188,7 +188,30 @@ exports.updatePost = (req, res, next) => {
 
     connectToDb("updatePost")
     .then(connection => {
-        if(req.file) {
+        if(req.body.deleteImg) {
+            connection.execute(
+                `UPDATE posts
+                SET 
+                    content = ?,
+                    img_url = "",
+                    modified = 1
+                WHERE id = ?`, 
+                [content, postId])
+                .then(() => {
+                    close(connection);
+                    const formerFileName = prevImgUrl.split("/images/")[1];
+                    prevImgUrl !== "" && fs.unlink(`images/${formerFileName}`, (error) => {
+                        if(error) handleError(res, "Chargement du fichier impossible.", 400, error);
+                    })
+                    console.log("Image supprimée.")
+                    res.status(200).json({message: "Image supprimée."})
+                })
+                .catch(error => {
+                    close(connection);
+                    handleError(res, "Impossible de supprimer l'image.", 400, error)
+                })
+        }
+        else if(req.file) {
             const newImgUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
             connection.execute(
                 `UPDATE posts

@@ -5,6 +5,9 @@ import { fetchCredentials } from "../../utils/utils";
 import { Container, Box, TextField, Typography, Link } from "@mui/material";
 import { myTheme } from "../../utils/theme";
 import SubmitButton from "../../components/Buttons/SubmitButton";
+import EmailField from "../../components/FormFields/EmailField";
+import PasswordField from "../../components/FormFields/PasswordField";
+import PasswordCheckField from "../../components/FormFields/PasswordCheckField";
 import ErrorMessage from "../../components/ErrorMessage";
 
 const SignUp = () => {
@@ -14,18 +17,6 @@ const SignUp = () => {
     const [errorMessage, setErrorMessage] = useState("");
 
     const navigate = useNavigate();
-
-    const handleChange = (e) => {
-        if (e.target.name === "email") {
-            setEmail(e.target.value);
-        }
-        if (e.target.name === "password") {
-            setPassword(e.target.value);
-        }
-        if (e.target.name === "passwordConfirm") {
-            setPasswordConfirm(e.target.value);
-        }
-    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -69,44 +60,22 @@ const SignUp = () => {
                     }}
                     noValidate
                 >
-                    <TextField
-                        type="email"
-                        name="email"
-                        label="Votre adresse e-mail"
-                        value={email}
-                        onChange={handleChange}
-                        required
-                        fullWidth
-                        margin="normal"
-                        autoFocus
+                    <EmailField email={email} setEmail={setEmail} />
+                    <PasswordField
+                        password={password}
+                        setPassword={setPassword}
                     />
-                    <TextField
-                        type="password"
-                        name="password"
-                        label="Votre mot de passe"
-                        value={password}
-                        onChange={handleChange}
-                        required
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        type="password"
-                        name="passwordConfirm"
-                        label="Confirmez votre mot de passe"
-                        value={passwordConfirm}
-                        onChange={handleChange}
-                        required
-                        fullWidth
-                        margin="normal"
+                    <PasswordCheckField
+                        passwordConfirm={passwordConfirm}
+                        setPasswordConfirm={setPasswordConfirm}
                     />
                     <SubmitButton text="S'enregistrer" />
-                    {errorMessage && (
-                        <ErrorMessage errorMessage={errorMessage} />
-                    )}
                     <Link component={RouterLink} to="/login" variant="body2">
                         Déjà un compte ? S'identifier
                     </Link>
+                    {errorMessage && (
+                        <ErrorMessage errorMessage={errorMessage} />
+                    )}
                 </Box>
             </Box>
         </Container>

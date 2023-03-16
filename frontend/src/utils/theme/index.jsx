@@ -18,11 +18,6 @@ export const myTheme = createTheme({
     typography: {
         fontFamily: "Lato, Helvetica Neue, Arial, sans-serif",
     },
-    form: {
-        margin: "1rem",
-        display: "flex",
-        flexDirection: "column",
-    },
     components: {
         MuiCssBaseline: {
             styleOverrides: {
@@ -39,7 +34,14 @@ export const myTheme = createTheme({
             },
         },
     },
+
+    // Custom properties
     maxWidth: {
         desktop: 800,
+    },
+    form: {
+        margin: "1rem",
+        display: "flex",
+        flexDirection: "column",
     },
 });

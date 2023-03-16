@@ -1,6 +1,11 @@
 import { Button } from "@mui/material";
+import PropTypes from "prop-types";
 
 const SubmitButton = ({ text }) => {
+    SubmitButton.propTypes = {
+        text: PropTypes.string,
+    };
+
     return (
         <Button
             type="submit"

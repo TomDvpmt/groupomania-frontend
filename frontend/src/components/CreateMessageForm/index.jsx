@@ -3,8 +3,16 @@ import ErrorMessage from "../ErrorMessage";
 import { imgMimeTypes, sanitize } from "../../utils/utils";
 import { Box, TextField, Button, Typography } from "@mui/material";
 import { myTheme } from "../../utils/theme";
+import PropTypes from "prop-types";
 
 const CreateMessageForm = ({ isReply, token, parentId, setHasNewMessages }) => {
+    CreateMessageForm.propTypes = {
+        isReply: PropTypes.bool,
+        token: PropTypes.string,
+        parentId: PropTypes.number,
+        setHasNewMessages: PropTypes.func,
+    };
+
     const [errorMessage, setErrorMessage] = useState("");
     const [content, setContent] = useState("");
     const [chosenFile, setChosenFile] = useState("");

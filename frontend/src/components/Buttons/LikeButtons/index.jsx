@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ErrorMessage from "../../ErrorMessage";
-import { Stack, Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import {
     ThumbUpAltOutlined,
     ThumbUp,
@@ -42,7 +42,6 @@ const LikeButtons = ({
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log("data reçues dans les buttons : ", data);
                 setLikeStatus(data.newUserLikeValue);
                 setLikesCount(data.newLikesCount);
                 setDislikesCount(data.newDislikesCount);
@@ -63,16 +62,28 @@ const LikeButtons = ({
 
     return (
         <>
-            <Stack direction="row">
+            <Box
+                sx={{
+                    padding: 1,
+                    display: "flex",
+                    gap: 1,
+                }}
+            >
                 <Button
                     variant="text"
                     onClick={handleLike}
                     sx={{
                         display: "flex",
-                        gap: 1,
+                        gap: 0.5,
+                        padding: 0,
+                        minWidth: "2.5rem",
                     }}
                 >
-                    {likeStatus === 1 ? <ThumbUp /> : <ThumbUpAltOutlined />}
+                    {likeStatus === 1 ? (
+                        <ThumbUp fontSize="small" />
+                    ) : (
+                        <ThumbUpAltOutlined fontSize="small" />
+                    )}
                     {likesCount}
                 </Button>
                 <Button
@@ -80,17 +91,19 @@ const LikeButtons = ({
                     onClick={handleDislike}
                     sx={{
                         display: "flex",
-                        gap: 1,
+                        gap: 0.5,
+                        padding: 0,
+                        minWidth: "2.5rem",
                     }}
                 >
                     {likeStatus === -1 ? (
-                        <ThumbDown />
+                        <ThumbDown fontSize="small" />
                     ) : (
-                        <ThumbDownAltOutlined />
+                        <ThumbDownAltOutlined fontSize="small" />
                     )}
                     {dislikesCount}
                 </Button>
-            </Stack>
+            </Box>
             {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
         </>
     );

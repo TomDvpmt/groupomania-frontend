@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { formatDate, deletePost } from "../../../utils/utils";
+import { formatDate } from "../../../utils/utils";
 import UpdateForm from "../../UpdateForm";
 import LikeButtons from "../../Buttons/LikeButtons";
+import UpdateDeleteButtons from "../../Buttons/UpdateDeleteButtons";
 import ErrorMessage from "../../ErrorMessage";
 import {
     Card,
@@ -9,8 +10,6 @@ import {
     CardActions,
     CardContent,
     CardMedia,
-    Button,
-    Stack,
     Typography,
 } from "@mui/material";
 import PropTypes from "prop-types";
@@ -27,29 +26,17 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
     const formatedDate = formatDate(commentData.date);
     const [commentContent, setCommentContent] = useState(commentData.content);
 
+    const canModify =
+        userData.admin || commentData.authorId === userData.loggedUserId;
     const token = userData.token;
+    const imgUrl = commentData.imgUrl;
 
     const [showCommentUpdateForm, setShowCommentUpdateForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-    const handleUpdate = () => {
-        setShowCommentUpdateForm(
-            (showCommentUpdateForm) => !showCommentUpdateForm
-        );
-    };
-
-    const handleDelete = () => {
-        deletePost(
-            token,
-            commentId,
-            commentData.imgUrl,
-            setHasNewComments,
-            setErrorMessage
-        );
-    };
-
     return (
         <Card
+            component="article"
             sx={{
                 backgroundColor: "#F5F5F5",
             }}
@@ -60,6 +47,7 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                     title={commentData.email}
                     titleTypographyProps={{
                         fontSize: "1rem",
+                        component: "h4",
                         variant: "h6",
                         fontWeight: "bold",
                     }}
@@ -69,7 +57,39 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                     subheaderTypographyProps={{
                         fontSize: ".8rem",
                     }}
-                    action={
+                    // action={
+                    //     <LikeButtons
+                    //         token={token}
+                    //         postId={commentId}
+                    //         likes={commentData.likes}
+                    //         dislikes={commentData.dislikes}
+                    //         currentUserLikeValue={userData.currentUserLikeValue}
+                    //     />
+                    // }
+                />
+                <CardContent>
+                    <Typography paragraph fontSize=".9rem">
+                        {commentContent}
+                    </Typography>
+                </CardContent>
+                {imgUrl && (
+                    <CardMedia
+                        image={imgUrl}
+                        component="img"
+                        alt="Illustration du commentaire"
+                    />
+                )}
+                {canModify && (
+                    <LikeButtons
+                        token={token}
+                        postId={commentId}
+                        likes={commentData.likes}
+                        dislikes={commentData.dislikes}
+                        currentUserLikeValue={userData.currentUserLikeValue}
+                    />
+                )}
+                <CardActions>
+                    {!canModify && (
                         <LikeButtons
                             token={token}
                             postId={commentId}
@@ -77,29 +97,19 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                             dislikes={commentData.dislikes}
                             currentUserLikeValue={userData.currentUserLikeValue}
                         />
-                    }
-                />
-                <CardContent>
-                    <Typography paragraph fontSize=".9rem">
-                        {commentContent}
-                    </Typography>
-                </CardContent>
-                {commentData.imgUrl && (
-                    <CardMedia component="img" image={commentData.imgUrl} />
-                )}
-                {userData.admin === true ||
-                commentData.authorId === userData.loggedUserId ? (
-                    <CardActions>
-                        <Stack direction="row" spacing={1}>
-                            <Button variant="outlined" onClick={handleUpdate}>
-                                Modifier
-                            </Button>
-                            <Button variant="outlined" onClick={handleDelete}>
-                                Supprimer
-                            </Button>
-                        </Stack>
-                    </CardActions>
-                ) : null}
+                    )}
+                    {canModify && (
+                        <UpdateDeleteButtons
+                            token={token}
+                            messageId={commentId}
+                            imgUrl={imgUrl}
+                            setHasNewMessages={setHasNewComments}
+                            setShowMessageUpdateForm={setShowCommentUpdateForm}
+                            setErrorMessage={setErrorMessage}
+                        />
+                    )}
+                </CardActions>
+
                 {showCommentUpdateForm && (
                     <UpdateForm
                         token={token}
@@ -107,7 +117,7 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                         parentId={parentId}
                         prevContent={commentContent}
                         setMessageContent={setCommentContent}
-                        imgUrl={commentData.imgUrl}
+                        imgUrl={imgUrl}
                         setShowUpdateForm={setShowCommentUpdateForm}
                         setHasNewMessages={setHasNewComments}
                     />

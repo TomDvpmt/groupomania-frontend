@@ -70,7 +70,7 @@ exports.formatDate = (timestamp) => {
  * @param {String} token
  * @param {Number} postId
  * @param {String} imgUrl
- * @param {import("react").SetStateAction} setHasNewPosts
+ * @param {import("react").SetStateAction} setHasNewMessages
  * @param {import("react").SetStateAction} setErrorMessage
  * @returns {Response}
  */
@@ -79,7 +79,7 @@ exports.deletePost = (
     token,
     postId,
     imgUrl,
-    setHasNewPosts,
+    setHasNewMessages,
     setErrorMessage
 ) => {
     if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce message ?")) {
@@ -99,7 +99,7 @@ exports.deletePost = (
                         .json()
                         .then(({ message }) => setErrorMessage(message));
                 } else {
-                    setHasNewPosts((hasNewPosts) => hasNewPosts + 1);
+                    setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
                 }
             })
             .catch(() =>
@@ -179,41 +179,3 @@ exports.setUserLikeStatus = (token, postId, setLikeStatus) => {
         .then((data) => setLikeStatus(data))
         .catch((error) => console.log(error));
 };
-
-// /**
-//  *
-//  * @param {String} token
-//  * @param {Number} postId
-//  * @param {import("react").SetStateAction} setLikesCount
-//  * @param {import("react").SetStateAction} setDislikesCount
-//  * @param {import("react").SetStateAction} setErrorMessage
-//  */
-
-// exports.setPostLikes = (
-//     token,
-//     postId,
-//     setLikesCount,
-//     setDislikesCount,
-//     setErrorMessage
-// ) => {
-//     fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}/likes`, {
-//         method: "GET",
-//         headers: {
-//             Authorization: `BEARER ${token}`,
-//         },
-//     })
-//         .then((response) => {
-//             if (response.status >= 400) {
-//                 response.json().then(({ message }) => setErrorMessage(message));
-//             } else return response.json();
-//         })
-//         .then((data) => {
-//             setLikesCount(data.likesCount === null ? 0 : data.likesCount);
-//             setDislikesCount(
-//                 data.dislikesCount === null ? 0 : data.dislikesCount
-//             );
-//         })
-//         .catch((error) =>
-//             setErrorMessage("Impossible d'afficher les likes / dislikes.")
-//         );
-// };

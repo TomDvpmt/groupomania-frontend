@@ -92,8 +92,8 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
                 />
             )}
             {comments.length > 0 && (
-                <Box padding="2rem 2rem 2rem 6rem">
-                    <Typography component="h2" variant="h5" gutterBottom>
+                <Box padding={1}>
+                    <Typography component="h3" variant="h5" mt={3} mb={2}>
                         {commentsNumber} commentaire
                         {commentsNumber > 1 ? "s" : ""} :{" "}
                     </Typography>

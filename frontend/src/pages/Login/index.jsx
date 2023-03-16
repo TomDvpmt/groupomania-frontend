@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { fetchCredentials } from "../../utils/utils";
 import { Link, Box, Typography, Container } from "@mui/material";
@@ -44,12 +44,7 @@ const Login = () => {
                 <Typography variant="h4" component="h1" mt={4}>
                     Connexion
                 </Typography>
-                <Box
-                    component="form"
-                    noValidate
-                    sx={{ mt: 2 }}
-                    onSubmit={handleSubmit}
-                >
+                <Box component="form" noValidate mt={2} onSubmit={handleSubmit}>
                     <EmailField email={email} setEmail={setEmail} />
                     <PasswordField
                         password={password}

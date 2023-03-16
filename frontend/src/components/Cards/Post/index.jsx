@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import Comments from "../../Comments";
 import UpdateForm from "../../UpdateForm";
 import LikeButtons from "../../Buttons/LikeButtons";
+import UpdateDeleteButtons from "../../Buttons/UpdateDeleteButtons";
 import ErrorMessage from "../../ErrorMessage";
-import { formatDate, deletePost } from "../../../utils/utils";
+import { formatDate } from "../../../utils/utils";
 import {
     Box,
-    Stack,
     Card,
     CardHeader,
     CardActions,
@@ -25,28 +25,15 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
     };
 
     const token = userData.token;
+    const canModify =
+        userData.admin || postData.postAuthorId === userData.loggedUserId;
     const postId = postData.id;
-
-    const [postContent, setPostContent] = useState(postData.content);
     const formatedDate = formatDate(postData.date);
+    const [postContent, setPostContent] = useState(postData.content);
 
     const [showCommentForm, setShowCommentForm] = useState(false);
     const [showPostUpdateForm, setShowPostUpdateForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-
-    const handleUpdate = () => {
-        setShowPostUpdateForm((showPostUpdateForm) => !showPostUpdateForm);
-    };
-
-    const handleDelete = () => {
-        deletePost(
-            token,
-            postId,
-            postData.imgUrl,
-            setHasNewPosts,
-            setErrorMessage
-        );
-    };
 
     const handleReply = () => {
         setShowCommentForm((showCommentForm) => !showCommentForm);
@@ -57,54 +44,84 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
             <CardHeader
                 component="header"
                 title={postData.email}
-                titleTypographyProps={{ variant: "h6", fontWeight: "bold" }}
+                titleTypographyProps={{
+                    component: "h2",
+                    variant: "h6",
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                }}
                 subheader={`${formatedDate}${
                     postData.modified === 1 ? " (modifié)" : ""
                 }`}
-                action={
-                    <LikeButtons
-                        token={token}
-                        postId={postId}
-                        likes={postData.likes}
-                        dislikes={postData.dislikes}
-                        currentUserLikeValue={userData.currentUserLikeValue}
-                    />
-                }
+                subheaderTypographyProps={{
+                    fontSize: ".8rem",
+                }}
+                // action={
+                //     <LikeButtons
+                //         token={token}
+                //         postId={postId}
+                //         likes={postData.likes}
+                //         dislikes={postData.dislikes}
+                //         currentUserLikeValue={userData.currentUserLikeValue}
+                //     />
+                // }
+                sx={{
+                    padding: 1,
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                }}
             />
             <CardContent>
                 <Typography paragraph>{postContent}</Typography>
             </CardContent>
             {postData.imgUrl && (
-                <CardMedia image={postData.imgUrl} component="img" />
+                <CardMedia
+                    image={postData.imgUrl}
+                    component="img"
+                    alt="Illustration du message"
+                />
+            )}
+            {canModify && (
+                <LikeButtons
+                    token={token}
+                    postId={postId}
+                    likes={postData.likes}
+                    dislikes={postData.dislikes}
+                    currentUserLikeValue={userData.currentUserLikeValue}
+                />
             )}
             <CardActions>
                 <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="flex-end"
                     flexGrow="1"
+                    display="flex"
+                    justifyContent={canModify ? "center" : "space-between"}
+                    alignItems="center"
+                    gap={1}
                 >
-                    <Box>
-                        {(userData.admin ||
-                            postData.postAuthorId ===
-                                userData.loggedUserId) && (
-                            <Stack direction="row" spacing={1}>
-                                <Button
-                                    variant="outlined"
-                                    onClick={handleUpdate}
-                                >
-                                    Modifier
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    onClick={handleDelete}
-                                >
-                                    Supprimer
-                                </Button>
-                            </Stack>
-                        )}
-                    </Box>
-                    <Button variant="contained" onClick={handleReply}>
+                    {canModify && (
+                        <UpdateDeleteButtons
+                            token={token}
+                            messageId={postId}
+                            imgUrl={postData.imgUrl}
+                            setHasNewMessages={setHasNewPosts}
+                            setErrorMessage={setErrorMessage}
+                            setShowMessageUpdateForm={setShowPostUpdateForm}
+                        />
+                    )}
+                    {!canModify && (
+                        <LikeButtons
+                            token={token}
+                            postId={postId}
+                            likes={postData.likes}
+                            dislikes={postData.dislikes}
+                            currentUserLikeValue={userData.currentUserLikeValue}
+                        />
+                    )}
+                    <Button
+                        variant="contained"
+                        onClick={handleReply}
+                        size="small"
+                    >
                         Répondre
                     </Button>
                 </Box>

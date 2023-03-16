@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { fetchCredentials } from "../../utils/utils";
 
-import { Container, Box, TextField, Typography, Link } from "@mui/material";
+import { Container, Box, Typography, Link } from "@mui/material";
 import { myTheme } from "../../utils/theme";
 import SubmitButton from "../../components/Buttons/SubmitButton";
 import EmailField from "../../components/FormFields/EmailField";
@@ -49,7 +49,7 @@ const SignUp = () => {
     return (
         <Container component="main" maxWidth="xs">
             <Box sx={myTheme.form}>
-                <Typography component="h1" variant="h4">
+                <Typography component="h1" variant="h4" mt={4}>
                     Créer un compte
                 </Typography>
                 <Box

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Post from "../../components/Cards/Post";
 import CreateMessageForm from "../../components/CreateMessageForm";
+import PostNewMessageButton from "../../components/Buttons/PostNewMessageButton";
 import ErrorMessage from "../../components/ErrorMessage";
 import { Box, Typography } from "@mui/material";
 import { myTheme } from "../../utils/theme";
@@ -9,6 +10,7 @@ import { myTheme } from "../../utils/theme";
 const Home = () => {
     const [posts, setPosts] = useState([]);
     const [hasNewPosts, setHasNewPosts] = useState(0);
+    const [showNewPostForm, setShowNewPostForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
@@ -27,7 +29,7 @@ const Home = () => {
                 if (response.status === 401) {
                     localStorage.setItem("token", null);
                     console.error("Non autorisé.");
-                    // navigate("/login");
+                    navigate("/login");
                 } else return response.json();
             })
             .then((data) => {
@@ -73,30 +75,46 @@ const Home = () => {
             component="main"
             maxWidth={myTheme.maxWidth.desktop}
             margin="auto"
-            padding="2rem"
+            padding="2rem .5rem"
         >
             <Box
+                component="section"
                 sx={{
-                    marginTop: 8,
+                    marginTop: 4,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "stretch",
                 }}
             >
-                <Typography component="h2" variant="h4" gutterBottom>
-                    Poster un message :
-                </Typography>
-                <CreateMessageForm
-                    isReply={false}
-                    token={token}
-                    parentId={0}
-                    setHasNewMessages={setHasNewPosts}
+                {/* <Typography
+                    component="h2"
+                    variant="h4"
+                    gutterBottom
+                    textAlign="center"
+                >
+                    Poster un message
+                </Typography> */}
+                <PostNewMessageButton
+                    showNewPostForm={showNewPostForm}
+                    setShowNewPostForm={setShowNewPostForm}
                 />
+                {showNewPostForm && (
+                    <CreateMessageForm
+                        isReply={false}
+                        token={token}
+                        parentId={0}
+                        setHasNewMessages={setHasNewPosts}
+                    />
+                )}
             </Box>
             <Box
+                component="section"
                 sx={{
                     marginTop: 8,
                 }}
             >
-                <Typography component="h2" variant="h4" mb={4}>
-                    Messages :
+                <Typography component="h1" variant="h4" mb={4}>
+                    Messages
                 </Typography>
                 {posts}
                 {errorMessage && <ErrorMessage errorMessage={errorMessage} />}

@@ -1,26 +1,61 @@
-import logo from "../../assets/brand/icon-left-font.svg";
+import logo from "../../assets/brand/icon-left-font-cropped.png";
 import { Link } from "react-router-dom";
 
-import { Box, Toolbar, Button } from "@mui/material";
+import { Box, Toolbar, Button, Typography } from "@mui/material";
 import { myTheme } from "../../utils/theme";
 
 import PropTypes from "prop-types";
 
-const Header = ({ nav }) => {
+const Header = ({ hasToken }) => {
     Header.propTypes = {
-        nav: PropTypes.bool,
+        hasToken: PropTypes.bool,
     };
 
-    const handleClick = () => {
+    const handleLogOut = () => {
         localStorage.setItem("token", null);
     };
 
     return (
         <Box component="header" bgcolor="white">
-            <Box sx={{ maxWidth: "300px", margin: "auto" }}>
-                <img src={logo} alt="Groupomania logo" />
+            <Box
+                sx={{
+                    maxWidth: "300px",
+                    margin: "auto",
+                    padding: "4rem 2rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "2rem",
+                }}
+            >
+                <Box
+                    component="img"
+                    src={logo}
+                    alt="Groupomania logo"
+                    sx={{
+                        maxWidth: "300px",
+                    }}
+                />
+                {hasToken && (
+                    <>
+                        <Typography
+                            component="h1"
+                            variant="h2"
+                            sx={{
+                                fontSize: "2rem",
+                                textTransform: "uppercase",
+                                color: myTheme.palette.primary.main,
+                            }}
+                        >
+                            Intranet
+                        </Typography>
+                        <Typography variant="h6" textAlign="center">
+                            Restez en communication avec vos collègues
+                        </Typography>
+                    </>
+                )}
             </Box>
-            {nav && (
+            {hasToken && (
                 <Toolbar
                     component="nav"
                     sx={{
@@ -32,7 +67,7 @@ const Header = ({ nav }) => {
                         <Button
                             component={Link}
                             to="/login"
-                            onClick={handleClick}
+                            onClick={handleLogOut}
                             sx={{ paddingLeft: 2 }}
                         >
                             Déconnexion

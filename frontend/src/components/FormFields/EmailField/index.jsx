@@ -13,8 +13,8 @@ const EmailField = ({ email, setEmail }) => {
 
     return (
         <TextField
-            margin="normal"
             required
+            margin="normal"
             fullWidth
             autoFocus
             id="email"

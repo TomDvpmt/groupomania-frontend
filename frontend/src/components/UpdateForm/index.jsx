@@ -41,33 +41,41 @@ const UpdateForm = ({
     };
 
     const handleFileDelete = () => {
-        const content = updateContent;
-        const formData = new FormData();
+        if (
+            !window.confirm("Êtes-vous sûr de vouloir supprimer cette image ?")
+        ) {
+            return;
+        } else {
+            const content = updateContent;
+            const formData = new FormData();
 
-        formData.append("content", content);
-        formData.append("imgUrl", imgUrl);
-        formData.append("deleteImg", true);
+            formData.append("content", content);
+            formData.append("imgUrl", imgUrl);
+            formData.append("deleteImg", true);
 
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}`, {
-            method: "PUT",
-            headers: {
-                Authorization: `BEARER ${token}`,
-            },
-            body: formData,
-        })
-            .then((response) => {
-                if (response.status >= 400) {
-                    response
-                        .json()
-                        .then(({ message }) => setErrorMessage(message));
-                } else {
-                    setShowUpdateForm(false);
-                    setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
-                }
+            fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}`, {
+                method: "PUT",
+                headers: {
+                    Authorization: `BEARER ${token}`,
+                },
+                body: formData,
             })
-            .catch((error) => {
-                console.log("Impossible de modifier le message : ", error);
-            });
+                .then((response) => {
+                    if (response.status >= 400) {
+                        response
+                            .json()
+                            .then(({ message }) => setErrorMessage(message));
+                    } else {
+                        setShowUpdateForm(false);
+                        setHasNewMessages(
+                            (hasNewMessages) => hasNewMessages + 1
+                        );
+                    }
+                })
+                .catch((error) => {
+                    console.log("Impossible de modifier le message : ", error);
+                });
+        }
     };
 
     const handleSubmit = (e) => {

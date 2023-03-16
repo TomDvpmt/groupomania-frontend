@@ -40,7 +40,7 @@ export const myTheme = createTheme({
         desktop: 800,
     },
     form: {
-        margin: "1rem",
+        margin: "1rem .5rem",
         display: "flex",
         flexDirection: "column",
     },

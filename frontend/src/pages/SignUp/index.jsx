@@ -3,14 +3,18 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { fetchCredentials } from "../../utils/utils";
 
 import { Container, Box, Typography, Link } from "@mui/material";
-import { myTheme } from "../../utils/theme";
-import SubmitButton from "../../components/Buttons/SubmitButton";
+import { theme } from "../../utils/theme";
+import FirstNameField from "../../components/FormFields/FirstNameField";
+import LastNameField from "../../components/FormFields/LastNameField";
 import EmailField from "../../components/FormFields/EmailField";
 import PasswordField from "../../components/FormFields/PasswordField";
 import PasswordCheckField from "../../components/FormFields/PasswordCheckField";
+import SubmitButton from "../../components/Buttons/SubmitButton";
 import ErrorMessage from "../../components/ErrorMessage";
 
 const SignUp = () => {
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
@@ -23,6 +27,8 @@ const SignUp = () => {
 
         if (password === passwordConfirm) {
             const signUpData = {
+                firstName: firstName,
+                lastName: lastName,
                 email: email,
                 password: password,
             };
@@ -48,7 +54,7 @@ const SignUp = () => {
 
     return (
         <Container component="main" maxWidth="xs">
-            <Box sx={myTheme.form}>
+            <Box sx={theme.form}>
                 <Typography component="h1" variant="h4" mt={4}>
                     Créer un compte
                 </Typography>
@@ -60,7 +66,19 @@ const SignUp = () => {
                     }}
                     noValidate
                 >
-                    <EmailField email={email} setEmail={setEmail} />
+                    <FirstNameField
+                        firstName={firstName}
+                        setFirstName={setFirstName}
+                    />
+                    <LastNameField
+                        lastName={lastName}
+                        setLastName={setLastName}
+                    />
+                    <EmailField
+                        email={email}
+                        setEmail={setEmail}
+                        autoFocus={false}
+                    />
                     <PasswordField
                         password={password}
                         setPassword={setPassword}

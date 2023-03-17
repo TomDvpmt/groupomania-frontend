@@ -30,7 +30,10 @@ exports.getAllPosts = (req, res, next) => {
         SELECT 
             id, 
             parent_id,
-            author_id, 
+            author_id,
+            first_name,
+            last_name,
+            admin, 
             email, 
             content, 
             img_url, 
@@ -45,6 +48,9 @@ exports.getAllPosts = (req, res, next) => {
                 posts.parent_id,
                 posts.author_id, 
                 users.email,
+                users.first_name,
+                users.last_name,
+                users.admin,
                 posts.content, 
                 posts.img_url, 
                 posts.created_at,
@@ -83,7 +89,10 @@ exports.getAllPosts = (req, res, next) => {
                     {
                         id: rows[i].id,
                         parentId: rows[0].parent_id,
-                        postAuthorId: rows[i].author_id,
+                        authorId: rows[i].author_id,
+                        firstName: rows[i].first_name,
+                        lastName: rows[i].last_name,
+                        admin: rows[i].admin,
                         email: rows[i].email,
                         content: rows[i].content,
                         imgUrl: rows[i].img_url,
@@ -114,34 +123,34 @@ exports.getAllPosts = (req, res, next) => {
     })
 };
 
-exports.getOnePost = (req, res, next) => {
-    const postId = req.params.id;
+// exports.getOnePost = (req, res, next) => {
+//     const postId = req.params.id;
 
-    connectToDb("getOnePost")
-    .then(connection => {
-        connection.execute(`
-            SELECT content, img_url, modified
-            FROM posts
-            WHERE id = ?
-        `, [postId])
-        .then(([rows]) => {
-            res.status(200).json({
-                content: rows[0].content,
-                imgUrl: rows[0].img_url,
-                modified: rows[0].modified
-            });
-            close(connection);
-        })
-        .catch(error => {
-            close(connection);
-            handleError(res, "Impossible de récupérer les données du message.", 400, error)
-        }
-        )
-    })
-    .catch(error => {
-        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
-    })
-};
+//     connectToDb("getOnePost")
+//     .then(connection => {
+//         connection.execute(`
+//             SELECT content, img_url, modified
+//             FROM posts
+//             WHERE id = ?
+//         `, [postId])
+//         .then(([rows]) => {
+//             res.status(200).json({
+//                 content: rows[0].content,
+//                 imgUrl: rows[0].img_url,
+//                 modified: rows[0].modified
+//             });
+//             close(connection);
+//         })
+//         .catch(error => {
+//             close(connection);
+//             handleError(res, "Impossible de récupérer les données du message.", 400, error)
+//         }
+//         )
+//     })
+//     .catch(error => {
+//         handleError(res, "Impossible de se connecter à la base de données.", 500, error);
+//     })
+// };
 
 exports.createPost = (req, res, next) => {
 
@@ -303,7 +312,6 @@ exports.likePost = (req, res, next) => {
                 )
                 .then(([rows]) => {
                     if (rows.length === 0) {
-                        console.log("CAS : rows.length === 0")
                         connection
                             .execute(
                                 `
@@ -338,7 +346,6 @@ exports.likePost = (req, res, next) => {
                                     `, [postId]
                                 )
                                 .then(([rows]) => {
-                                    console.log("rows : ", rows)
                                     const newLikesCount = rows[0].likes_count === null ? 0 : rows[0].likes_count;
                                     const newDislikesCount = rows[0].dislikes_count === null ? 0 : rows[0].dislikes_count;
                                     const dataToSend = {
@@ -346,7 +353,6 @@ exports.likePost = (req, res, next) => {
                                         newDislikesCount: newDislikesCount,
                                         newUserLikeValue: clickValue,
                                     }
-                                    console.log("dataToSend : ", dataToSend);
                                     close(connection);
                                     res.status(201).json(dataToSend);
                                 })
@@ -365,8 +371,6 @@ exports.likePost = (req, res, next) => {
                                 );
                             });
                     } else {
-                        console.log("CAS : rows.length > 0")
-                        console.log("userId : ", userId, "postId : ", postId)
                         connection.execute(
                             `
                             SELECT 
@@ -399,7 +403,6 @@ exports.likePost = (req, res, next) => {
                             `, [userId, postId]
                         )
                         .then(([rows]) => {
-                            console.log("rows : ", rows)
                             const prevLikeValue = rows[0].current_user_like_value;
                             const prevLikesCount = rows[0].likes_count;
                             const prevDislikesCount = rows[0].dislikes_count;
@@ -407,10 +410,6 @@ exports.likePost = (req, res, next) => {
                             let newLikeValue = 0;
                             let likesCount = prevLikesCount === null ? 0 : prevLikesCount;
                             let dislikesCount = prevDislikesCount === null ? 0 : prevDislikesCount;
-
-                            console.log("prevLikeValue : ", prevLikeValue);
-                            console.log("likesCount : ", likesCount);
-                            console.log("dislikesCount : ", dislikesCount);
 
                             if(prevLikeValue === 0) {
                                 newLikeValue = clickValue;
@@ -433,8 +432,6 @@ exports.likePost = (req, res, next) => {
                                 dislikesCount = dislikesCount - 1;
                             }
 
-                            console.log("newLikeValue :", newLikeValue, "newLikesCount : ", likesCount, "newDislikesCount : ", dislikesCount)
-
                             if(newLikeValue === 0 ) {
                                 connection.execute(`
                                     DELETE FROM likes
@@ -447,7 +444,6 @@ exports.likePost = (req, res, next) => {
                                         newDislikesCount: dislikesCount,
                                         newUserLikeValue: 0,
                                     }
-                                    console.log("dataToSend after delete : ", dataToSend);
                                     close(connection);
                                     res.status(200).json(dataToSend);
                                 })

@@ -7,6 +7,11 @@ const close = (connection) => {
     console.log("========= Déconnexion de la base de données. =============");
 };
 
+const handleError = (res, message, status, error) => {
+    console.log(message, error);
+    res.status(status).json({message: message});
+}
+
 const logAfterSignUp = (connection, email, res) => {
     connection.execute(`
         SELECT id, admin
@@ -35,13 +40,15 @@ exports.signUp = async (req, res, next) => {
     connectToDb()
         .then(connection => {
 
+            const firstName = req.body.firstName;
+            const lastName = req.body.lastName;
             const email = req.body.email;
-
+            
             connection.execute(`
-                INSERT INTO users (email, passwordHash)
-                VALUES (?, ?)
+                INSERT INTO users (first_name, last_name, email, password_hash)
+                VALUES (?, ?, ?, ?)
             `,
-            [email, hash]
+            [firstName, lastName, email, hash]
             )
                 .then(() => {
                     logAfterSignUp(connection, email, res);                   
@@ -75,14 +82,14 @@ exports.login = (req, res, next) => {
 
                     if(count === 1) {
                         connection.execute(`
-                            SELECT id, passwordHash, admin
+                            SELECT id, password_hash, admin
                             FROM users
                             WHERE email = ?
                         `, [email])
                             .then(([rows]) => {
                                 const userId = rows[0].id;
                                 const admin = rows[0].admin;
-                                const passwordHash = rows[0].passwordHash;
+                                const passwordHash = rows[0].password_hash;
                                 bcrypt.compare(password, passwordHash)
                                 .then(isValidPassword => {
                                     if(!isValidPassword) {
@@ -115,3 +122,71 @@ exports.login = (req, res, next) => {
         })
         .catch(error => console.error("=========== Impossible de se connecter à la base de données :", error))
 };
+
+exports.getOneUser = (req, res, next) => {
+    const paramUserId = parseInt(req.params.userId);
+    const userId = req.auth.userId;
+    const modifiable = req.auth.admin || paramUserId === userId;
+    
+        connectToDb("getOneUser")
+        .then(connection => {
+            connection.execute(`
+                SELECT id, first_name, last_name, email
+                FROM users
+                WHERE id = ?
+            `, [paramUserId])
+            .then(([rows]) => {
+                close(connection);
+                res.status(200).json({
+                    firstName: rows[0].first_name,
+                    lastName: rows[0].last_name,
+                    email: rows[0].email,
+                    modifiable: modifiable
+                });
+            })
+            .catch(error => {
+                close(connection);
+                handleError(res, "Impossible de récupérer les données de l'utilisateur.", 400, error)
+            })
+        })
+        .catch(error => {
+            handleError(res, "Impossible de se connecter à la base de données.", 500, error)
+        })
+}
+
+exports.updateUser = (req, res, next) => {
+    const paramUserId = parseInt(req.params.userId);
+    const userId = req.auth.userId;
+    const firstName = req.body.firstName ? req.body.firstName : null;
+    const lastName = req.body.lastName ? req.body.lastName : null;
+    const email = req.body.email;
+    console.log("firstName : ", firstName);
+
+    // const {firstName, lastName, email} = {...req.body};
+
+    if(!req.auth.admin && paramUserId !== userId) {
+        res.status(401).json({message: "Non autorisé"});
+    } else {
+        connectToDb("updateUser")
+        .then(connection => 
+            connection.execute(`
+                UPDATE users
+                SET first_name = ?, last_name = ?, email = ?
+                WHERE id = ?
+            `, [firstName, lastName, email, paramUserId])
+            .then(() => {
+                close(connection);
+                res.status(200).json({firstName, lastName, email});
+            })
+            .catch(error => {
+                close(connection);
+                handleError(res, "Impossible de mettre à jour l'utilisateur.", 400, error)
+            }))
+        .catch(error => {
+            console.log(error);
+            handleError(res, "Impossible de se connecter à la base de données.", 500, error)
+        })
+
+
+    }
+}

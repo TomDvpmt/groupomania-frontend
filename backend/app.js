@@ -3,7 +3,6 @@ const express = require("express");
 const app = express();
 const userRoutes = require("./routes/user");
 const postRoutes = require("./routes/post");
-// const commentRoutes = require("./routes/comment");
 const path = require("path");
 const dbSetUp = require("./database/db-setup-mysql");
 
@@ -27,7 +26,6 @@ app.use((req, res, next) => {
 
 app.use("/API/auth", userRoutes);
 app.use("/API/posts", postRoutes);
-// app.use("/API/comments", commentRoutes);
 app.use("/images", express.static(path.join(__dirname, "images")));
 
 module.exports = app;

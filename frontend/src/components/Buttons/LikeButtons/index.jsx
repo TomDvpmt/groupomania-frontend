@@ -80,7 +80,7 @@ const LikeButtons = ({
                     }}
                 >
                     {likeStatus === 1 ? (
-                        <ThumbUp fontSize="small" />
+                        <ThumbUp />
                     ) : (
                         <ThumbUpAltOutlined fontSize="small" />
                     )}
@@ -97,7 +97,7 @@ const LikeButtons = ({
                     }}
                 >
                     {likeStatus === -1 ? (
-                        <ThumbDown fontSize="small" />
+                        <ThumbDown />
                     ) : (
                         <ThumbDownAltOutlined fontSize="small" />
                     )}

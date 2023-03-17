@@ -82,30 +82,69 @@ exports.deletePost = (
     setHasNewMessages,
     setErrorMessage
 ) => {
-    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce message ?")) {
-        return;
-    } else {
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `BEARER ${token}`,
-                "Content-type": "application/json",
-            },
-            body: JSON.stringify({ imgUrl: imgUrl }),
+    fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `BEARER ${token}`,
+            "Content-type": "application/json",
+        },
+        body: JSON.stringify({ imgUrl: imgUrl }),
+    })
+        .then((response) => {
+            if (response.status >= 400) {
+                response.json().then(({ message }) => setErrorMessage(message));
+            } else {
+                setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
+            }
         })
-            .then((response) => {
-                if (response.status >= 400) {
-                    response
-                        .json()
-                        .then(({ message }) => setErrorMessage(message));
-                } else {
-                    setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
-                }
-            })
-            .catch(() =>
-                setErrorMessage("Impossible de supprimer le message.")
-            );
-    }
+        .catch(() => setErrorMessage("Impossible de supprimer le message."));
+};
+
+/**
+ *
+ * @param {String} updateContent
+ * @param {String} imgUrl
+ * @param {Number} postId
+ * @param {String} token
+ * @param {import("react").SetStateAction} setShowUpdateForm
+ * @param {import("react").SetStateAction} setHasNewMessages
+ * @param {import("react").SetStateAction} setErrorMessage
+ */
+
+exports.deleteImage = (
+    updateContent,
+    imgUrl,
+    postId,
+    token,
+    setShowUpdateForm,
+    setHasNewMessages,
+    setErrorMessage
+) => {
+    const content = updateContent;
+    const formData = new FormData();
+
+    formData.append("content", content);
+    formData.append("imgUrl", imgUrl);
+    formData.append("deleteImg", true);
+
+    fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}`, {
+        method: "PUT",
+        headers: {
+            Authorization: `BEARER ${token}`,
+        },
+        body: formData,
+    })
+        .then((response) => {
+            if (response.status >= 400) {
+                response.json().then(({ message }) => setErrorMessage(message));
+            } else {
+                setShowUpdateForm(false);
+                setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
+            }
+        })
+        .catch((error) => {
+            console.log("Impossible de modifier le message : ", error);
+        });
 };
 
 /**

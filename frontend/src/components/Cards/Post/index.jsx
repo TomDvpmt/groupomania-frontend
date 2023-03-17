@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import Comments from "../../Comments";
-import UpdateForm from "../../UpdateForm";
+import UpdateMessageForm from "../../Forms/UpdateMessageForm";
 import LikeButtons from "../../Buttons/LikeButtons";
 import UpdateDeleteButtons from "../../Buttons/UpdateDeleteButtons";
 import ErrorMessage from "../../ErrorMessage";
@@ -14,7 +15,10 @@ import {
     CardMedia,
     Button,
     Typography,
+    IconButton,
+    Link,
 } from "@mui/material";
+import { MailOutline } from "@mui/icons-material";
 import PropTypes from "prop-types";
 
 const Post = ({ postData, userData, setHasNewPosts }) => {
@@ -26,8 +30,9 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
 
     const token = userData.token;
     const canModify =
-        userData.admin || postData.postAuthorId === userData.loggedUserId;
+        userData.admin || postData.authorId === userData.loggedUserId;
     const postId = postData.id;
+    const authorName = `${postData.authorFirstName} ${postData.authorLastName}`;
     const formatedDate = formatDate(postData.date);
     const [postContent, setPostContent] = useState(postData.content);
 
@@ -40,10 +45,43 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
     };
 
     return (
-        <Card component="article" sx={{ mb: 3 }}>
+        <Card component="article" sx={{ mb: 3, padding: { sm: 2 } }}>
             <CardHeader
                 component="header"
-                title={postData.email}
+                title={
+                    postData.authorIsAdmin ? (
+                        <Typography color="primary" fontWeight="700">
+                            ADMIN
+                        </Typography>
+                    ) : (
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 2,
+                            }}
+                        >
+                            {authorName !== " " ? (
+                                <Link
+                                    component={RouterLink}
+                                    to={`/users/${postData.authorId}`}
+                                    underline="none"
+                                >
+                                    {authorName}
+                                </Link>
+                            ) : (
+                                <Typography>(anonyme)</Typography>
+                            )}
+                            <IconButton
+                                color="primary"
+                                sx={{ padding: 0 }}
+                                href={`mailto:${postData.authorEmail}`}
+                            >
+                                <MailOutline fontSize="small" />
+                            </IconButton>
+                        </Box>
+                    )
+                }
                 titleTypographyProps={{
                     component: "h2",
                     variant: "h6",
@@ -56,15 +94,6 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                 subheaderTypographyProps={{
                     fontSize: ".8rem",
                 }}
-                // action={
-                //     <LikeButtons
-                //         token={token}
-                //         postId={postId}
-                //         likes={postData.likes}
-                //         dislikes={postData.dislikes}
-                //         currentUserLikeValue={userData.currentUserLikeValue}
-                //     />
-                // }
                 sx={{
                     padding: 1,
                     flexDirection: "column",
@@ -94,7 +123,7 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                 <Box
                     flexGrow="1"
                     display="flex"
-                    justifyContent={canModify ? "center" : "space-between"}
+                    justifyContent="space-between"
                     alignItems="center"
                     gap={1}
                 >
@@ -121,13 +150,14 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                         variant="contained"
                         onClick={handleReply}
                         size="small"
+                        sx={{ fontWeight: "700" }}
                     >
                         Répondre
                     </Button>
                 </Box>
             </CardActions>
             {showPostUpdateForm && (
-                <UpdateForm
+                <UpdateMessageForm
                     token={token}
                     postId={postId}
                     parentId={0}

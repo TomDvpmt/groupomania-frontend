@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { imgMimeTypes, sanitize } from "../../utils/utils";
-import ErrorMessage from "../ErrorMessage";
+import { imgMimeTypes, sanitize } from "../../../utils/utils";
+import AlertDialog from "../../AlertDialog";
+import ErrorMessage from "../../ErrorMessage";
 import { Box, TextField, Button, Typography } from "@mui/material";
-import { myTheme } from "../../utils/theme";
+import { theme } from "../../../utils/theme";
 import PropTypes from "prop-types";
 
-const UpdateForm = ({
+const UpdateMessageForm = ({
     token,
     postId,
     parentId,
@@ -15,7 +16,7 @@ const UpdateForm = ({
     setShowUpdateForm,
     setHasNewMessages,
 }) => {
-    UpdateForm.propTypes = {
+    UpdateMessageForm.propTypes = {
         token: PropTypes.string,
         postId: PropTypes.number,
         parentId: PropTypes.number,
@@ -28,6 +29,7 @@ const UpdateForm = ({
 
     const [updateContent, setUpdateContent] = useState(prevContent);
     const [chosenFile, setChosenFile] = useState("");
+    const [showAlert, setShowAlert] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
     const handleContentChange = (e) => {
@@ -41,41 +43,7 @@ const UpdateForm = ({
     };
 
     const handleFileDelete = () => {
-        if (
-            !window.confirm("Êtes-vous sûr de vouloir supprimer cette image ?")
-        ) {
-            return;
-        } else {
-            const content = updateContent;
-            const formData = new FormData();
-
-            formData.append("content", content);
-            formData.append("imgUrl", imgUrl);
-            formData.append("deleteImg", true);
-
-            fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}`, {
-                method: "PUT",
-                headers: {
-                    Authorization: `BEARER ${token}`,
-                },
-                body: formData,
-            })
-                .then((response) => {
-                    if (response.status >= 400) {
-                        response
-                            .json()
-                            .then(({ message }) => setErrorMessage(message));
-                    } else {
-                        setShowUpdateForm(false);
-                        setHasNewMessages(
-                            (hasNewMessages) => hasNewMessages + 1
-                        );
-                    }
-                })
-                .catch((error) => {
-                    console.log("Impossible de modifier le message : ", error);
-                });
-        }
+        setShowAlert(true);
     };
 
     const handleSubmit = (e) => {
@@ -128,7 +96,7 @@ const UpdateForm = ({
         <Box
             id="update-form"
             component="form"
-            sx={myTheme.form}
+            sx={theme.form}
             onSubmit={handleSubmit}
             encType="multipart/form-data"
         >
@@ -148,7 +116,6 @@ const UpdateForm = ({
             />
             <Box
                 sx={{
-                    mb: 2,
                     display: "flex",
                     alignItems: "center",
                     gap: 1,
@@ -172,9 +139,23 @@ const UpdateForm = ({
                         Supprimer l'image
                     </Button>
                 )}
-                <Typography variant="body2">{chosenFile}</Typography>
+                {showAlert && (
+                    <AlertDialog
+                        concern="image"
+                        token={token}
+                        postId={postId}
+                        updateContent={updateContent}
+                        imgUrl={imgUrl}
+                        setHasNewMessages={setHasNewMessages}
+                        setShowUpdateForm={setShowUpdateForm}
+                        setErrorMessage={setErrorMessage}
+                        showAlert={showAlert}
+                        setShowAlert={setShowAlert}
+                    />
+                )}
             </Box>
-            <Button type="submit" variant="contained">
+            <Typography variant="body2">{chosenFile}</Typography>
+            <Button type="submit" variant="contained" sx={{ mt: 2 }}>
                 Mettre à jour
             </Button>
             {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
@@ -182,4 +163,4 @@ const UpdateForm = ({
     );
 };
 
-export default UpdateForm;
+export default UpdateMessageForm;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Comment from "../Cards/Comment";
-import CreateMessageForm from "../CreateMessageForm";
+import CreateMessageForm from "../Forms/CreateMessageForm";
 import ErrorMessage from "../ErrorMessage";
 import { Box, Typography, Stack } from "@mui/material";
 import PropTypes from "prop-types";
@@ -44,8 +44,11 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
                             commentData={{
                                 id: result.id,
                                 parentId: parentId,
-                                authorId: result.postAuthorId,
-                                email: result.email,
+                                authorId: result.authorId,
+                                authorFirstName: result.firstName,
+                                authorLastName: result.lastName,
+                                authorIsAdmin: result.admin,
+                                authorEmail: result.email,
                                 imgUrl: result.imgUrl,
                                 content: result.content,
                                 date: result.date,
@@ -92,7 +95,14 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
                 />
             )}
             {comments.length > 0 && (
-                <Box padding={1}>
+                <Box
+                    sx={{
+                        padding: {
+                            xs: ".5rem",
+                            sm: ".5rem .5rem .5rem 3rem",
+                        },
+                    }}
+                >
                     <Typography component="h3" variant="h5" mt={3} mb={2}>
                         {commentsNumber} commentaire
                         {commentsNumber > 1 ? "s" : ""} :{" "}

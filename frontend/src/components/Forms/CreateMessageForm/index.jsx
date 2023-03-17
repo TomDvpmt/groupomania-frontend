@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import ErrorMessage from "../ErrorMessage";
-import { imgMimeTypes, sanitize } from "../../utils/utils";
+import ErrorMessage from "../../ErrorMessage";
+import { imgMimeTypes, sanitize } from "../../../utils/utils";
 import { Box, TextField, Button, Typography } from "@mui/material";
-import { myTheme } from "../../utils/theme";
+import { theme } from "../../../utils/theme";
 import PropTypes from "prop-types";
 
 const CreateMessageForm = ({ isReply, token, parentId, setHasNewMessages }) => {
@@ -77,7 +77,7 @@ const CreateMessageForm = ({ isReply, token, parentId, setHasNewMessages }) => {
     return (
         <Box
             component="form"
-            sx={myTheme.form}
+            sx={theme.form}
             onSubmit={handleSubmit}
             encType="multipart/form-data"
         >
@@ -116,11 +116,17 @@ const CreateMessageForm = ({ isReply, token, parentId, setHasNewMessages }) => {
                         onChange={handleFileChange}
                     />
                 </Button>
-                <Typography variant="body2">{chosenFile}</Typography>
+                <Button
+                    type="submit"
+                    variant="contained"
+                    sx={{ fontWeight: "700" }}
+                >
+                    Envoyer
+                </Button>
             </Box>
-            <Button type="submit" variant="contained">
-                Envoyer
-            </Button>
+            <Typography paragraph variant="body2">
+                {chosenFile}
+            </Typography>
             {errorMessage !== "" && (
                 <ErrorMessage errorMessage={errorMessage} />
             )}

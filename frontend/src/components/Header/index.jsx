@@ -2,7 +2,7 @@ import logo from "../../assets/brand/icon-left-font-cropped.png";
 import { Link } from "react-router-dom";
 
 import { Box, Toolbar, Button, Typography } from "@mui/material";
-import { myTheme } from "../../utils/theme";
+import { theme } from "../../utils/theme";
 
 import PropTypes from "prop-types";
 
@@ -43,8 +43,9 @@ const Header = ({ hasToken }) => {
                             variant="h2"
                             sx={{
                                 fontSize: "2rem",
+                                fontWeight: "500",
                                 textTransform: "uppercase",
-                                color: myTheme.palette.primary.main,
+                                color: theme.palette.primary.main,
                             }}
                         >
                             Intranet
@@ -59,11 +60,11 @@ const Header = ({ hasToken }) => {
                 <Toolbar
                     component="nav"
                     sx={{
-                        bgcolor: myTheme.palette.secondary.main,
+                        bgcolor: theme.palette.secondary.main,
                         justifyContent: "center",
                     }}
                 >
-                    <Box flexGrow="1" maxWidth={myTheme.maxWidth.desktop}>
+                    <Box flexGrow="1" maxWidth={theme.maxWidth.desktop}>
                         <Button
                             component={Link}
                             to="/login"

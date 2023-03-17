@@ -1,17 +1,22 @@
 import React, { useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { formatDate } from "../../../utils/utils";
-import UpdateForm from "../../UpdateForm";
+import UpdateMessageForm from "../../Forms/UpdateMessageForm";
 import LikeButtons from "../../Buttons/LikeButtons";
 import UpdateDeleteButtons from "../../Buttons/UpdateDeleteButtons";
 import ErrorMessage from "../../ErrorMessage";
 import {
+    Box,
     Card,
     CardHeader,
     CardActions,
     CardContent,
     CardMedia,
+    Link,
     Typography,
+    IconButton,
 } from "@mui/material";
+import { MailOutline } from "@mui/icons-material";
 import PropTypes from "prop-types";
 
 const Comment = ({ commentData, userData, setHasNewComments }) => {
@@ -24,6 +29,7 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
     const commentId = commentData.id;
     const parentId = commentData.parentId;
     const formatedDate = formatDate(commentData.date);
+    const authorName = `${commentData.authorFirstName} ${commentData.authorLastName}`;
     const [commentContent, setCommentContent] = useState(commentData.content);
 
     const canModify =
@@ -44,7 +50,40 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
             <>
                 <CardHeader
                     component="header"
-                    title={commentData.email}
+                    title={
+                        commentData.authorIsAdmin ? (
+                            <Typography color="primary" fontWeight="700">
+                                ADMIN
+                            </Typography>
+                        ) : (
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 2,
+                                }}
+                            >
+                                {authorName !== " " ? (
+                                    <Link
+                                        component={RouterLink}
+                                        to={`/users/${commentData.authorId}`}
+                                        underline="none"
+                                    >
+                                        {authorName}
+                                    </Link>
+                                ) : (
+                                    <Typography>(anonyme)</Typography>
+                                )}
+                                <IconButton
+                                    color="primary"
+                                    sx={{ padding: 0 }}
+                                    href={`mailto:${commentData.authorEmail}`}
+                                >
+                                    <MailOutline fontSize="small" />
+                                </IconButton>
+                            </Box>
+                        )
+                    }
                     titleTypographyProps={{
                         fontSize: "1rem",
                         component: "h4",
@@ -57,15 +96,6 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                     subheaderTypographyProps={{
                         fontSize: ".8rem",
                     }}
-                    // action={
-                    //     <LikeButtons
-                    //         token={token}
-                    //         postId={commentId}
-                    //         likes={commentData.likes}
-                    //         dislikes={commentData.dislikes}
-                    //         currentUserLikeValue={userData.currentUserLikeValue}
-                    //     />
-                    // }
                 />
                 <CardContent>
                     <Typography paragraph fontSize=".9rem">
@@ -106,12 +136,13 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                             setHasNewMessages={setHasNewComments}
                             setShowMessageUpdateForm={setShowCommentUpdateForm}
                             setErrorMessage={setErrorMessage}
+                            setShowUpdateForm={setShowCommentUpdateForm}
                         />
                     )}
                 </CardActions>
 
                 {showCommentUpdateForm && (
-                    <UpdateForm
+                    <UpdateMessageForm
                         token={token}
                         postId={commentId}
                         parentId={parentId}

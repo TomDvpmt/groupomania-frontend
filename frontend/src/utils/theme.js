@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 
-export const myTheme = createTheme({
+export const theme = createTheme({
     palette: {
         primary: {
             main: "#FD2D01",
@@ -15,6 +15,9 @@ export const myTheme = createTheme({
             main: "#FF0000",
         },
     },
+    // breakpoints: {
+
+    // },
     typography: {
         fontFamily: "Lato, Helvetica Neue, Arial, sans-serif",
     },
@@ -43,5 +46,6 @@ export const myTheme = createTheme({
         margin: "1rem .5rem",
         display: "flex",
         flexDirection: "column",
+        alignItems: "center",
     },
 });

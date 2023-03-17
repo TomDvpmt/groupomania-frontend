@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { myTheme } from "../../utils/theme";
+import { theme } from "../../utils/theme";
 import PropTypes from "prop-types";
 
 const ErrorMessage = ({ errorMessage }) => {
@@ -8,7 +8,7 @@ const ErrorMessage = ({ errorMessage }) => {
     };
 
     return (
-        <Typography color={myTheme.palette.error.main} ml={1} mt={1}>
+        <Typography color={theme.palette.error.main} ml={1} mt={1}>
             {errorMessage}
         </Typography>
     );

@@ -1,10 +1,11 @@
 import { TextField } from "@mui/material";
 import PropTypes from "prop-types";
 
-const EmailField = ({ email, setEmail }) => {
+const EmailField = ({ email, setEmail, autoFocus }) => {
     EmailField.propTypes = {
         email: PropTypes.string,
         setEmail: PropTypes.func,
+        autoFocus: PropTypes.bool,
     };
 
     const handleChange = (e) => {
@@ -13,10 +14,10 @@ const EmailField = ({ email, setEmail }) => {
 
     return (
         <TextField
+            autoFocus={autoFocus}
             required
             margin="normal"
             fullWidth
-            autoFocus
             id="email"
             name="email"
             type="email"

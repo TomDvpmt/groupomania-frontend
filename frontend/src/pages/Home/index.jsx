@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Post from "../../components/Cards/Post";
-import CreateMessageForm from "../../components/CreateMessageForm";
+import CreateMessageForm from "../../components/Forms/CreateMessageForm";
 import PostNewMessageButton from "../../components/Buttons/PostNewMessageButton";
 import ErrorMessage from "../../components/ErrorMessage";
 import { Box, Typography } from "@mui/material";
-import { myTheme } from "../../utils/theme";
+import { theme } from "../../utils/theme";
 
 const Home = () => {
     const [posts, setPosts] = useState([]);
@@ -42,8 +42,11 @@ const Home = () => {
                             postData={{
                                 id: result.id,
                                 parentId: 0,
-                                postAuthorId: result.postAuthorId,
-                                email: result.email,
+                                authorId: result.authorId,
+                                authorFirstName: result.firstName,
+                                authorLastName: result.lastName,
+                                authorIsAdmin: result.admin,
+                                authorEmail: result.email,
                                 imgUrl: result.imgUrl,
                                 content: result.content,
                                 date: result.date,
@@ -73,7 +76,7 @@ const Home = () => {
     return (
         <Box
             component="main"
-            maxWidth={myTheme.maxWidth.desktop}
+            maxWidth={theme.maxWidth.desktop}
             margin="auto"
             padding="2rem .5rem"
         >
@@ -86,14 +89,6 @@ const Home = () => {
                     alignItems: "stretch",
                 }}
             >
-                {/* <Typography
-                    component="h2"
-                    variant="h4"
-                    gutterBottom
-                    textAlign="center"
-                >
-                    Poster un message
-                </Typography> */}
                 <PostNewMessageButton
                     showNewPostForm={showNewPostForm}
                     setShowNewPostForm={setShowNewPostForm}

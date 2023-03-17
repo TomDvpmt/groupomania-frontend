@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { fetchCredentials } from "../../utils/utils";
 import { Link, Box, Typography, Container } from "@mui/material";
-import { myTheme } from "../../utils/theme";
+import { theme } from "../../utils/theme";
 import SubmitButton from "../../components/Buttons/SubmitButton";
 import EmailField from "../../components/FormFields/EmailField";
 import PasswordField from "../../components/FormFields/PasswordField";
@@ -40,12 +40,16 @@ const Login = () => {
 
     return (
         <Container component="main" maxWidth="xs">
-            <Box sx={myTheme.form}>
+            <Box sx={theme.form}>
                 <Typography variant="h4" component="h1" mt={4}>
                     Connexion
                 </Typography>
                 <Box component="form" noValidate mt={2} onSubmit={handleSubmit}>
-                    <EmailField email={email} setEmail={setEmail} />
+                    <EmailField
+                        email={email}
+                        setEmail={setEmail}
+                        autoFocus={true}
+                    />
                     <PasswordField
                         password={password}
                         setPassword={setPassword}

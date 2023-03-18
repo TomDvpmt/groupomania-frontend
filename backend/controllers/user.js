@@ -156,7 +156,7 @@ exports.getOneUser = (req, res, next) => {
 
 exports.updateUser = (req, res, next) => {
     const paramUserId = parseInt(req.params.userId);
-    const userId = req.auth.userId;
+    const loggedUserId = req.auth.userId;
     const firstName = req.body.firstName ? req.body.firstName : null;
     const lastName = req.body.lastName ? req.body.lastName : null;
     const email = req.body.email;
@@ -164,7 +164,7 @@ exports.updateUser = (req, res, next) => {
 
     // const {firstName, lastName, email} = {...req.body};
 
-    if(!req.auth.admin && paramUserId !== userId) {
+    if(!req.auth.admin && paramUserId !== loggedUserId) {
         res.status(401).json({message: "Non autorisé"});
     } else {
         connectToDb("updateUser")
@@ -183,10 +183,35 @@ exports.updateUser = (req, res, next) => {
                 handleError(res, "Impossible de mettre à jour l'utilisateur.", 400, error)
             }))
         .catch(error => {
-            console.log(error);
             handleError(res, "Impossible de se connecter à la base de données.", 500, error)
         })
 
 
+    }
+}
+
+exports.deleteUser = (req, res, next) => {
+    const paramUserId = parseInt(req.params.userId);
+    const loggedUserId = req.auth.userId;
+
+    if(!req.auth.admin && paramUserId !== loggedUserId) {
+        res.status(401).json({message: "Non autorisé"});
+    } else {
+        connectToDb("deleteUser")
+        .then(connection => {
+            connection.execute(`
+                DELETE from users
+                WHERE id = ?
+            `, [paramUserId])
+            .then(response => {
+                close(connection);
+                res.status(200).json({message: "Utilisateur supprimé."});
+            })
+            .catch(error => {
+                close(connection);
+                handleError(res, "Impossible de supprimer l'utilisateur.", 400, error)
+            })
+        })
+        .catch(error => handleError(res, "Impossible de se connecter à la base de données.", 500, error))
     }
 }

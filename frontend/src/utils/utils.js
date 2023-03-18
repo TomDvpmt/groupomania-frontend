@@ -97,7 +97,10 @@ exports.deletePost = (
                 setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
             }
         })
-        .catch(() => setErrorMessage("Impossible de supprimer le message."));
+        .catch((error) => {
+            console.error("Impossible de supprimer le message : ", error);
+            setErrorMessage("Impossible de supprimer le message.");
+        });
 };
 
 /**
@@ -143,7 +146,37 @@ exports.deleteImage = (
             }
         })
         .catch((error) => {
-            console.log("Impossible de modifier le message : ", error);
+            setErrorMessage("Impossible de modifier le message.");
+            console.error("Impossible de modifier le message : ", error);
+        });
+};
+
+/**
+ *
+ * @param {String} token
+ * @param {Number} userId
+ * @param {import("react").SetStateAction} setErrorMessage
+ * @param {Function} navigate
+ */
+
+exports.deleteUser = (token, userId, setErrorMessage, navigate) => {
+    fetch(`${process.env.REACT_APP_BACKEND_URI}/API/auth/${userId}`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `BEARER ${token}`,
+        },
+    })
+        .then((response) => {
+            if (response.status >= 400) {
+                response.json().then(({ message }) => setErrorMessage(message));
+            } else {
+                localStorage.setItem("token", null);
+                navigate("/login");
+            }
+        })
+        .catch((error) => {
+            console.error("Impossible de supprimer l'utilisateur : ", error);
+            setErrorMessage("Impossible de supprimer le compte.");
         });
 };
 

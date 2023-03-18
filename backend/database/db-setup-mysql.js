@@ -63,7 +63,6 @@ const setupDbTables = async (connection, dbName) => {
     const usersExists = await tableExists(connection, dbName, "users");
     const postsExists = await tableExists(connection, dbName, "posts");
     const likesExists = await tableExists(connection, dbName, "likes");
-    // const commentsExists = await tableExists(connection, dbName, "comments");
 
     
     await connection.query(`
@@ -125,6 +124,22 @@ const setupDbTables = async (connection, dbName) => {
         FOR EACH ROW
         DELETE FROM likes
         WHERE post_id = OLD.id
+    `);
+
+    await connection.query(`
+        CREATE TRIGGER IF NOT EXISTS users_likes_before_delete
+        BEFORE DELETE ON users
+        FOR EACH ROW
+        DELETE FROM likes
+        WHERE user_id = OLD.id
+    `);
+
+    await connection.query(`
+        CREATE TRIGGER IF NOT EXISTS users_posts_before_delete
+        BEFORE DELETE ON users
+        FOR EACH ROW
+        DELETE FROM posts
+        WHERE author_id = OLD.id
     `);
 
     console.log("========= Tables vérifiées. =========== ");

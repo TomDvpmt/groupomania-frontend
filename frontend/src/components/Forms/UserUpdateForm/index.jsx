@@ -50,17 +50,14 @@ const UserUpdateForm = ({
                 lastName: newLastName,
                 email: newEmail,
             };
-            fetch(
-                `${process.env.REACT_APP_BACKEND_URI}/API/auth/users/${userId}/update`,
-                {
-                    method: "PUT",
-                    headers: {
-                        Authorization: `BEARER ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(userData),
-                }
-            )
+            fetch(`${process.env.REACT_APP_BACKEND_URI}/API/auth/${userId}`, {
+                method: "PUT",
+                headers: {
+                    Authorization: `BEARER ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(userData),
+            })
                 .then((response) => {
                     if (response.status < 400) {
                         setShowValidationMessage(true);

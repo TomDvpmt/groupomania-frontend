@@ -1,4 +1,4 @@
-import { deletePost, deleteImage } from "../../utils/utils";
+import { deletePost, deleteImage, deleteUser } from "../../utils/utils";
 import {
     Button,
     Dialog,
@@ -11,8 +11,8 @@ import PropTypes from "prop-types";
 
 const AlertDialog = ({
     concern,
+    concernId,
     token,
-    postId,
     updateContent,
     imgUrl,
     setHasNewMessages,
@@ -20,47 +20,61 @@ const AlertDialog = ({
     setErrorMessage,
     showAlert,
     setShowAlert,
+    navigate,
 }) => {
     AlertDialog.propTypes = {
         concern: PropTypes.string,
+        concernId: PropTypes.number,
         token: PropTypes.string,
-        postId: PropTypes.number,
         updateContent: PropTypes.string,
         imgUrl: PropTypes.string,
         setHasNewMessages: PropTypes.func,
         setShowUpdateForm: PropTypes.func,
         showAlert: PropTypes.bool,
         setShowAlert: PropTypes.func,
+        navigate: PropTypes.func,
     };
 
-    const concernTitle = concern === "image" ? "l'image" : "le message";
-    const concernDescription =
-        concern === "image"
-            ? `La suppression de l'image est définitive.`
-            : `La suppression du message est définitive.`;
+    let concernTitle, concernDescription;
+
+    if (concern === "image") {
+        concernTitle = "l'image";
+        concernDescription = "La suppression de l'image est définitive.";
+    } else if (concern === "message") {
+        concernTitle = "le message";
+        concernDescription = "La suppression du message est définitive.";
+    } else if (concern === "user") {
+        concernTitle = "le compte";
+        concernDescription =
+            "Le compte ainsi que tous les messages qui y sont attachés seront supprimés définitivement, sans possibilité de les récupérer.";
+    }
 
     const handleNo = () => {
         setShowAlert(false);
     };
 
     const handleYes = () => {
-        concern === "image"
-            ? deleteImage(
-                  updateContent,
-                  imgUrl,
-                  postId,
-                  token,
-                  setShowUpdateForm,
-                  setHasNewMessages,
-                  setErrorMessage
-              )
-            : deletePost(
-                  token,
-                  postId,
-                  imgUrl,
-                  setHasNewMessages,
-                  setErrorMessage
-              );
+        if (concern === "image") {
+            deleteImage(
+                updateContent,
+                imgUrl,
+                concernId,
+                token,
+                setShowUpdateForm,
+                setHasNewMessages,
+                setErrorMessage
+            );
+        } else if (concern === "message") {
+            deletePost(
+                token,
+                concernId,
+                imgUrl,
+                setHasNewMessages,
+                setErrorMessage
+            );
+        } else if (concern === "user") {
+            deleteUser(token, concernId, setErrorMessage, navigate);
+        }
         setShowAlert(false);
     };
 
@@ -80,9 +94,9 @@ const AlertDialog = ({
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleNo} autoFocus>
-                    Non
+                    Annuler
                 </Button>
-                <Button onClick={handleYes}>Oui</Button>
+                <Button onClick={handleYes}>Supprimer {concernTitle}</Button>
             </DialogActions>
         </Dialog>
     );

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import UserUpdateForm from "../../components/Forms/UserUpdateForm";
+import AlertDialog from "../../components/AlertDialog";
 import ErrorMessage from "../../components/ErrorMessage";
-import { Box, Container, Typography, Button } from "@mui/material";
+import { Box, Container, Typography, Button, Stack } from "@mui/material";
 
 const Profile = () => {
     const token = localStorage.getItem("token");
@@ -14,6 +15,7 @@ const Profile = () => {
     const [modifiable, setModifiable] = useState(false);
     const [showUserUpdateForm, setShowUserUpdateForm] = useState(false);
     const [showValidationMessage, setShowValidationMessage] = useState(false);
+    const [showAlert, setShowAlert] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
     const navigate = useNavigate();
@@ -23,12 +25,16 @@ const Profile = () => {
         setShowValidationMessage(false);
     };
 
+    const handleDelete = () => {
+        setShowAlert(true);
+    };
+
     useEffect(() => {
         setErrorMessage("");
     }, [showUserUpdateForm]);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/auth/users/${userId}`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/auth/${userId}`, {
             method: "GET",
             headers: {
                 Authorization: `BEARER ${token}`,
@@ -86,13 +92,23 @@ const Profile = () => {
                 <Typography>Adresse e-mail : {email}</Typography>
             </Container>
             {modifiable && (
-                <Button
-                    variant="outlined"
-                    sx={{ mt: 2 }}
-                    onClick={handleUpdate}
-                >
-                    Modifier les informations
-                </Button>
+                <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={handleUpdate}
+                    >
+                        Modifier les informations
+                    </Button>
+                    <Button
+                        variant="text"
+                        size="small"
+                        sx={{ textTransform: "initial" }}
+                        onClick={handleDelete}
+                    >
+                        Supprimer le compte
+                    </Button>
+                </Stack>
             )}
             {showUserUpdateForm && (
                 <UserUpdateForm
@@ -107,6 +123,17 @@ const Profile = () => {
                     setErrorMessage={setErrorMessage}
                     setShowUserUpdateForm={setShowUserUpdateForm}
                     setShowValidationMessage={setShowValidationMessage}
+                />
+            )}
+            {showAlert && (
+                <AlertDialog
+                    concern="user"
+                    concernId={parseInt(userId)}
+                    token={token}
+                    setErrorMessage={setErrorMessage}
+                    showAlert={showAlert}
+                    setShowAlert={setShowAlert}
+                    navigate={navigate}
                 />
             )}
             {errorMessage && <ErrorMessage errorMessage={errorMessage} />}

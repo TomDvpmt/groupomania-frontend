@@ -31,6 +31,8 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
     const token = userData.token;
     const canModify =
         userData.admin || postData.authorId === userData.loggedUserId;
+    const loggedUserId = parseInt(localStorage.getItem("userId"));
+
     const postId = postData.id;
     const authorName = `${postData.authorFirstName} ${postData.authorLastName}`;
     const formatedDate = formatDate(postData.date);
@@ -83,7 +85,7 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                     )
                 }
                 titleTypographyProps={{
-                    component: "h2",
+                    component: "h3",
                     variant: "h6",
                     fontWeight: "bold",
                     fontSize: "1rem",

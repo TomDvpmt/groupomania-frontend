@@ -141,7 +141,7 @@ const UpdateMessageForm = ({
                 )}
                 {showAlert && (
                     <AlertDialog
-                        concern="image"
+                        issue="image"
                         token={token}
                         postId={postId}
                         updateContent={updateContent}

@@ -1,15 +1,30 @@
 import { TextField } from "@mui/material";
 import PropTypes from "prop-types";
 
-const EmailField = ({ email, setEmail, autoFocus }) => {
+const EmailField = ({
+    email,
+    setEmail,
+    emailError,
+    setEmailError,
+    setGlobalErrorMessage,
+    autoFocus,
+}) => {
     EmailField.propTypes = {
         email: PropTypes.string,
         setEmail: PropTypes.func,
+        emailError: PropTypes.string,
+        setEmailError: PropTypes.func,
+        setGlobalErrorMessage: PropTypes.func,
         autoFocus: PropTypes.bool,
     };
 
     const handleChange = (e) => {
         setEmail(e.target.value);
+    };
+
+    const handleFocus = () => {
+        setEmailError("");
+        setGlobalErrorMessage("");
     };
 
     return (
@@ -24,6 +39,8 @@ const EmailField = ({ email, setEmail, autoFocus }) => {
             label="Adresse e-mail"
             value={email}
             onChange={handleChange}
+            onFocus={handleFocus}
+            error={emailError !== ""}
         />
     );
 };

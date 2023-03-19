@@ -22,7 +22,6 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log("useEffect de Comments => getAllPosts");
         fetch(
             `${process.env.REACT_APP_BACKEND_URI}/API/posts/all/${parentId}`,
             {
@@ -103,7 +102,7 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
                         },
                     }}
                 >
-                    <Typography component="h3" variant="h5" mt={3} mb={2}>
+                    <Typography component="h4" variant="h5" mt={3} mb={2}>
                         {commentsNumber} commentaire
                         {commentsNumber > 1 ? "s" : ""} :{" "}
                     </Typography>

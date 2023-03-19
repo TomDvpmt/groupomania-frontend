@@ -108,7 +108,7 @@ const Home = () => {
                     marginTop: 8,
                 }}
             >
-                <Typography component="h1" variant="h4" mb={4}>
+                <Typography component="h2" variant="h4" mb={4}>
                     Messages
                 </Typography>
                 {posts}

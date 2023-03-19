@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import ProfileData from "../../components/ProfileData";
 import UserUpdateForm from "../../components/Forms/UserUpdateForm";
 import AlertDialog from "../../components/AlertDialog";
 import ErrorMessage from "../../components/ErrorMessage";
 import { Box, Container, Typography, Button, Stack } from "@mui/material";
+import { theme } from "../../utils/theme";
 
 const Profile = () => {
     const token = localStorage.getItem("token");
@@ -41,7 +43,7 @@ const Profile = () => {
             },
         })
             .then((response) => {
-                if (response.status === 401) {
+                if (response.status === 401 || response.status === 404) {
                     navigate("/");
                 } else {
                     return response.json();
@@ -60,39 +62,44 @@ const Profile = () => {
                 );
                 setErrorMessage("Impossible d'afficher les données.");
             });
-    }, [token, userId]);
+    }, [token, userId, navigate]);
 
     return (
         <Box
             component="main"
             sx={{
-                mb: 4,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
             }}
+            maxWidth={theme.maxWidth.desktop}
+            mb={4}
+            ml="auto"
+            mr="auto"
         >
             <Typography
                 component="h1"
                 variant="h4"
                 textAlign="center"
                 mt={4}
-                mb={2}
+                mb={4}
             >
-                Profil
+                {firstName + " " + lastName}
             </Typography>
-            <Container>
+            <Container sx={{ padding: 0, maxWidth: "500px" }}>
                 {showValidationMessage && (
                     <Typography color="green" mb={2}>
-                        Les données ont été mises à jour.
+                        Les informations ont été mises à jour.
                     </Typography>
                 )}
-                <Typography>Prénom : {firstName}</Typography>
-                <Typography>Nom : {lastName}</Typography>
-                <Typography>Adresse e-mail : {email}</Typography>
+                <ProfileData
+                    firstName={firstName}
+                    lastName={lastName}
+                    email={email}
+                />
             </Container>
             {modifiable && (
-                <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+                <Stack direction="row" spacing={2} sx={{ mt: 4, pl: 2, pr: 2 }}>
                     <Button
                         variant="outlined"
                         size="small"
@@ -127,8 +134,8 @@ const Profile = () => {
             )}
             {showAlert && (
                 <AlertDialog
-                    concern="user"
-                    concernId={parseInt(userId)}
+                    issue="user"
+                    issueId={parseInt(userId)}
                     token={token}
                     setErrorMessage={setErrorMessage}
                     showAlert={showAlert}

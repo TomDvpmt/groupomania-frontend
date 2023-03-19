@@ -25,7 +25,8 @@ const logAfterSignUp = (connection, email, res) => {
             token: jwt.sign(
                 {userId: userId, admin: admin},
                 process.env.TOKEN_CREATION_PHRASE
-            )
+            ),
+            userId: userId
         });
         close(connection);
         console.log("======== Utilisateur créé et connecté à l'application. ==========")
@@ -102,7 +103,8 @@ exports.login = (req, res, next) => {
                                             token: jwt.sign(
                                                 {userId: userId, admin: admin},
                                                 process.env.TOKEN_CREATION_PHRASE
-                                            )
+                                            ),
+                                            userId: userId
                                         });
                                         console.log("======== Utilisateur connecté à l'application. ==========")
                                     }
@@ -137,12 +139,16 @@ exports.getOneUser = (req, res, next) => {
             `, [paramUserId])
             .then(([rows]) => {
                 close(connection);
-                res.status(200).json({
-                    firstName: rows[0].first_name,
-                    lastName: rows[0].last_name,
-                    email: rows[0].email,
-                    modifiable: modifiable
-                });
+                if(rows.length === 0) {
+                    res.status(404).json({message : "Page introuvable."})
+                } else {
+                    res.status(200).json({
+                        firstName: rows[0].first_name,
+                        lastName: rows[0].last_name,
+                        email: rows[0].email,
+                        modifiable: modifiable
+                    });
+                }
             })
             .catch(error => {
                 close(connection);

@@ -251,3 +251,46 @@ exports.setUserLikeStatus = (token, postId, setLikeStatus) => {
         .then((data) => setLikeStatus(data))
         .catch((error) => console.log(error));
 };
+
+/**
+ * Tests if string input by user matches a regex
+ *
+ * @param { String } inputName
+ * @param { String } stringToTest
+ * @returns { Boolean }
+ */
+
+exports.setInputErrorMessages = (fields) => {
+    fields.forEach((field) => {
+        if (field.errors.isEmpty.condition) {
+            field.errorSetter(field.errors.isEmpty.message);
+        } else if (field.errors.isInvalid.condition) {
+            field.errorSetter(field.errors.isInvalid.message);
+        }
+    });
+};
+
+exports.checkInputErrors = (fields) => {
+    let hasErrors = 0;
+    fields.forEach((field) => {
+        field.errors.isEmpty.condition && hasErrors++;
+        field.errors.isInvalid.condition && hasErrors++;
+    });
+    return hasErrors;
+};
+
+exports.isValidInput = (inputName, stringToTest) => {
+    const nameRegex = new RegExp(
+        "(^[a-zà-ÿ][a-zà-ÿ-']?)+([a-zà-ÿ-' ]+)?[a-zà-ÿ']$",
+        "i"
+    );
+    const emailRegex = new RegExp(
+        "^[\\w\\-\\.]+@([\\w\\-]+\\.)+[\\w\\-]{2,4}$" // double escapes because the RegExp is created by a string
+    );
+    const regexs = {
+        firstName: nameRegex,
+        lastName: nameRegex,
+        email: emailRegex,
+    };
+    return regexs[inputName].test(stringToTest);
+};

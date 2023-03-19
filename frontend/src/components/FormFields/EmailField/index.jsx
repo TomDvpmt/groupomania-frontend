@@ -7,7 +7,7 @@ const EmailField = ({
     emailError,
     setEmailError,
     setGlobalErrorMessage,
-    autoFocus,
+    hasAutoFocus,
 }) => {
     EmailField.propTypes = {
         email: PropTypes.string,
@@ -15,7 +15,7 @@ const EmailField = ({
         emailError: PropTypes.string,
         setEmailError: PropTypes.func,
         setGlobalErrorMessage: PropTypes.func,
-        autoFocus: PropTypes.bool,
+        hasAutoFocus: PropTypes.bool,
     };
 
     const handleChange = (e) => {
@@ -29,7 +29,7 @@ const EmailField = ({
 
     return (
         <TextField
-            autoFocus={autoFocus}
+            autoFocus={hasAutoFocus}
             required
             margin="normal"
             fullWidth

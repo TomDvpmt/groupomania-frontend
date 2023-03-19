@@ -270,27 +270,68 @@ exports.setInputErrorMessages = (fields) => {
     });
 };
 
-exports.checkInputErrors = (fields) => {
-    let hasErrors = 0;
-    fields.forEach((field) => {
-        field.errors.isEmpty.condition && hasErrors++;
-        field.errors.isInvalid.condition && hasErrors++;
-    });
-    return hasErrors;
-};
-
-exports.isValidInput = (inputName, stringToTest) => {
+const isValidInput = (inputName, stringToTest) => {
     const nameRegex = new RegExp(
-        "(^[a-zà-ÿ][a-zà-ÿ-']?)+([a-zà-ÿ-' ]+)?[a-zà-ÿ']$",
-        "i"
+        /(^[a-zà-ÿ][a-zà-ÿ-']?)+([a-zà-ÿ-' ]+)?[a-zà-ÿ']$/i
     );
-    const emailRegex = new RegExp(
-        "^[\\w\\-\\.]+@([\\w\\-]+\\.)+[\\w\\-]{2,4}$" // double escapes because the RegExp is created by a string
-    );
+    const emailRegex = new RegExp(/^[\w\-.]+@([\w-]+.)+[\w-]{2,4}$/);
+    const passwordRegex = new RegExp(/.{4,}/);
+
     const regexs = {
         firstName: nameRegex,
         lastName: nameRegex,
         email: emailRegex,
+        password: passwordRegex,
     };
+
     return regexs[inputName].test(stringToTest);
+};
+
+const notRequiredFields = ["firstName", "lastName"];
+
+class InputField {
+    constructor(name, state, emptyMessage, invalidMessage, errorSetter) {
+        this.name = name;
+        this.errors = {
+            isEmpty: {
+                condition: !notRequiredFields.includes(name) && state === "",
+                message: emptyMessage,
+            },
+            isInvalid: {
+                condition:
+                    !(notRequiredFields.includes(name) && state === "") &&
+                    !isValidInput(name, state),
+                message: invalidMessage,
+            },
+        };
+        this.errorSetter = errorSetter;
+    }
+}
+
+/**
+ *
+ * @param {Array} requestedFields
+ * @returns {Array}
+ */
+
+exports.getInputFields = (requestedFields) => {
+    const inputFields = requestedFields.map((field) => {
+        return new InputField(...field);
+    });
+    return inputFields;
+};
+
+/**
+ *
+ * @param {Array} fields
+ * @returns {Number} -
+ */
+
+exports.checkInputErrors = (fields) => {
+    let hasErrors = false;
+    fields.forEach((field) => {
+        if (field.errors.isEmpty.condition || field.errors.isInvalid.condition)
+            hasErrors = true;
+    });
+    return hasErrors;
 };

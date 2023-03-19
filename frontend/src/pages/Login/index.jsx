@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import {
     fetchCredentials,
-    isValidInput,
+    getInputFields,
     setInputErrorMessages,
     checkInputErrors,
 } from "../../utils/utils";
@@ -28,50 +28,22 @@ const Login = () => {
 
         setShowFieldErrors(true);
 
-        const getInputFields = (fieldNames) => {
-            const allInputFields = [
-                {
-                    name: "email",
-                    errors: {
-                        isEmpty: {
-                            condition: email === "",
-                            message: "Adresse e-mail requise.",
-                        },
-                        isInvalid: {
-                            condition: !isValidInput("email", email),
-                            message: "Format d'adresse e-mail invalide.",
-                        },
-                    },
-                    errorSetter: setEmailError,
-                },
-                {
-                    name: "password",
-                    errors: {
-                        isEmpty: {
-                            condition: password === "",
-                            message: "Mot de passe requis.",
-                        },
-                        isInvalid: {
-                            condition: false,
-                            message: " ",
-                        },
-                    },
-                    errorSetter: setPasswordError,
-                },
-            ];
+        const inputFields = getInputFields([
+            [
+                "email",
+                email,
+                "Adresse e-mail requise.",
+                "Format d'adresse e-mail invalide",
+                setEmailError,
+            ],
+        ]);
 
-            const inputFields = allInputFields.filter((field) =>
-                fieldNames.includes(field.name)
-            );
+        password === "" && setPasswordError("Mot de passe requis.");
 
-            return inputFields;
-        };
-
-        const inputFields = getInputFields(["email", "password"]);
         const hasErrors = checkInputErrors(inputFields);
         hasErrors && setInputErrorMessages(inputFields);
 
-        if (hasErrors) {
+        if (hasErrors || password === "") {
             return;
         } else {
             const loginData = {
@@ -121,7 +93,7 @@ const Login = () => {
                         emailError={emailError}
                         setEmailError={setEmailError}
                         setGlobalErrorMessage={setGlobalErrorMessage}
-                        autoFocus={true}
+                        hasAutoFocus={true}
                     />
                     {showFieldErrors && (
                         <Typography color="red">{emailError}</Typography>

@@ -1,26 +1,33 @@
 import React, { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { fetchCredentials } from "../../utils/utils";
+import {
+    fetchCredentials,
+    getInputFields,
+    checkInputErrors,
+    setInputErrorMessages,
+} from "../../utils/utils";
 import { Container, Box, Typography, Link } from "@mui/material";
 import { theme } from "../../utils/theme";
 import FirstNameField from "../../components/FormFields/FirstNameField";
 import LastNameField from "../../components/FormFields/LastNameField";
 import EmailField from "../../components/FormFields/EmailField";
 import PasswordField from "../../components/FormFields/PasswordField";
-import PasswordCheckField from "../../components/FormFields/PasswordCheckField";
+import PasswordConfirmField from "../../components/FormFields/PasswordConfirmField";
 import SubmitButton from "../../components/Buttons/SubmitButton";
 import ErrorMessage from "../../components/ErrorMessage";
 
 const SignUp = () => {
     const [firstName, setFirstName] = useState("");
-    const [firstNameErrorMessage, setFirstNameErrorMessage] = useState("");
+    const [firstNameError, setFirstNameError] = useState("");
     const [lastName, setLastName] = useState("");
-    const [lastNameErrorMessage, setlastNameErrorMessage] = useState("");
+    const [lastNameError, setLastNameError] = useState("");
     const [email, setEmail] = useState("");
-    const [emailErrorMessage, setEmailErrorMessage] = useState("");
+    const [emailError, setEmailError] = useState("");
     const [password, setPassword] = useState("");
-    const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+    const [passwordError, setPasswordError] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
+    const [passwordConfirmError, setPasswordConfirmError] = useState("");
+    const [showFieldErrors, setShowFieldErrors] = useState(false);
     const [globalErrorMessage, setGlobalErrorMessage] = useState("");
 
     const navigate = useNavigate();
@@ -28,7 +35,48 @@ const SignUp = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (password === passwordConfirm) {
+        setShowFieldErrors(true);
+
+        const inputFields = getInputFields([
+            [
+                "firstName",
+                firstName,
+                "",
+                "Format de prénom invalide.",
+                setFirstNameError,
+            ],
+            [
+                "lastName",
+                lastName,
+                "",
+                "Format de nom invalide",
+                setLastNameError,
+            ],
+            [
+                "email",
+                email,
+                "Adresse e-mail requise.",
+                "Format d'adresse e-mail invalide",
+                setEmailError,
+            ],
+            [
+                "password",
+                password,
+                "Mot de passe requis.",
+                "Le mot de passe doit comporter au moins 4 charactères.",
+                setPasswordError,
+            ],
+        ]);
+
+        const hasErrors = checkInputErrors(inputFields);
+        hasErrors && setInputErrorMessages(inputFields);
+
+        password !== passwordConfirm &&
+            setPasswordConfirmError("Les mots de passe ne correspondent pas.");
+
+        if (password !== passwordConfirm || hasErrors) {
+            return;
+        } else {
             const signUpData = {
                 firstName: firstName,
                 lastName: lastName,
@@ -53,8 +101,6 @@ const SignUp = () => {
                     }
                 })
                 .catch((error) => console.log(error));
-        } else {
-            setGlobalErrorMessage("Les mots de passe ne correspondent pas.");
         }
     };
 
@@ -78,30 +124,57 @@ const SignUp = () => {
                     <FirstNameField
                         firstName={firstName}
                         setFirstName={setFirstName}
+                        firstNameError={firstNameError}
+                        setFirstNameError={setFirstNameError}
+                        setGlobalErrorMessage={setGlobalErrorMessage}
+                        hasAutoFocus={true}
                     />
+                    {showFieldErrors && (
+                        <Typography color="red">{firstNameError}</Typography>
+                    )}
                     <LastNameField
                         lastName={lastName}
                         setLastName={setLastName}
+                        lastNameError={lastNameError}
+                        setLastNameError={setLastNameError}
+                        setGlobalErrorMessage={setGlobalErrorMessage}
                     />
+                    {showFieldErrors && (
+                        <Typography color="red">{lastNameError}</Typography>
+                    )}
                     <EmailField
                         email={email}
                         setEmail={setEmail}
-                        emailErrorMessage={emailErrorMessage}
-                        setEmailErrorMessage={setEmailErrorMessage}
+                        emailError={emailError}
+                        setEmailError={setEmailError}
                         setGlobalErrorMessage={setGlobalErrorMessage}
-                        autoFocus={false}
+                        hasAutoFocus={false}
                     />
+                    {showFieldErrors && (
+                        <Typography color="red">{emailError}</Typography>
+                    )}
                     <PasswordField
                         password={password}
                         setPassword={setPassword}
-                        passwordErrorMessage={passwordErrorMessage}
-                        setPasswordErrorMessage={setPasswordErrorMessage}
+                        passwordError={passwordError}
+                        setPasswordError={setPasswordError}
                         setGlobalErrorMessage={setGlobalErrorMessage}
                     />
-                    <PasswordCheckField
+                    {showFieldErrors && (
+                        <Typography color="red">{passwordError}</Typography>
+                    )}
+                    <PasswordConfirmField
                         passwordConfirm={passwordConfirm}
                         setPasswordConfirm={setPasswordConfirm}
+                        passwordConfirmError={passwordConfirmError}
+                        setPasswordConfirmError={setPasswordConfirmError}
+                        setGlobalErrorMessage={setGlobalErrorMessage}
                     />
+                    {showFieldErrors && (
+                        <Typography color="red">
+                            {passwordConfirmError}
+                        </Typography>
+                    )}
                     <SubmitButton text="S'enregistrer" />
                     <Link component={RouterLink} to="/login" variant="body2">
                         Déjà un compte ? S'identifier

@@ -4,7 +4,6 @@ import { theme } from "../../utils/theme";
 
 const Error404 = () => {
     const token = localStorage.getItem("token");
-    const hasToken = !token || token === "null" ? false : true;
 
     return (
         <Box
@@ -19,9 +18,11 @@ const Error404 = () => {
             <Typography paragraph>
                 La page que vous cherchez n'existe pas.
             </Typography>
-            <Link component={RouterLink} to={hasToken ? "/" : "/login"}>
-                {hasToken ? "Retour à l'accueil" : "Se connecter"}
-            </Link>
+            {!token && (
+                <Link component={RouterLink} to="/login">
+                    Se connecter
+                </Link>
+            )}
         </Box>
     );
 };

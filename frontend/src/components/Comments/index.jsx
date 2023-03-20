@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Comment from "../Cards/Comment";
 import CreateMessageForm from "../Forms/CreateMessageForm";
 import ErrorMessage from "../ErrorMessage";
-import { Box, Typography, Stack } from "@mui/material";
+import Loader from "../Loader";
+import { Box, Typography, Stack, Collapse } from "@mui/material";
 import PropTypes from "prop-types";
 
 const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
@@ -18,10 +19,12 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
     const [hasNewComments, setHasNewComments] = useState(0);
     const [commentsNumber, setCommentsNumber] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
     useEffect(() => {
+        setLoading(true);
         fetch(
             `${process.env.REACT_APP_BACKEND_URI}/API/posts/all/${parentId}`,
             {
@@ -62,6 +65,8 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
                                 token: token,
                                 admin: data.admin,
                                 loggedUserId: data.loggedUserId,
+                                currentUserLikeValue:
+                                    result.currentUserLikeValue,
                             }}
                             setHasNewComments={setHasNewComments}
                         />
@@ -75,7 +80,8 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
                     error
                 );
                 setErrorMessage("Impossible d'afficher les commentaires.");
-            });
+            })
+            .finally(setLoading(false));
     }, [parentId, hasNewComments, token, navigate]);
 
     useEffect(() => {
@@ -84,7 +90,7 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
 
     return (
         <>
-            {showCommentForm && (
+            <Collapse in={showCommentForm}>
                 <CreateMessageForm
                     isReply={true}
                     token={token}
@@ -92,7 +98,7 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
                     setHasNewMessages={setHasNewComments}
                     setMessages={setComments}
                 />
-            )}
+            </Collapse>
             {comments.length > 0 && (
                 <Box
                     sx={{

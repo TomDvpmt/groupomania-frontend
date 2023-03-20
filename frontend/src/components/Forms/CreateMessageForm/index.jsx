@@ -5,12 +5,19 @@ import { Box, TextField, Button, Typography } from "@mui/material";
 import { theme } from "../../../utils/theme";
 import PropTypes from "prop-types";
 
-const CreateMessageForm = ({ isReply, token, parentId, setHasNewMessages }) => {
+const CreateMessageForm = ({
+    isReply,
+    token,
+    parentId,
+    setHasNewMessages,
+    setShowNewPostForm,
+}) => {
     CreateMessageForm.propTypes = {
         isReply: PropTypes.bool,
         token: PropTypes.string,
         parentId: PropTypes.number,
         setHasNewMessages: PropTypes.func,
+        setShowNewPostForm: PropTypes.func,
     };
 
     const [errorMessage, setErrorMessage] = useState("");
@@ -61,11 +68,13 @@ const CreateMessageForm = ({ isReply, token, parentId, setHasNewMessages }) => {
                             .json()
                             .then(({ message }) => setErrorMessage(message));
                     } else {
+                        e.target.imageFile.value = "";
+                        setChosenFile("");
+                        setShowNewPostForm(false);
                         setHasNewMessages(
                             (hasNewMessages) => hasNewMessages + 1
                         );
                         setContent("");
-                        setChosenFile("");
                     }
                 })
                 .catch((error) => {

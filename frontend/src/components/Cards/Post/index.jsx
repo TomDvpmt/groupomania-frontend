@@ -17,6 +17,7 @@ import {
     Typography,
     IconButton,
     Link,
+    Collapse,
 } from "@mui/material";
 import { MailOutline } from "@mui/icons-material";
 import PropTypes from "prop-types";
@@ -31,7 +32,6 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
     const token = userData.token;
     const canModify =
         userData.admin || postData.authorId === userData.loggedUserId;
-    const loggedUserId = parseInt(localStorage.getItem("userId"));
 
     const postId = postData.id;
     const authorName = `${postData.authorFirstName} ${postData.authorLastName}`;
@@ -110,6 +110,9 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                     image={postData.imgUrl}
                     component="img"
                     alt="Illustration du message"
+                    sx={{
+                        objectFit: "scale-down",
+                    }}
                 />
             )}
             {canModify && (
@@ -158,7 +161,7 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                     </Button>
                 </Box>
             </CardActions>
-            {showPostUpdateForm && (
+            <Collapse in={showPostUpdateForm}>
                 <UpdateMessageForm
                     token={token}
                     postId={postId}
@@ -169,7 +172,7 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                     setShowUpdateForm={setShowPostUpdateForm}
                     setHasNewMessages={setHasNewPosts}
                 />
-            )}
+            </Collapse>
             {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
             <Comments
                 token={token}

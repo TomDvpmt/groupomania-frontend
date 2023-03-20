@@ -123,35 +123,6 @@ exports.getAllPosts = (req, res, next) => {
     })
 };
 
-// exports.getOnePost = (req, res, next) => {
-//     const postId = req.params.id;
-
-//     connectToDb("getOnePost")
-//     .then(connection => {
-//         connection.execute(`
-//             SELECT content, img_url, modified
-//             FROM posts
-//             WHERE id = ?
-//         `, [postId])
-//         .then(([rows]) => {
-//             res.status(200).json({
-//                 content: rows[0].content,
-//                 imgUrl: rows[0].img_url,
-//                 modified: rows[0].modified
-//             });
-//             close(connection);
-//         })
-//         .catch(error => {
-//             close(connection);
-//             handleError(res, "Impossible de récupérer les données du message.", 400, error)
-//         }
-//         )
-//     })
-//     .catch(error => {
-//         handleError(res, "Impossible de se connecter à la base de données.", 500, error);
-//     })
-// };
-
 exports.createPost = (req, res, next) => {
 
     const userId = req.auth.userId;
@@ -164,9 +135,10 @@ exports.createPost = (req, res, next) => {
             handleError(res, "Le message ne peut pas être vide.", 400);
         }
         const imgUrl = 
-            req.file ? 
-            `${req.protocol}://${req.get("host")}/images/${req.file.filename}` : 
-            "";
+            req.file 
+            ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}` 
+            : ""
+        ;
         connection.execute(
             `
             INSERT INTO posts (parent_id, author_id, content, img_url, created_at)
@@ -198,19 +170,19 @@ exports.updatePost = (req, res, next) => {
     connectToDb("updatePost")
     .then(connection => {
         if(req.body.deleteImg) {
+            console.log("postId : ", postId, "prevImgUrl :", prevImgUrl)
             connection.execute(
                 `UPDATE posts
                 SET 
-                    content = ?,
                     img_url = "",
                     modified = 1
                 WHERE id = ?`, 
-                [content, postId])
+                [postId])
                 .then(() => {
                     close(connection);
                     const formerFileName = prevImgUrl.split("/images/")[1];
                     prevImgUrl !== "" && fs.unlink(`images/${formerFileName}`, (error) => {
-                        if(error) handleError(res, "Chargement du fichier impossible.", 400, error);
+                        if(error) handleError(res, "Suppression du fichier impossible.", 400, error);
                     })
                     console.log("Image supprimée.")
                     res.status(200).json({message: "Image supprimée."})
@@ -497,183 +469,3 @@ exports.likePost = (req, res, next) => {
             );
         });
 };
-
-
-// exports.getPostLikes = (req, res, next) => {
-//     const postId = req.params.id;
-
-//     connectToDb("getPostLikes")
-//     .then(connection => {
-//         connection.execute(`
-//         SELECT id, likes_count, dislikes_count
-//         FROM posts
-//         LEFT JOIN 
-//             (SELECT COUNT(*) AS likes_count, post_id
-//             FROM likes
-//             WHERE like_value = 1
-//             GROUP BY post_id) 
-//             AS likes_table
-//         ON posts.id = likes_table.post_id
-//         LEFT JOIN 
-//             (SELECT COUNT(*) AS dislikes_count, post_id
-//             FROM likes
-//             WHERE like_value = -1
-//             GROUP BY post_id)
-//             AS dislikes_table
-//         ON posts.id = dislikes_table.post_id
-//         WHERE id = ?
-//         ORDER BY created_at DESC;
-//         `, [postId])
-//         .then(([rows]) => {
-//             res.status(200).json({
-//                 likesCount: rows[0].likes_count,
-//                 dislikesCount: rows[0].dislikes_count
-//             })
-//         })
-//         .catch(error => {
-//             close(connection);
-//             handleError(res, "Impossible de récupérer les données (likes / dislikes).", 400, error);
-//         })
-//     })
-//     .catch(error => {
-//         handleError(res, "Impossible de se connecter à la base de données.", 500, error);
-//     })
-// }
-
-// exports.getPostUserLike = (req, res, next) => {
-//     const postId = req.params.id;
-//     const userId = req.auth.userId;
-
-//     connectToDb("getPostUserLike")
-//     .then(connection => {
-//         connection.execute(`
-//             SELECT like_value 
-//             FROM likes
-//             WHERE user_id = ? AND post_id = ?
-//         `, [userId, postId])
-//         .then(([rows]) => {
-//             if(rows.length === 0) {
-//                 res.status(200).json(0)
-//             }
-//             else res.status(200).json(rows[0].like_value)
-//         } )
-//         .catch(error => {
-//             close(connection);
-//             handleError(res, "Impossible de récupérer les données (likes / dislikes).", 400, error);
-//         })
-//     })
-//     .catch(error => {
-//         handleError(res, "Impossible de se connecter à la base de données.", 500, error);
-//     })
-// }
-
-// exports.getAllComments = (req, res, next) => {
-//     const userId = req.auth.userId;
-//     const postId = req.params.id;
-
-//     connectToDb("getAllComments")
-//     .then(connection => {
-//         connection.execute(`
-//         SELECT comment_id, parent_id, comment_author_id, email, content, img_url, created_at, likes_count, dislikes_count
-//         FROM 
-//             (SELECT 
-//                 posts.id AS comment_id, 
-//                 posts.parent_id,
-//                 posts.author_id AS comment_author_id, 
-//                 users.email,
-//                 posts.content, 
-//                 posts.img_url, 
-//                 posts.created_at, 
-//                 users.id AS user_id
-//             FROM posts
-//             JOIN users
-//             ON posts.author_id = users.id) 
-//             AS posts_users
-//             LEFT JOIN 
-//                 (SELECT COUNT(*) AS likes_count, post_id
-//                 FROM likes
-//                 WHERE like_value = 1
-//                 GROUP BY post_id) 
-//                 AS likes_table
-//             ON posts_users.comment_id = likes_table.post_id
-//             LEFT JOIN 
-//                 (SELECT COUNT(*) AS dislikes_count, post_id
-//                 FROM likes
-//                 WHERE like_value = -1
-//                 GROUP BY post_id)
-//                 AS dislikes_table
-//             ON posts_users.comment_id = dislikes_table.post_id
-//         WHERE parent_id = ?
-//         ORDER BY created_at DESC
-//         `, [postId])
-//         .then(([rows]) => {
-//             const results = [];
-            
-//             for(let i = 0 ; i < rows.length ; i++) {
-//                 results[i] =
-//                     {
-//                         commentId: rows[i].comment_id,
-//                         commentUserId: rows[i].comment_user_id,
-//                         email: rows[i].email,
-//                         content: rows[i].content,
-//                         imgUrl: rows[i].img_url,
-//                         date: rows[i].created_at,
-//                         likesCount: rows[i].likes_count,
-//                         dislikesCount: rows[i].dislikes_count,
-//                         currentUserLikeValue: rows[i].current_user_like_value
-//                     };
-//             };
-//             close(connection);
-//             return {
-//                 comments: results, 
-//                 admin: req.auth.admin === 1, 
-//                 loggedUserId: req.auth.userId
-//             };
-//         })
-//         .then(results => res.status(200).json(results))
-//         .catch(error => {
-//             close(connection);
-//             handleError(res, "Impossible de récupérer les commentaires.", 400, error);
-//         });
-//     })
-//     .catch(error => {
-//         handleError(res, "Impossible de se connecter à la base de données.", 500, error);
-//     });
-// }
-
-// exports.createComment = (req, res, next) => {
-//     const userId = req.auth.userId;
-//     const postId = req.params.id;
-
-//     const createdAt = Date.now();
-//     connectToDb("createComment")
-//     .then(connection => {
-//         if(!req.file && !req.body.content) {
-//             handleError(res, "Le message ne peut pas être vide.", 400);
-//         }
-//         const imgUrl = 
-//             req.file ? 
-//             `${req.protocol}://${req.get("host")}/images/${req.file.filename}` : 
-//             "";
-//         connection.execute(
-//             `
-//             INSERT INTO posts (parent_id, user_id, content, img_url, created_at)
-//             VALUES (?, ?, ?, ?, ?)
-//             `,
-//             [postId, userId, content, imgUrl, createdAt]
-//         )
-//         .then(() => {
-//             close(connection);
-//             console.log("Commentaire ajouté à la base de données.");
-//             res.status(201).json();
-            
-//         })
-//         .catch(error => {
-//             close(connection);
-//             handleError(res, "Impossible de publier le commentaire.", 400, error);
-//         }) 
-//     })
-//     .catch(error => {
-//         handleError(res, "Impossible de se connecter à la base de données.", 500, error);
-//     })
-// }

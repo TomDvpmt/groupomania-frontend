@@ -15,6 +15,7 @@ const UserUpdateForm = ({
     setLastName,
     setEmail,
     setErrorMessage,
+    showUserUpdateForm,
     setShowUserUpdateForm,
     setShowValidationMessage,
 }) => {
@@ -28,6 +29,7 @@ const UserUpdateForm = ({
         setLastName: PropTypes.func,
         setEmail: PropTypes.func,
         setErrorMessage: PropTypes.func,
+        showUserUpdateForm: PropTypes.bool,
         setShowUserUpdateForm: PropTypes.func,
         setShowValidationMessage: PropTypes.func,
     };
@@ -35,6 +37,11 @@ const UserUpdateForm = ({
     const [newFirstName, setNewFirstName] = useState(prevFirstName);
     const [newLastName, setNewLastName] = useState(prevLastName);
     const [newEmail, setNewEmail] = useState(prevEmail);
+    const [newFirstNameError, setNewFirstNameError] = useState("");
+    const [newLastNameError, setNewLastNameError] = useState("");
+    const [newEmailError, setNewEmailError] = useState("");
+
+    console.log("prevFirstName :", prevFirstName);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -68,7 +75,6 @@ const UserUpdateForm = ({
                     }
                 })
                 .then((data) => {
-                    console.log(data);
                     setFirstName(newFirstName);
                     setLastName(newLastName);
                     setEmail(newEmail);
@@ -82,19 +88,29 @@ const UserUpdateForm = ({
     };
 
     return (
-        <Box component="form" onSubmit={handleSubmit}>
+        <Box component="form" onSubmit={handleSubmit} mt={2} mb={6}>
             <FirstNameField
                 firstName={newFirstName}
                 setFirstName={setNewFirstName}
+                firstNameError={newFirstNameError}
+                setFirstNameError={setNewFirstNameError}
+                setGlobalErrorMessage={setErrorMessage}
+                hasAutoFocus={true}
             />
             <LastNameField
                 lastName={newLastName}
                 setLastName={setNewLastName}
+                lastNameError={newLastNameError}
+                setLastNameError={setNewLastNameError}
+                setGlobalErrorMessage={setErrorMessage}
             />
             <EmailField
                 email={newEmail}
                 setEmail={setNewEmail}
-                autoFocus={false}
+                emailError={newEmailError}
+                setEmailError={setNewEmailError}
+                setGlobalErrorMessage={setErrorMessage}
+                hasAutoFocus={false}
             />
             <Button type="submit" variant="contained">
                 Valider

@@ -166,9 +166,6 @@ exports.updateUser = (req, res, next) => {
     const firstName = req.body.firstName ? req.body.firstName : null;
     const lastName = req.body.lastName ? req.body.lastName : null;
     const email = req.body.email;
-    console.log("firstName : ", firstName);
-
-    // const {firstName, lastName, email} = {...req.body};
 
     if(!req.auth.admin && paramUserId !== loggedUserId) {
         res.status(401).json({message: "Non autorisé"});
@@ -191,8 +188,6 @@ exports.updateUser = (req, res, next) => {
         .catch(error => {
             handleError(res, "Impossible de se connecter à la base de données.", 500, error)
         })
-
-
     }
 }
 

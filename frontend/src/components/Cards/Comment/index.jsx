@@ -15,6 +15,7 @@ import {
     Link,
     Typography,
     IconButton,
+    Collapse,
 } from "@mui/material";
 import { MailOutline } from "@mui/icons-material";
 import PropTypes from "prop-types";
@@ -107,6 +108,9 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                         image={imgUrl}
                         component="img"
                         alt="Illustration du commentaire"
+                        sx={{
+                            objectFit: "scale-down",
+                        }}
                     />
                 )}
                 {canModify && (
@@ -140,8 +144,7 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                         />
                     )}
                 </CardActions>
-
-                {showCommentUpdateForm && (
+                <Collapse in={showCommentUpdateForm}>
                     <UpdateMessageForm
                         token={token}
                         postId={commentId}
@@ -152,7 +155,7 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                         setShowUpdateForm={setShowCommentUpdateForm}
                         setHasNewMessages={setHasNewComments}
                     />
-                )}
+                </Collapse>
                 {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
             </>
         </Card>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Routes, Route } from "react-router-dom";
 import NoNavLayout from "../../layout/NoNavLayout";
 import NavLayout from "../../layout/NavLayout";
@@ -9,6 +9,7 @@ import Profile from "../Profile";
 import Error404 from "../Error404";
 
 const App = () => {
+    const isLogged = localStorage.getItem("token");
     return (
         <Routes>
             <Route element={<NoNavLayout isLogged={false} />}>
@@ -21,7 +22,7 @@ const App = () => {
             <Route element={<NavLayout page="profile" isLogged={true} />}>
                 <Route path="/users/:userId" element={<Profile />} />
             </Route>
-            <Route element={<NavLayout page="error404" isLogged={true} />}>
+            <Route element={<NavLayout page="error404" isLogged={isLogged} />}>
                 <Route path="*" element={<Error404 />} />
             </Route>
         </Routes>

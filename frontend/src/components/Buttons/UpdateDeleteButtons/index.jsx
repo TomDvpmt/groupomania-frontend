@@ -44,8 +44,8 @@ const UpdateDeleteButtons = ({
             {showAlert && (
                 <AlertDialog
                     issue="message"
+                    issueId={messageId}
                     token={token}
-                    postId={messageId}
                     imgUrl={imgUrl}
                     setHasNewMessages={setHasNewMessages}
                     setErrorMessage={setErrorMessage}

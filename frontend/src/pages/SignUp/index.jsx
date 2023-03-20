@@ -118,6 +118,7 @@ const SignUp = () => {
                     onSubmit={handleSubmit}
                     sx={{
                         mt: 2,
+                        width: "100%",
                     }}
                     noValidate
                 >

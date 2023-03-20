@@ -1,7 +1,6 @@
 import logo from "../../assets/brand/icon-left-font-cropped.png";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
 import {
     Box,
     Toolbar,
@@ -14,7 +13,6 @@ import {
 } from "@mui/material";
 import { Logout } from "@mui/icons-material";
 import { theme } from "../../utils/theme";
-
 import PropTypes from "prop-types";
 
 const Header = ({ isLogged, page }) => {
@@ -43,8 +41,7 @@ const Header = ({ isLogged, page }) => {
     };
 
     const handleLogOut = () => {
-        localStorage.setItem("token", null);
-        localStorage.setItem("userId", null);
+        localStorage.clear();
         navigate("/login");
     };
 

@@ -170,7 +170,7 @@ exports.deleteUser = (token, userId, setErrorMessage, navigate) => {
             if (response.status >= 400) {
                 response.json().then(({ message }) => setErrorMessage(message));
             } else {
-                localStorage.setItem("token", null);
+                localStorage.clear();
                 navigate("/login");
             }
         })

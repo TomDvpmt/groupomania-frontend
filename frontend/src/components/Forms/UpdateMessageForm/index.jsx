@@ -143,7 +143,7 @@ const UpdateMessageForm = ({
                     <AlertDialog
                         issue="image"
                         token={token}
-                        postId={postId}
+                        issueId={postId}
                         updateContent={updateContent}
                         imgUrl={imgUrl}
                         setHasNewMessages={setHasNewMessages}

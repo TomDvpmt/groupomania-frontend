@@ -1,5 +1,12 @@
 const mysql = require("mysql2/promise");
 
+
+/** Connects the application to the database
+ * 
+ * @param {String} message 
+ * @returns {import("mysql2/promise").Connection}
+ */
+
 const connectToDb = async (message) => {
     try{
         const connection = await mysql.createConnection({

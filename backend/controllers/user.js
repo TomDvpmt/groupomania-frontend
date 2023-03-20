@@ -2,15 +2,39 @@ const bcrypt = require("bcrypt");
 const jwt = require ("jsonwebtoken");
 const connectToDb = require("../database/db-connect-mysql");
 
+
+/** Closes connection to database
+ * 
+ * @param {import("mysql2/promise").Connection} connection
+ */
+
 const close = (connection) => {
     connection.end();
     console.log("========= Déconnexion de la base de données. =============");
 };
 
+
+/** Handles error : sets res.status and the error message, and logs the error
+ * 
+ * @param {Response} res
+ * @param {String} message 
+ * @param {Number} status 
+ * @param {Error} error
+ */
+
 const handleError = (res, message, status, error) => {
     console.log(message, error);
     res.status(status).json({message: message});
 }
+
+
+
+/** Logs the user automatically after signing up
+ * 
+ * @param {import("mysql2/promise").Connection} connection 
+ * @param {String} email 
+ * @param {Response} res 
+ */
 
 const logAfterSignUp = (connection, email, res) => {
     connection.execute(`
@@ -33,6 +57,13 @@ const logAfterSignUp = (connection, email, res) => {
     })
     .catch(error => console.log("============ Connexion à l'application impossible :", error));
 }
+
+
+/** Creates a user in the database
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ */
 
 exports.signUp = async (req, res, next) => {
 
@@ -64,6 +95,13 @@ exports.signUp = async (req, res, next) => {
         })   
         .catch(error => console.error("Impossible de se connecter à la base de données :", error))
 };
+
+
+/** Logs the user in
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ */
 
 exports.login = (req, res, next) => {
 
@@ -125,6 +163,13 @@ exports.login = (req, res, next) => {
         .catch(error => console.error("=========== Impossible de se connecter à la base de données :", error))
 };
 
+
+/** Gets a user's info
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ */
+
 exports.getOneUser = (req, res, next) => {
     const paramUserId = parseInt(req.params.userId);
     const userId = req.auth.userId;
@@ -160,6 +205,12 @@ exports.getOneUser = (req, res, next) => {
         })
 }
 
+/** Updates a user's info
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ */
+
 exports.updateUser = (req, res, next) => {
     const paramUserId = parseInt(req.params.userId);
     const loggedUserId = req.auth.userId;
@@ -190,6 +241,12 @@ exports.updateUser = (req, res, next) => {
         })
     }
 }
+
+/** Removes a user from the database
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ */
 
 exports.deleteUser = (req, res, next) => {
     const paramUserId = parseInt(req.params.userId);

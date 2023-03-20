@@ -20,7 +20,6 @@ const Home = () => {
 
     useEffect(() => {
         setLoading(true);
-        console.log("loading");
         !token && navigate("/login");
 
         fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/all/0`, {

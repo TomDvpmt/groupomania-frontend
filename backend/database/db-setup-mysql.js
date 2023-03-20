@@ -1,7 +1,16 @@
 const mysql = require("mysql2/promise");
 const connectToDb = require("./db-connect-mysql");
 
-const databaseExists = async(connection, dbName) => {
+
+
+/** Checks if the database exists
+ * 
+ * @param {import("mysql2/promise").Connection} connection 
+ * @param {String} dbName 
+ * @returns {Boolean}
+ */
+
+const databaseExists = async (connection, dbName) => {
     try{
         const [rows] = await connection.execute(
             `
@@ -16,18 +25,24 @@ const databaseExists = async(connection, dbName) => {
     }
 }
 
+/** Initializes the database (creates it if it doesn't exist, then connects to it)
+ * 
+ * @param {String} dbName 
+ * @returns {import("mysql2/promise").Connection}
+ */
+
 const initializeDb = async (dbName) => {
     try{
-        const firtsConnection = await mysql.createConnection({
+        const firstConnection = await mysql.createConnection({
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
         });
 
-        const groupomaniaDbExists = await databaseExists(firtsConnection, dbName);
+        const groupomaniaDbExists = await databaseExists(firstConnection, dbName);
 
         if(!groupomaniaDbExists) {
-            await firtsConnection.execute(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
+            await firstConnection.execute(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
             console.log(`========= Base de données "${dbName}" créée. =========`);
         }
 
@@ -38,6 +53,14 @@ const initializeDb = async (dbName) => {
         console.error("========= Connexion à la base de données échouée: ", error);
     }
 };
+
+/** Checks if a table exists in the database
+ * 
+ * @param {import("mysql2/promise").Connection} connection 
+ * @param {String} dbName 
+ * @param {String} tableName 
+ * @returns {Boolean}
+ */
 
 const tableExists = async (connection, dbName, tableName) => {
     try{
@@ -57,6 +80,12 @@ const tableExists = async (connection, dbName, tableName) => {
         console.log(error);
     }
 };
+
+/** Sets up the database's tables (including triggers)
+ * 
+ * @param {import("mysql2/promise").Connection} connection 
+ * @param {String} dbName 
+ */
 
 const setupDbTables = async (connection, dbName) => {
 
@@ -104,20 +133,6 @@ const setupDbTables = async (connection, dbName) => {
     `);
     !likesExists && console.log(`========= Table "likes" créée. =========`);
 
-    // await connection.query(`
-    //     CREATE TABLE IF NOT EXISTS comments (
-    //         id INT AUTO_INCREMENT PRIMARY KEY,
-    //         parent_id INT,
-    //         author_id INT,
-    //         content VARCHAR(5000),
-    //         img_url VARCHAR(500),
-    //         created_at BIGINT NOT NULL,
-    //         FOREIGN KEY (author_id) REFERENCES users(id),
-    //         FOREIGN KEY (parent_id) REFERENCES posts(id)
-    //     )
-    // `);
-    // !commentsExists && console.log(`========= Table "comments" créée. =========`)
-
     await connection.query(`
         CREATE TRIGGER IF NOT EXISTS posts_before_delete
         BEFORE DELETE ON posts
@@ -144,6 +159,9 @@ const setupDbTables = async (connection, dbName) => {
 
     console.log("========= Tables vérifiées. =========== ");
 };
+
+/** Sets up the database (initialization + tables setup)
+ */
 
 const dbSetUp = async () => {
     const dbName = process.env.DB_NAME;

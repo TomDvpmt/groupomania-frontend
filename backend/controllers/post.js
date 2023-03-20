@@ -2,12 +2,22 @@ const fs = require("fs");
 
 const connectToDb = require("../database/db-connect-mysql");
 
+
+
+/** Closes connection to database
+ * 
+ * @param {import("mysql2/promise").Connection} connection
+ */
+
 const close = (connection) => {
     connection.end();
     console.log("========= Déconnexion de la base de données. =============");
 };
 
-/**
+
+
+/** Handles error : sets res.status and the error message, and logs the error
+ * 
  * @param {Response} res
  * @param {String} message 
  * @param {Number} status 
@@ -19,68 +29,79 @@ const handleError = (res, message, status, error) => {
     res.status(status).json({message: message});
 }
 
+
+/** Gets all the messages (posts or comments)
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ */
+
 exports.getAllPosts = (req, res, next) => {
 
     const userId = req.auth.userId;
     const parentId = req.params.parentId;
 
     connectToDb("getAllPosts" + parentId === 0 ? "posts" : "comments")
+    .catch(error => {
+        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
+    })
     .then(connection => {
         connection.execute(`
-        SELECT 
-            id, 
-            parent_id,
-            author_id,
-            first_name,
-            last_name,
-            admin, 
-            email, 
-            content, 
-            img_url, 
-            created_at, 
-            modified,
-            IFNULL(likes_count, 0) AS likes_count,
-            IFNULL(dislikes_count, 0) AS dislikes_count,
-            IFNULL(current_user_like_value, 0) AS current_user_like_value
-        FROM
-            (SELECT 
-                posts.id, 
-                posts.parent_id,
-                posts.author_id, 
-                users.email,
-                users.first_name,
-                users.last_name,
-                users.admin,
-                posts.content, 
-                posts.img_url, 
-                posts.created_at,
-                posts.modified
-            FROM posts
-            JOIN users
-            ON posts.author_id = users.id)
-        AS posts_users
-        LEFT JOIN 
-            (SELECT COUNT(*) AS likes_count, post_id
-            FROM likes
-            WHERE like_value = 1
-            GROUP BY post_id) 
-        AS likes_table
-        ON posts_users.id = likes_table.post_id
-        LEFT JOIN
-            (SELECT COUNT(*) AS dislikes_count, post_id
-            FROM likes
-            WHERE like_value = -1
-            GROUP BY post_id )
-        AS dislikes_table
-        ON posts_users.id = dislikes_table.post_id
-        LEFT JOIN
-            (SELECT user_id, post_id, like_value AS current_user_like_value
-            FROM likes
-            WHERE user_id = ?) AS like_value_table
-        ON posts_users.id = like_value_table.post_id
-        WHERE parent_id = ?
-        ORDER BY created_at DESC
+            SELECT 
+                id, 
+                parent_id,
+                author_id,
+                first_name,
+                last_name,
+                admin, 
+                email, 
+                content, 
+                img_url, 
+                created_at, 
+                modified,
+                IFNULL(likes_count, 0) AS likes_count,
+                IFNULL(dislikes_count, 0) AS dislikes_count,
+                IFNULL(current_user_like_value, 0) AS current_user_like_value
+            FROM
+                (SELECT 
+                    posts.id, 
+                    posts.parent_id,
+                    posts.author_id, 
+                    users.email,
+                    users.first_name,
+                    users.last_name,
+                    users.admin,
+                    posts.content, 
+                    posts.img_url, 
+                    posts.created_at,
+                    posts.modified
+                FROM posts
+                JOIN users
+                ON posts.author_id = users.id)
+            AS posts_users
+            LEFT JOIN 
+                (SELECT COUNT(*) AS likes_count, post_id
+                FROM likes
+                WHERE like_value = 1
+                GROUP BY post_id) 
+            AS likes_table
+            ON posts_users.id = likes_table.post_id
+            LEFT JOIN
+                (SELECT COUNT(*) AS dislikes_count, post_id
+                FROM likes
+                WHERE like_value = -1
+                GROUP BY post_id )
+            AS dislikes_table
+            ON posts_users.id = dislikes_table.post_id
+            LEFT JOIN
+                (SELECT user_id, post_id, like_value AS current_user_like_value
+                FROM likes
+                WHERE user_id = ?) AS like_value_table
+            ON posts_users.id = like_value_table.post_id
+            WHERE parent_id = ?
+            ORDER BY created_at DESC
             `, [userId, parentId])
+
         .then(([rows]) => {
             const results = [];
             
@@ -109,19 +130,23 @@ exports.getAllPosts = (req, res, next) => {
                 admin: req.auth.admin === 1, 
                 loggedUserId: req.auth.userId
             };
-        })
-        .then((response) => {
-            res.status(200).json(response);
-        })
-        .catch(error => {
-            close(connection);
-            handleError(res, "Impossible de récupérer les données.", 400, error);
-        } )
+            })
+            .then((response) => {
+                res.status(200).json(response);
+            })
+            .catch((error) => {
+                close(connection);
+                handleError(res, "Impossible de récupérer les données.", 400, error);
+            })
     })
-    .catch(error => {
-        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
-    })
+    
 };
+
+/** Creates a message (post or comment)
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ */
 
 exports.createPost = (req, res, next) => {
 
@@ -130,6 +155,9 @@ exports.createPost = (req, res, next) => {
     const parentId = req.body.parentId;
     const createdAt = Date.now();
     connectToDb("createPost")
+    .catch(error => {
+        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
+    })
     .then(connection => {
         if(!req.file && !req.body.content) {
             handleError(res, "Le message ne peut pas être vide.", 400);
@@ -145,22 +173,26 @@ exports.createPost = (req, res, next) => {
             VALUES (?, ?, ?, ?, ?)
             `,
             [parentId, userId, content, imgUrl, createdAt]
-        )
-        .then(() => {
-            close(connection);
-            console.log("Message ajouté à la base de données.");
-            res.status(201).json();
-            
-        })
-        .catch(error => {
-            close(connection);
-            handleError(res, "Impossible de publier le message.", 400, error);
-        }) 
+        );
+        return connection;
+    })
+    .then((connection) => {
+        close(connection);
+        console.log("Message ajouté à la base de données.");
+        res.status(201).json();
     })
     .catch(error => {
-        handleError(res, "Impossible de se connecter à la base de données.", 500, error);
-    })
+        close(connection);
+        handleError(res, "Impossible de publier le message.", 400, error);
+    }) 
 };
+
+
+/** Updates a message (post or comment)
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ */
 
 exports.updatePost = (req, res, next) => {
     const postId = req.params.id;
@@ -202,19 +234,19 @@ exports.updatePost = (req, res, next) => {
                     modified = 1
                 WHERE id = ?`, 
                 [content, newImgUrl, postId])
-            .then(() => {
-                close(connection);
-                const formerFileName = prevImgUrl.split("/images/")[1];
-                prevImgUrl !== "" && fs.unlink(`images/${formerFileName}`, (error) => {
-                    if(error) handleError(res, "Chargement du fichier impossible.", 400, error);
+                .then(() => {
+                    close(connection);
+                    const formerFileName = prevImgUrl.split("/images/")[1];
+                    prevImgUrl !== "" && fs.unlink(`images/${formerFileName}`, (error) => {
+                        if(error) handleError(res, "Chargement du fichier impossible.", 400, error);
+                    })
+                    console.log("Post mis à jour.")
+                    res.status(200).json({message: "Message mis à jour."})
                 })
-                console.log("Post mis à jour.")
-                res.status(200).json({message: "Message mis à jour."})
-            })
-            .catch(error => {
-                close(connection);
-                handleError(res, "Mise à jour du message impossible.", 400, error);
-            })
+                .catch(error => {
+                    close(connection);
+                    handleError(res, "Mise à jour du message impossible.", 400, error);
+                })
         } else {
             connection.execute(
                 `UPDATE posts
@@ -223,15 +255,15 @@ exports.updatePost = (req, res, next) => {
                     modified = 1
                 WHERE id = ?`, 
                 [content, postId])
-            .then(() => {
-                close(connection);
-                console.log("Post mis à jour.")
-                res.status(200).json({message: "Message mis à jour."})
-            })
-            .catch((error) => {
-                close(connection);
-                handleError(res, "Mise à jour du message impossible.", 400, error);
-            })
+                .then(() => {
+                    close(connection);
+                    console.log("Post mis à jour.")
+                    res.status(200).json({message: "Message mis à jour."})
+                })
+                .catch((error) => {
+                    close(connection);
+                    handleError(res, "Mise à jour du message impossible.", 400, error);
+                })
         }
     })
     .catch(error => {
@@ -240,32 +272,47 @@ exports.updatePost = (req, res, next) => {
     
 };
 
+/** Deletes a message (post or comment)
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ */
+
 exports.deletePost = (req, res, next) => {
     const postId = req.params.id;
     const imgUrl = req.body.imgUrl;
+    
     connectToDb("deletePost")
-        .then(connection => {
-            connection.execute(`
-                DELETE FROM posts
-                WHERE id = ? OR parent_id = ?
-            `, [postId, postId])
-            .then(() => {
-                close(connection);
-                if(imgUrl) {
-                    const fileName = imgUrl.split("/images/")[1];
-                    fs.unlink(`images/${fileName}`, (error) => {
-                        if(error) handleError(res, "Impossible de supprimer le fichier.", 400, error);
-                    });
-                }
-                res.status(200).json();
-            })
-            .catch(error => {
-                close(connection);
-                handleError(res, "Impossible de supprimer le message.", 400, error);
-            })
-        })
-        .catch(error => handleError(res, "Impossible de se connecter à la base de données.", 500, error));
+    .catch(error => handleError(res, "Impossible de se connecter à la base de données.", 500, error))
+    .then(connection => {
+        connection.execute(`
+            DELETE FROM posts
+            WHERE id = ? OR parent_id = ?
+        `, [postId, postId]);
+        return connection;
+    })
+    .then((connection) => {
+        close(connection);
+        if(imgUrl) {
+            const fileName = imgUrl.split("/images/")[1];
+            fs.unlink(`images/${fileName}`, (error) => {
+                if(error) handleError(res, "Impossible de supprimer le fichier.", 400, error);
+            });
+        }
+        res.status(200).json();
+    })
+    .catch(error => {
+        close(connection);
+        handleError(res, "Impossible de supprimer le message.", 400, error);
+    })
 };
+
+
+/** Adds or cancels a like or dislike on a message (post or comment)
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ */
 
 exports.likePost = (req, res, next) => {
     const postId = req.params.id;
@@ -330,14 +377,14 @@ exports.likePost = (req, res, next) => {
                                 })
                                 .catch(error => {
                                     close(connection);
-                                    handleError(res, "Like / dislike impossible (1).", 400, error)
+                                    handleError(res, "Création du like / dislike impossible (2).", 400, error)
                                 })
                             })
                             .catch((error) => {
                                 close(connection);
                                 handleError(
                                     res,
-                                    "Like / dislike impossible (2).",
+                                    "Création du like / dislike impossible (1).",
                                     400,
                                     error
                                 );

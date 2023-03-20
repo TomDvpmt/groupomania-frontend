@@ -1,25 +1,4 @@
-/**
- *
- * @param {String} endpoint
- * @param {Object} credentialsData
- * @returns {Response}
- */
-
-exports.fetchCredentials = (endpoint, credentialsData) => {
-    const response = fetch(
-        `${process.env.REACT_APP_BACKEND_URI}/API/auth/${endpoint}`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(credentialsData),
-        }
-    );
-    return response;
-};
-
-/**
+/** Strips an input from undesirable characters to prevent XSS
  *
  * @param {String} input
  * @returns {String}
@@ -40,6 +19,9 @@ exports.sanitize = (input) => {
     return input.replace(regExp, (match) => htmlCodes[match]);
 };
 
+/** A list of image MIME types
+ */
+
 exports.imgMimeTypes = {
     "image/jpg": "jpg",
     "image/jpeg": "jpg",
@@ -48,7 +30,7 @@ exports.imgMimeTypes = {
     "image/webp": "webp",
 };
 
-/**
+/** Formats a timestamp into a readable date
  *
  * @param {BigInt} timestamp
  * @returns {String}
@@ -65,7 +47,28 @@ exports.formatDate = (timestamp) => {
     return `Le ${rawDate.toLocaleDateString()} à ${hours}:${minutes}`;
 };
 
-/**
+/** Sends credentials (for login and signup requests)
+ *
+ * @param {String} endpoint
+ * @param {Object} credentialsData
+ * @returns {Response}
+ */
+
+exports.fetchCredentials = (endpoint, credentialsData) => {
+    const response = fetch(
+        `${process.env.REACT_APP_BACKEND_URI}/API/auth/${endpoint}`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(credentialsData),
+        }
+    );
+    return response;
+};
+
+/** Sends a request to delete a message (post or comment)
  *
  * @param {String} token
  * @param {Number} postId
@@ -103,7 +106,7 @@ exports.deletePost = (
         });
 };
 
-/**
+/** Sends a request to delete the image of a message (post or comment)
  *
  * @param {String} updateContent
  * @param {String} imgUrl
@@ -151,7 +154,7 @@ exports.deleteImage = (
         });
 };
 
-/**
+/** Sends a request to delete a user's account
  *
  * @param {String} token
  * @param {Number} userId
@@ -180,7 +183,7 @@ exports.deleteUser = (token, userId, setErrorMessage, navigate) => {
         });
 };
 
-/**
+/** Sends a request to add or cancel a like or dislike to a message (post or comment)
  *
  * @param {Event} e
  * @param {String} token
@@ -230,7 +233,7 @@ exports.setLike = (
         .catch(() => setErrorMessage("Like / dislike impossible."));
 };
 
-/**
+/** Sets the state of a user's like / dislike on a message (post or comment)
  *
  * @param {String} token
  * @param {Number} postId
@@ -252,12 +255,9 @@ exports.setUserLikeStatus = (token, postId, setLikeStatus) => {
         .catch((error) => console.log(error));
 };
 
-/**
- * Tests if string input by user matches a regex
+/** Sets the eventual error messages on the form's fields (form validation).
  *
- * @param { String } inputName
- * @param { String } stringToTest
- * @returns { Boolean }
+ * @param { Array } fields
  */
 
 exports.setInputErrorMessages = (fields) => {
@@ -269,6 +269,13 @@ exports.setInputErrorMessages = (fields) => {
         }
     });
 };
+
+/** Tests if a string input by user matches a regex
+ *
+ * @param { String } inputName
+ * @param { String } stringToTest
+ * @returns { Boolean }
+ */
 
 const isValidInput = (inputName, stringToTest) => {
     const nameRegex = new RegExp(
@@ -308,7 +315,7 @@ class InputField {
     }
 }
 
-/**
+/** Gets the requested input fields from a form
  *
  * @param {Array} requestedFields
  * @returns {Array}
@@ -321,7 +328,7 @@ exports.getInputFields = (requestedFields) => {
     return inputFields;
 };
 
-/**
+/** Checks errors on a form's fields
  *
  * @param {Array} fields
  * @returns {Number} -

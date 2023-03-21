@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { fetchCredentials } from "../../utils/requests";
 import {
-    fetchCredentials,
     getInputFields,
     setInputErrorMessages,
     checkInputErrors,
-} from "../../utils/utils";
+} from "../../utils/formValidation";
 import { Link, Box, Typography, Container } from "@mui/material";
 import { theme } from "../../utils/theme";
 import SubmitButton from "../../components/Buttons/SubmitButton";

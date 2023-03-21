@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { fetchCredentials } from "../../utils/requests";
 import {
-    fetchCredentials,
     getInputFields,
     checkInputErrors,
     setInputErrorMessages,
-} from "../../utils/utils";
+} from "../../utils/formValidation";
 import { Container, Box, Typography, Link } from "@mui/material";
 import { theme } from "../../utils/theme";
 import FirstNameField from "../../components/FormFields/FirstNameField";

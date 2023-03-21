@@ -1,4 +1,3 @@
-import { Block } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
 
 const Loader = () => {

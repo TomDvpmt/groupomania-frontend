@@ -103,27 +103,24 @@ exports.getAllPosts = (req, res, next) => {
             `, [userId, parentId])
 
         .then(([rows]) => {
-            const results = [];
-            
-            for(let i = 0 ; i < rows.length ; i++) {
-                results[i] = 
-                    {
-                        id: rows[i].id,
-                        parentId: rows[0].parent_id,
-                        authorId: rows[i].author_id,
-                        firstName: rows[i].first_name,
-                        lastName: rows[i].last_name,
-                        admin: rows[i].admin,
-                        email: rows[i].email,
-                        content: rows[i].content,
-                        imgUrl: rows[i].img_url,
-                        date: rows[i].created_at,
-                        modified: rows[i].modified,
-                        likes: rows[i].likes_count,
-                        dislikes: rows[i].dislikes_count,
-                        currentUserLikeValue: rows[i].current_user_like_value
-                    }
-            };
+            const results = rows.map(row => 
+                ({
+                    id: row.id,
+                    parentId: parentId,
+                    authorId: row.author_id,
+                    firstName: row.first_name,
+                    lastName: row.last_name,
+                    admin: row.admin,
+                    email: row.email,
+                    content: row.content,
+                    imgUrl: row.img_url,
+                    date: row.created_at,
+                    modified: row.modified,
+                    likes: row.likes_count,
+                    dislikes: row.dislikes_count,
+                    currentUserLikeValue: row.current_user_like_value
+                })
+            )
             close(connection);
             return {
                 results: results, 
@@ -174,10 +171,9 @@ exports.createPost = (req, res, next) => {
             `,
             [parentId, userId, content, imgUrl, createdAt]
         );
-        return connection;
-    })
-    .then((connection) => {
         close(connection);
+    })
+    .then(() => {
         console.log("Message ajouté à la base de données.");
         res.status(201).json();
     })
@@ -289,10 +285,9 @@ exports.deletePost = (req, res, next) => {
             DELETE FROM posts
             WHERE id = ? OR parent_id = ?
         `, [postId, postId]);
-        return connection;
-    })
-    .then((connection) => {
         close(connection);
+    })
+    .then(() => {
         if(imgUrl) {
             const fileName = imgUrl.split("/images/")[1];
             fs.unlink(`images/${fileName}`, (error) => {

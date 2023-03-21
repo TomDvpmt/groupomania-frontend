@@ -96,7 +96,7 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
                     token={token}
                     parentId={parentId}
                     setHasNewMessages={setHasNewComments}
-                    setMessages={setComments}
+                    setShowNewMessageForm={setShowCommentForm}
                 />
             </Collapse>
             {comments.length > 0 && (
@@ -112,7 +112,11 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
                         {commentsNumber} commentaire
                         {commentsNumber > 1 ? "s" : ""} :{" "}
                     </Typography>
-                    <Stack spacing={2}>{comments}</Stack>
+                    {loading ? (
+                        <Loader />
+                    ) : (
+                        <Stack spacing={2}>{comments}</Stack>
+                    )}
                 </Box>
             )}
             {errorMessage && <ErrorMessage errorMessage={errorMessage} />}

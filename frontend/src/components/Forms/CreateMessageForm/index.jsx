@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ErrorMessage from "../../ErrorMessage";
-import { imgMimeTypes, sanitize } from "../../../utils/utils";
+import { imgMimeTypes, sanitize } from "../../../utils/formValidation";
 import { Box, TextField, Button, Typography } from "@mui/material";
 import { theme } from "../../../utils/theme";
 import PropTypes from "prop-types";
@@ -10,14 +10,14 @@ const CreateMessageForm = ({
     token,
     parentId,
     setHasNewMessages,
-    setShowNewPostForm,
+    setShowNewMessageForm,
 }) => {
     CreateMessageForm.propTypes = {
         isReply: PropTypes.bool,
         token: PropTypes.string,
         parentId: PropTypes.number,
         setHasNewMessages: PropTypes.func,
-        setShowNewPostForm: PropTypes.func,
+        setShowNewMessageForm: PropTypes.func,
     };
 
     const [errorMessage, setErrorMessage] = useState("");
@@ -70,7 +70,7 @@ const CreateMessageForm = ({
                     } else {
                         e.target.imageFile.value = "";
                         setChosenFile("");
-                        setShowNewPostForm(false);
+                        setShowNewMessageForm(false);
                         setHasNewMessages(
                             (hasNewMessages) => hasNewMessages + 1
                         );

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { imgMimeTypes, sanitize } from "../../../utils/utils";
+import { imgMimeTypes, sanitize } from "../../../utils/formValidation";
 import AlertDialog from "../../AlertDialog";
 import ErrorMessage from "../../ErrorMessage";
 import { Box, TextField, Button, Typography } from "@mui/material";

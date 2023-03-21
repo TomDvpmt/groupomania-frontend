@@ -1,4 +1,4 @@
-import { deletePost, deleteImage, deleteUser } from "../../utils/utils";
+import { deletePost, deleteImage, deleteUser } from "../../utils/requests";
 import {
     Button,
     Dialog,

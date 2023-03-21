@@ -104,7 +104,7 @@ const Home = () => {
                             token={token}
                             parentId={0}
                             setHasNewMessages={setHasNewPosts}
-                            setShowNewPostForm={setShowNewPostForm}
+                            setShowNewMessageForm={setShowNewPostForm}
                         />
                     </Collapse>
                 </Box>

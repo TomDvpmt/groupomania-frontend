@@ -2,7 +2,6 @@ import { useState } from "react";
 import AlertDialog from "../../AlertDialog";
 import { Box, Button } from "@mui/material";
 import PropTypes from "prop-types";
-import { deletePost } from "../../../utils/utils";
 
 const UpdateDeleteButtons = ({
     token,

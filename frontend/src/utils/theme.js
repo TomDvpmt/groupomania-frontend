@@ -15,9 +15,6 @@ export const theme = createTheme({
             main: "#FF0000",
         },
     },
-    // breakpoints: {
-
-    // },
     typography: {
         fontFamily: "Lato, Helvetica Neue, Arial, sans-serif",
     },

@@ -107,7 +107,7 @@ const SignUp = () => {
     return (
         <Container component="main" maxWidth="xs">
             <Box sx={theme.form}>
-                <Typography component="h1" variant="h4" mt={4}>
+                <Typography component="h1" variant="h4" mt={4} mb={2}>
                     Créer un compte
                 </Typography>
                 {globalErrorMessage && (

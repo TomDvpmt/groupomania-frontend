@@ -7,7 +7,7 @@ const mysql = require("mysql2/promise");
  * @returns {import("mysql2/promise").Connection}
  */
 
-const connectToDb = async (message) => {
+exports.connectToDb = async (message) => {
     try{
         const connection = await mysql.createConnection({
             host: process.env.DB_HOST,
@@ -22,5 +22,3 @@ const connectToDb = async (message) => {
         console.error("========= Connexion à la base de données échouée: ", error);
     }
 }
-
-module.exports = connectToDb;

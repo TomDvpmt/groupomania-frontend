@@ -55,7 +55,6 @@ const AlertDialog = ({
 
     const handleYes = () => {
         if (issue === "image") {
-            console.log(imgUrl, issueId);
             deleteImage(
                 updateContent,
                 imgUrl,
@@ -66,7 +65,6 @@ const AlertDialog = ({
                 setErrorMessage
             );
         } else if (issue === "message") {
-            console.log(issueId);
             deletePost(
                 token,
                 issueId,

@@ -1,5 +1,5 @@
 const mysql = require("mysql2/promise");
-const connectToDb = require("./db-connect-mysql");
+const {connectToDb} = require("./db-connect-mysql");
 
 
 

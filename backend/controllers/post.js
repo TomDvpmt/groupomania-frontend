@@ -1,33 +1,8 @@
 const fs = require("fs");
 
-const connectToDb = require("../database/db-connect-mysql");
-
-
-
-/** Closes connection to database
- * 
- * @param {import("mysql2/promise").Connection} connection
- */
-
-const close = (connection) => {
-    connection.end();
-    console.log("========= Déconnexion de la base de données. =============");
-};
-
-
-
-/** Handles error : sets res.status and the error message, and logs the error
- * 
- * @param {Response} res
- * @param {String} message 
- * @param {Number} status 
- * @param {Error} error
- */
-
-const handleError = (res, message, status, error) => {
-    console.log(message, error);
-    res.status(status).json({message: message});
-}
+const {connectToDb} = require("../database/db-connect-mysql");
+const {close} = require("../utils/utils");
+const {handleError} = require("../utils/utils");
 
 
 /** Gets all the messages (posts or comments)
@@ -108,8 +83,8 @@ exports.getAllPosts = (req, res, next) => {
                     id: row.id,
                     parentId: parentId,
                     authorId: row.author_id,
-                    firstName: row.first_name,
-                    lastName: row.last_name,
+                    firstName: row.first_name ? row.first_name : "",
+                    lastName: row.last_name ? row.last_name : "",
                     admin: row.admin,
                     email: row.email,
                     content: row.content,
@@ -127,14 +102,12 @@ exports.getAllPosts = (req, res, next) => {
                 admin: req.auth.admin === 1, 
                 loggedUserId: req.auth.userId
             };
-            })
-            .then((response) => {
-                res.status(200).json(response);
-            })
-            .catch((error) => {
-                close(connection);
-                handleError(res, "Impossible de récupérer les données.", 400, error);
-            })
+        })
+        .then((response) => res.status(200).json(response))
+        .catch((error) => {
+            close(connection);
+            handleError(res, "Impossible de récupérer les données.", 400, error);
+        })
     })
     
 };

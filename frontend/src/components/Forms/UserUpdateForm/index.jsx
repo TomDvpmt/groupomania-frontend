@@ -41,8 +41,6 @@ const UserUpdateForm = ({
     const [newLastNameError, setNewLastNameError] = useState("");
     const [newEmailError, setNewEmailError] = useState("");
 
-    console.log("prevFirstName :", prevFirstName);
-
     const handleSubmit = (e) => {
         e.preventDefault();
         if (

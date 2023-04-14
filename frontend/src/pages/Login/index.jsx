@@ -60,11 +60,15 @@ const Login = () => {
                                 setGlobalErrorMessage(message)
                             );
                     } else {
-                        response.json().then(({ token, userId }) => {
-                            localStorage.setItem("token", token);
-                            localStorage.setItem("userId", userId);
-                            navigate("/");
-                        });
+                        response
+                            .json()
+                            .then(({ token, userId, firstName, lastName }) => {
+                                localStorage.setItem("token", token);
+                                localStorage.setItem("userId", userId);
+                                localStorage.setItem("firstName", firstName);
+                                localStorage.setItem("lastName", lastName);
+                                navigate("/");
+                            });
                     }
                 })
                 .catch((error) => console.log(error));

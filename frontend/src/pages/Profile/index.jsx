@@ -96,7 +96,10 @@ const Profile = () => {
                     </Typography>
                     <Container sx={{ padding: 0, maxWidth: "500px" }}>
                         {showValidationMessage && (
-                            <Typography color="green" mb={2}>
+                            <Typography
+                                color={theme.palette.validation.main}
+                                mb={2}
+                            >
                                 Les informations ont été mises à jour.
                             </Typography>
                         )}

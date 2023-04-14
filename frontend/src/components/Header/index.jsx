@@ -1,6 +1,6 @@
 import logo from "../../assets/brand/icon-left-font-cropped.png";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
     Box,
     Toolbar,
@@ -99,15 +99,17 @@ const Header = ({ isLogged, page }) => {
                         maxWidth={theme.maxWidth.desktop}
                         sx={{
                             display: "flex",
-                            justifyContent:
-                                page === "home" ? "end" : "space-between",
+                            justifyContent: "space-between",
                         }}
                     >
-                        {page !== "home" && (
-                            <Button component={Link} to="/">
-                                Retour
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                            <Button component={NavLink} to="/">
+                                Forum
                             </Button>
-                        )}
+                            <Button component={NavLink} to="/chat">
+                                Chat
+                            </Button>
+                        </Box>
                         <IconButton onClick={handleAvatarClick} size="small">
                             <Avatar />
                         </IconButton>

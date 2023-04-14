@@ -96,6 +96,8 @@ const SignUp = () => {
                         response.json().then(({ token, userId }) => {
                             localStorage.setItem("token", token);
                             localStorage.setItem("userId", userId);
+                            localStorage.setItem("firstName", firstName);
+                            localStorage.setItem("lastName", lastName);
                             navigate("/");
                         });
                     }

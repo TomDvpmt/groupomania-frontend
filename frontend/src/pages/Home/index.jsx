@@ -85,6 +85,9 @@ const Home = () => {
                 margin="auto"
                 padding="2rem .5rem"
             >
+                <Typography component="h2" variant="h4" mb={4}>
+                    Forum
+                </Typography>
                 <Box
                     component="section"
                     sx={{
@@ -117,9 +120,6 @@ const Home = () => {
                             marginTop: 8,
                         }}
                     >
-                        <Typography component="h2" variant="h4" mb={4}>
-                            Messages
-                        </Typography>
                         {posts}
                         {errorMessage && (
                             <ErrorMessage errorMessage={errorMessage} />

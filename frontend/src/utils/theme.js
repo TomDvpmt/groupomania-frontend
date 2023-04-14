@@ -14,6 +14,9 @@ export const theme = createTheme({
         error: {
             main: "#FF0000",
         },
+        validation: {
+            main: "green",
+        },
     },
     typography: {
         fontFamily: "Lato, Helvetica Neue, Arial, sans-serif",

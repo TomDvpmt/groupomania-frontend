@@ -101,7 +101,7 @@ const Header = ({ page }) => {
                 <Toolbar
                     component="nav"
                     sx={{
-                        bgcolor: theme.palette.secondary.main,
+                        bgcolor: theme.palette.primary.light,
                         justifyContent: "center",
                     }}
                 >

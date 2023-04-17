@@ -11,6 +11,7 @@ import {
 } from "../../services/utils/selectors";
 
 import { Box, Container, Typography, Button } from "@mui/material";
+import { theme } from "../../assets/styles/theme";
 
 import PropTypes from "prop-types";
 
@@ -71,6 +72,7 @@ const ChatPost = ({ postIndex, post }) => {
             <Box
                 component="article"
                 sx={{
+                    padding: ".1rem",
                     display: "grid",
                     gridTemplateColumns: "auto 1fr",
                 }}
@@ -89,7 +91,7 @@ const ChatPost = ({ postIndex, post }) => {
                 >
                     {authorFullName} :
                 </Typography>
-                <Typography sx={{ gridColumn: "2" }}>
+                <Box sx={{ gridColumn: "2" }}>
                     {admin === 1 && (
                         <Button
                             variant="outlined"
@@ -100,8 +102,17 @@ const ChatPost = ({ postIndex, post }) => {
                             {moderated ? "Rétablir" : "Modérer"}
                         </Button>
                     )}
-                    {moderated ? "< MESSAGE MODÉRÉ >" : post.content}
-                </Typography>
+                    {moderated ? (
+                        <Typography
+                            component="span"
+                            color={theme.palette.text.light}
+                        >
+                            {"<MESSAGE MODÉRÉ>"}
+                        </Typography>
+                    ) : (
+                        post.content
+                    )}
+                </Box>
                 {post.imgUrl !== "" && !moderated && (
                     <Container
                         sx={{

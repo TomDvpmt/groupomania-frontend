@@ -3,13 +3,17 @@ import { createTheme } from "@mui/material/styles";
 export const theme = createTheme({
     palette: {
         primary: {
+            // red-pink
             main: "#FD2D01",
+            light: "#FFD7D7",
         },
         secondary: {
-            main: "#FFD7D7",
-        },
-        tertiary: {
+            // dark blue-grey
             main: "#4E5166",
+        },
+        text: {
+            main: "black",
+            light: "#9395a3",
         },
         error: {
             main: "#FF0000",

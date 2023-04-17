@@ -6,8 +6,8 @@ const initialState = {
 
 export const commentsSetPostsFromDB = createAction("comments/setPostsFromDB");
 export const commentsAddPost = createAction("comments/addPost");
-export const commentsUpdatePost = createAction("comments/addPost");
-export const commentsDeletePost = createAction("comments/addPost");
+export const commentsUpdatePost = createAction("comments/updatePost");
+export const commentsDeletePost = createAction("comments/deletePost");
 
 const commentsReducer = createReducer(initialState, (builder) => {
     return builder

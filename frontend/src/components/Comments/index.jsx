@@ -6,6 +6,9 @@ import CreateMessageForm from "../Forms/CreateMessageForm";
 import ErrorMessage from "../ErrorMessage";
 import Loader from "../Loader";
 
+import store from "../../services/utils/store";
+import { forumSetPostCommentsFromDB } from "../../services/features/forum";
+
 import { Box, Typography, Stack, Collapse } from "@mui/material";
 import PropTypes from "prop-types";
 
@@ -42,6 +45,12 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
                     return <p>Aucun message à afficher.</p>;
                 } else {
                     setCommentsNumber(data.results.length);
+                    store.dispatch(
+                        forumSetPostCommentsFromDB({
+                            postId: parentId,
+                            comments: data.results,
+                        })
+                    );
                     return data.results.map((result) => (
                         <Comment
                             key={result.id}

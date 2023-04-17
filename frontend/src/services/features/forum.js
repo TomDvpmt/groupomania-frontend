@@ -5,6 +5,9 @@ const initialState = {
 };
 
 export const forumSetPostsFromDB = createAction("forum/setPostsFromDB");
+export const forumSetPostCommentsFromDB = createAction(
+    "forum/setCommentsFromDB"
+);
 export const forumAddPost = createAction("forum/addPost");
 export const forumUpdatePost = createAction("forum/updatePost");
 export const forumDeletePost = createAction("forum/deletePost");
@@ -13,17 +16,21 @@ const forumReducer = createReducer(initialState, (builder) => {
     return builder
         .addCase(forumSetPostsFromDB, (draft, action) => {
             draft.posts = action.payload;
-            return;
+        })
+        .addCase(forumSetPostCommentsFromDB, (draft, action) => {
+            draft.posts.filter(
+                (post) => post.id === action.payload.postId
+            )[0].comments = action.payload.comments;
+            // draft.test = draft.posts.filter((post) => post.id === 12);
         })
         .addCase(forumAddPost, (draft, action) => {
             draft.posts.push(action.payload);
-            return;
         })
         .addCase(forumUpdatePost, (draft, action) => {
-            return;
+            //
         })
         .addCase(forumDeletePost, (draft, action) => {
-            return;
+            //
         });
 });
 

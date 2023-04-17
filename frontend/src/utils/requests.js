@@ -124,7 +124,7 @@ export const deleteUser = (token, userId, setErrorMessage, navigate) => {
             if (response.status >= 400) {
                 response.json().then(({ message }) => setErrorMessage(message));
             } else {
-                localStorage.clear();
+                sessionStorage.clear();
                 navigate("/login");
             }
         })
@@ -204,4 +204,28 @@ export const setUserLikeStatus = (token, postId, setLikeStatus) => {
         .then((response) => response.json())
         .then((data) => setLikeStatus(data))
         .catch((error) => console.log(error));
+};
+
+/**
+ * Get a user's data from the API
+ * @param {String} token
+ * @returns
+ */
+
+export const getUserInfo = async (token) => {
+    try {
+        const response = await fetch(
+            `${process.env.REACT_APP_BACKEND_URI}/API/auth/0`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `BEARER ${token}`,
+                },
+            }
+        );
+        const data = response.json();
+        return data;
+    } catch (error) {
+        console.log(error);
+    }
 };

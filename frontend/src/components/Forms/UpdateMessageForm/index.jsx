@@ -3,7 +3,7 @@ import { imgMimeTypes, sanitize } from "../../../utils/formValidation";
 import AlertDialog from "../../AlertDialog";
 import ErrorMessage from "../../ErrorMessage";
 import { Box, TextField, Button, Typography } from "@mui/material";
-import { theme } from "../../../utils/theme";
+import { theme } from "../../../assets/styles/theme";
 import PropTypes from "prop-types";
 
 const UpdateMessageForm = ({

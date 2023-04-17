@@ -1,6 +1,16 @@
-import logo from "../../assets/brand/icon-left-font-cropped.png";
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+import store from "../../services/utils/store";
+import { userLogOut } from "../../services/features/user";
+import {
+    selectUserIsLoggedIn,
+    selectUserId,
+} from "../../services/utils/selectors";
+
+import logo from "../../assets/img/brand/icon-left-font-cropped.png";
+
 import {
     Box,
     Toolbar,
@@ -12,20 +22,20 @@ import {
     IconButton,
 } from "@mui/material";
 import { Logout } from "@mui/icons-material";
-import { theme } from "../../utils/theme";
+import { theme } from "../../assets/styles/theme";
+
 import PropTypes from "prop-types";
 
-const Header = ({ isLogged, page }) => {
+const Header = ({ page }) => {
     Header.propTypes = {
-        isLogged: PropTypes.bool,
         page: PropTypes.string,
     };
 
     const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
     const navigate = useNavigate();
-
-    const loggedUserId = localStorage.getItem("userId");
+    const isLogged = useSelector(selectUserIsLoggedIn());
+    const loggedUserId = useSelector(selectUserId());
+    const open = Boolean(anchorEl);
 
     const handleAvatarClick = (e) => {
         setAnchorEl(e.currentTarget);
@@ -41,7 +51,8 @@ const Header = ({ isLogged, page }) => {
     };
 
     const handleLogOut = () => {
-        localStorage.clear();
+        sessionStorage.clear();
+        store.dispatch(userLogOut());
         navigate("/login");
     };
 

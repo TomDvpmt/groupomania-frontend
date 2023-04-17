@@ -1,38 +1,43 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+
 import FirstNameField from "../../FormFields/FirstNameField";
 import LastNameField from "../../FormFields/LastNameField";
 import EmailField from "../../FormFields/EmailField";
+
+import store from "../../../services/utils/store";
+import {
+    userSetFirstName,
+    userSetLastName,
+    userSetEmail,
+} from "../../../services/features/user";
+import {
+    selectUserFirstName,
+    selectUserLastName,
+    selectUserEmail,
+} from "../../../services/utils/selectors";
+
 import { Box, Button } from "@mui/material";
+import PropTypes from "prop-types";
 
 const UserUpdateForm = ({
     userId,
     token,
-    prevFirstName,
-    prevLastName,
-    prevEmail,
-    setFirstName,
-    setLastName,
-    setEmail,
     setErrorMessage,
-    showUserUpdateForm,
     setShowUserUpdateForm,
     setShowValidationMessage,
 }) => {
     UserUpdateForm.propTypes = {
         token: PropTypes.string,
         userId: PropTypes.number,
-        prevFirstName: PropTypes.string,
-        prevLastName: PropTypes.string,
-        prevEmail: PropTypes.string,
-        setFirstName: PropTypes.func,
-        setLastName: PropTypes.func,
-        setEmail: PropTypes.func,
         setErrorMessage: PropTypes.func,
-        showUserUpdateForm: PropTypes.bool,
         setShowUserUpdateForm: PropTypes.func,
         setShowValidationMessage: PropTypes.func,
     };
+
+    const prevFirstName = useSelector(selectUserFirstName());
+    const prevLastName = useSelector(selectUserLastName());
+    const prevEmail = useSelector(selectUserEmail());
 
     const [newFirstName, setNewFirstName] = useState(prevFirstName);
     const [newLastName, setNewLastName] = useState(prevLastName);
@@ -72,10 +77,10 @@ const UserUpdateForm = ({
                         setErrorMessage("Impossible de modifier les données.");
                     }
                 })
-                .then((data) => {
-                    setFirstName(newFirstName);
-                    setLastName(newLastName);
-                    setEmail(newEmail);
+                .then(() => {
+                    store.dispatch(userSetFirstName(newFirstName));
+                    store.dispatch(userSetLastName(newLastName));
+                    store.dispatch(userSetEmail(newEmail));
                 })
                 .catch((error) => {
                     setErrorMessage("Impossible de modifier les données.");

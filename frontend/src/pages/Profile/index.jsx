@@ -1,20 +1,34 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 import ProfileData from "../../components/ProfileData";
 import UserUpdateForm from "../../components/Forms/UserUpdateForm";
 import AlertDialog from "../../components/AlertDialog";
 import ErrorMessage from "../../components/ErrorMessage";
-import { Box, Container, Typography, Button, Stack } from "@mui/material";
-import { theme } from "../../utils/theme";
 import Loader from "../../components/Loader";
 
+import {
+    selectUserFirstName,
+    selectUserLastName,
+    selectUserEmail,
+} from "../../services/utils/selectors";
+
+import { setUserState } from "../../utils/utils";
+
+import { Box, Container, Typography, Button, Stack } from "@mui/material";
+import { theme } from "../../assets/styles/theme";
+
 const Profile = () => {
-    const token = localStorage.getItem("token");
     const { userId } = useParams();
 
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState("");
+    const firstName = useSelector(selectUserFirstName());
+    const lastName = useSelector(selectUserLastName());
+    const email = useSelector(selectUserEmail());
+
+    // const [firstName, setFirstName] = useState("");
+    // const [lastName, setLastName] = useState("");
+    // const [email, setEmail] = useState("");
     const [modifiable, setModifiable] = useState(false);
     const [showUserUpdateForm, setShowUserUpdateForm] = useState(false);
     const [showValidationMessage, setShowValidationMessage] = useState(false);
@@ -22,7 +36,12 @@ const Profile = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
+
+    useEffect(() => {
+        setUserState(token, navigate);
+    }, [token, navigate]);
 
     const handleUpdate = () => {
         setShowUserUpdateForm((showUserUpdateForm) => !showUserUpdateForm);
@@ -53,17 +72,17 @@ const Profile = () => {
                 }
             })
             .then((data) => {
-                setFirstName(data.firstName);
-                setLastName(data.lastName);
-                setEmail(data.email);
+                // setFirstName(data.firstName);
+                // setLastName(data.lastName);
+                // setEmail(data.email);
                 setModifiable(data.modifiable);
             })
             .catch((error) => {
                 console.log(
-                    "Impossible d'afficher les données de l'utilisateur :",
+                    // "Impossible d'afficher les données de l'utilisateur :",
                     error
                 );
-                setErrorMessage("Impossible d'afficher les données.");
+                // setErrorMessage("Impossible d'afficher les données.");
             })
             .finally(setLoading(false));
     }, [token, userId, navigate]);
@@ -136,12 +155,12 @@ const Profile = () => {
                         <UserUpdateForm
                             token={token}
                             userId={parseInt(userId)}
-                            prevFirstName={firstName}
-                            prevLastName={lastName}
-                            prevEmail={email}
-                            setFirstName={setFirstName}
-                            setLastName={setLastName}
-                            setEmail={setEmail}
+                            // prevFirstName={firstName}
+                            // prevLastName={lastName}
+                            // prevEmail={email}
+                            // setFirstName={setFirstName}
+                            // setLastName={setLastName}
+                            // setEmail={setEmail}
                             setErrorMessage={setErrorMessage}
                             setShowUserUpdateForm={setShowUserUpdateForm}
                             setShowValidationMessage={setShowValidationMessage}

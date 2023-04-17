@@ -1,13 +1,6 @@
 import React, { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { fetchCredentials } from "../../utils/requests";
-import {
-    getInputFields,
-    checkInputErrors,
-    setInputErrorMessages,
-} from "../../utils/formValidation";
-import { Container, Box, Typography, Link } from "@mui/material";
-import { theme } from "../../utils/theme";
+
 import FirstNameField from "../../components/FormFields/FirstNameField";
 import LastNameField from "../../components/FormFields/LastNameField";
 import EmailField from "../../components/FormFields/EmailField";
@@ -15,6 +8,16 @@ import PasswordField from "../../components/FormFields/PasswordField";
 import PasswordConfirmField from "../../components/FormFields/PasswordConfirmField";
 import SubmitButton from "../../components/Buttons/SubmitButton";
 import ErrorMessage from "../../components/ErrorMessage";
+
+import { fetchCredentials } from "../../utils/requests";
+import {
+    getInputFields,
+    checkInputErrors,
+    setInputErrorMessages,
+} from "../../utils/formValidation";
+
+import { Container, Box, Typography, Link } from "@mui/material";
+import { theme } from "../../assets/styles/theme";
 
 const SignUp = () => {
     const [firstName, setFirstName] = useState("");
@@ -94,10 +97,10 @@ const SignUp = () => {
                             );
                     } else {
                         response.json().then(({ token, userId }) => {
-                            localStorage.setItem("token", token);
-                            localStorage.setItem("userId", userId);
-                            localStorage.setItem("firstName", firstName);
-                            localStorage.setItem("lastName", lastName);
+                            sessionStorage.setItem("token", token);
+                            sessionStorage.setItem("userId", userId);
+                            sessionStorage.setItem("firstName", firstName);
+                            sessionStorage.setItem("lastName", lastName);
                             navigate("/");
                         });
                     }

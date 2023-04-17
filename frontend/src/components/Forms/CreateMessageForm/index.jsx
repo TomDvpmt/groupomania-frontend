@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ErrorMessage from "../../ErrorMessage";
 import { imgMimeTypes, sanitize } from "../../../utils/formValidation";
 import { Box, TextField, Button, Typography } from "@mui/material";
-import { theme } from "../../../utils/theme";
+import { theme } from "../../../assets/styles/theme";
 import PropTypes from "prop-types";
 
 const CreateMessageForm = ({

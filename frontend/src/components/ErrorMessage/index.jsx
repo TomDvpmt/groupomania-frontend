@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { theme } from "../../utils/theme";
+import { theme } from "../../assets/styles/theme";
 import PropTypes from "prop-types";
 
 const ErrorMessage = ({ errorMessage }) => {

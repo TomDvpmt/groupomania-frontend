@@ -2,34 +2,43 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import store from "../../utils/store";
-import { setPostsFromDB } from "../../features/chat";
-import { addChatPost } from "../../features/chat";
-import { selectChatPosts } from "../../utils/selectors";
-
 import ChatPost from "../../components/ChatPost";
 import ErrorMessage from "../../components/ErrorMessage";
 
+import store from "../../services/utils/store";
+import { setChatPostsFromDB } from "../../services/features/chat";
+import { addChatPost } from "../../services/features/chat";
+import {
+    selectUserFirstName,
+    selectUserLastName,
+    selectChatPosts,
+} from "../../services/utils/selectors";
+
+import { setUserState } from "../../utils/utils";
 import { imgMimeTypes, sanitize } from "../../utils/formValidation";
 
 import { Box, TextField, Button, Typography } from "@mui/material";
-import { theme } from "../../utils/theme";
+import { theme } from "../../assets/styles/theme";
 
 const Chat = () => {
-    const token = localStorage.getItem("token");
-
-    const [loading, setLoading] = useState(false);
+    const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
 
+    useEffect(() => {
+        setUserState(token, navigate);
+    }, [token, navigate]);
+
+    const firstName = useSelector(selectUserFirstName());
+    const lastName = useSelector(selectUserLastName());
     const chatPosts = useSelector(selectChatPosts());
 
+    const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [content, setContent] = useState("");
     const [chosenFile, setChosenFile] = useState("");
 
     useEffect(() => {
         setLoading(true);
-        !token && navigate("/login");
 
         fetch(`${process.env.REACT_APP_BACKEND_URI}/API/chat/`, {
             method: "GET",
@@ -38,10 +47,10 @@ const Chat = () => {
             },
         })
             .then((response) => response.json())
-            .then((data) => store.dispatch(setPostsFromDB(data)))
+            .then((data) => store.dispatch(setChatPostsFromDB(data)))
             .catch((error) => console.log(error))
             .finally(setLoading(false));
-    }, []);
+    }, [navigate, token]);
 
     const handleContentChange = (e) => {
         setContent(e.target.value);
@@ -57,8 +66,6 @@ const Chat = () => {
         e.preventDefault();
         setErrorMessage("");
 
-        const firstName = localStorage.getItem("firstName");
-        const lastName = localStorage.getItem("lastName");
         const uploadedFile = e.target.imageFile.files[0];
 
         if (!uploadedFile && !content) {
@@ -150,58 +157,60 @@ const Chat = () => {
                     <p>Aucun message à afficher.</p>
                 )}
             </Box>
-            <Box
-                component="form"
-                onSubmit={handleSubmit}
-                encType="multipart/form-data"
-            >
-                <TextField
-                    autoFocus={chatPosts.length === 0}
-                    multiline
-                    name="content"
-                    id="content"
-                    label="Votre message : "
-                    fullWidth
-                    minRows={4}
-                    margin="normal"
-                    value={content}
-                    onChange={handleContentChange}
-                ></TextField>
+            <Box component="section">
                 <Box
-                    sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 2,
-                        mb: 2,
-                    }}
+                    component="form"
+                    onSubmit={handleSubmit}
+                    encType="multipart/form-data"
                 >
-                    <Button
-                        component="label"
-                        variant="text"
-                        sx={{ alignSelf: "start" }}
+                    <TextField
+                        autoFocus={chatPosts.length === 0}
+                        multiline
+                        name="content"
+                        id="content"
+                        label="Votre message : "
+                        fullWidth
+                        minRows={4}
+                        margin="normal"
+                        value={content}
+                        onChange={handleContentChange}
+                    ></TextField>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 2,
+                            mb: 2,
+                        }}
                     >
-                        Ajouter une image
-                        <input
-                            hidden
-                            type="file"
-                            name="imageFile"
-                            onChange={handleFileChange}
-                        />
-                    </Button>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        sx={{ fontWeight: "700" }}
-                    >
-                        Envoyer
-                    </Button>
+                        <Button
+                            component="label"
+                            variant="text"
+                            sx={{ alignSelf: "start" }}
+                        >
+                            Ajouter une image
+                            <input
+                                hidden
+                                type="file"
+                                name="imageFile"
+                                onChange={handleFileChange}
+                            />
+                        </Button>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            sx={{ fontWeight: "700" }}
+                        >
+                            Envoyer
+                        </Button>
+                    </Box>
+                    <Typography paragraph variant="body2">
+                        {chosenFile}
+                    </Typography>
+                    {errorMessage !== "" && (
+                        <ErrorMessage errorMessage={errorMessage} />
+                    )}
                 </Box>
-                <Typography paragraph variant="body2">
-                    {chosenFile}
-                </Typography>
-                {errorMessage !== "" && (
-                    <ErrorMessage errorMessage={errorMessage} />
-                )}
             </Box>
         </Box>
     );

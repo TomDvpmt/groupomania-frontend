@@ -1,6 +1,9 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
-import { Box, Container, Typography } from "@mui/material";
+import { selectUserAdminStatus } from "../../services/utils/selectors";
+
+import { Box, Container, Typography, Button } from "@mui/material";
 
 import PropTypes from "prop-types";
 
@@ -8,14 +11,23 @@ const ChatPost = ({ post }) => {
     ChatPost.propTypes = {
         post: PropTypes.object,
     };
-    const fullName =
+
+    const admin = useSelector(selectUserAdminStatus());
+
+    const authorFullName =
         post.firstName || post.lastName
             ? `${post.firstName}${post.firstName && post.lastName ? " " : ""}${
                   post.lastName
               }`
             : "(Anonyme)";
+
+    const handleModerate = () => {
+        //
+    };
+
     return (
         <Box
+            component="article"
             sx={{
                 display: "grid",
                 gridTemplateColumns: "auto 1fr",
@@ -25,12 +37,25 @@ const ChatPost = ({ post }) => {
                 component="h2"
                 variant="body1"
                 mr={2}
+                pt={admin === 1 && "2px"}
                 color="primary"
                 sx={{ gridColumn: "1", justifySelf: "end", fontWeight: "700" }}
             >
-                {fullName} :
+                {authorFullName} :
             </Typography>
-            <Typography sx={{ gridColumn: "2" }}>{post.content}</Typography>
+            <Typography sx={{ gridColumn: "2" }}>
+                {admin === 1 && (
+                    <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={handleModerate}
+                        sx={{ mr: 2 }}
+                    >
+                        Modérer
+                    </Button>
+                )}
+                {post.content}
+            </Typography>
             {post.imgUrl !== "" && (
                 <Container
                     sx={{

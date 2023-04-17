@@ -27,10 +27,12 @@ exports.getAllPosts = (req, res) => {
                 .execute(
                     `
                         SELECT
+                            posts.id as id,
                             users.first_name as first_name,
                             users.last_name as last_name,
                             posts.content as content,
                             posts.img_url as img_url,
+                            posts.moderated as moderated,
                             posts.created_at as created_at
                         FROM chat_posts as posts
                         JOIN users
@@ -45,6 +47,7 @@ exports.getAllPosts = (req, res) => {
                         lastName: row.last_name,
                         content: row.content,
                         imgUrl: row.img_url,
+                        moderated: row.moderated,
                         createdAt: row.created_at,
                     }));
                     close(connection);

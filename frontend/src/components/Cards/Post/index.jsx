@@ -1,11 +1,20 @@
 import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 import Comments from "../../Comments";
 import UpdateMessageForm from "../../Forms/UpdateMessageForm";
 import LikeButtons from "../../Buttons/LikeButtons";
 import UpdateDeleteButtons from "../../Buttons/UpdateDeleteButtons";
 import ErrorMessage from "../../ErrorMessage";
+
+import {
+    selectUserId,
+    selectUserAdminStatus,
+} from "../../../services/utils/selectors";
+
 import { formatDate } from "../../../utils/utils";
+
 import {
     Box,
     Card,
@@ -22,16 +31,18 @@ import {
 import { MailOutline } from "@mui/icons-material";
 import PropTypes from "prop-types";
 
-const Post = ({ postData, userData, setHasNewPosts }) => {
+const Post = ({ postData, currentUserLikeValue, setHasNewPosts }) => {
     Post.propTypes = {
         postData: PropTypes.object,
-        userData: PropTypes.object,
+        currentUserLikeValue: PropTypes.number,
         setHasNewPosts: PropTypes.func,
     };
 
-    const token = userData.token;
-    const canModify =
-        userData.admin || postData.authorId === userData.loggedUserId;
+    const token = sessionStorage.getItem("token");
+    const isAdmin = useSelector(selectUserAdminStatus());
+    const loggedUserId = useSelector(selectUserId());
+
+    const canModify = isAdmin || postData.authorId === loggedUserId;
 
     const postId = postData.id;
     const authorName = `${postData.authorFirstName} ${postData.authorLastName}`;
@@ -121,7 +132,7 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                     postId={postId}
                     likes={postData.likes}
                     dislikes={postData.dislikes}
-                    currentUserLikeValue={userData.currentUserLikeValue}
+                    currentUserLikeValue={currentUserLikeValue}
                 />
             )}
             <CardActions>
@@ -148,7 +159,7 @@ const Post = ({ postData, userData, setHasNewPosts }) => {
                             postId={postId}
                             likes={postData.likes}
                             dislikes={postData.dislikes}
-                            currentUserLikeValue={userData.currentUserLikeValue}
+                            currentUserLikeValue={currentUserLikeValue}
                         />
                     )}
                     <Button

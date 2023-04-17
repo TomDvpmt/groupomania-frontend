@@ -1,17 +1,23 @@
 import React, { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+
+import SubmitButton from "../../components/Buttons/SubmitButton";
+import EmailField from "../../components/FormFields/EmailField";
+import PasswordField from "../../components/FormFields/PasswordField";
+import ErrorMessage from "../../components/ErrorMessage";
+
+import store from "../../services/utils/store";
+import { userSetIsLoggedIn, userSetInfo } from "../../services/features/user";
+
 import { fetchCredentials } from "../../utils/requests";
 import {
     getInputFields,
     setInputErrorMessages,
     checkInputErrors,
 } from "../../utils/formValidation";
+
 import { Link, Box, Typography, Container } from "@mui/material";
-import { theme } from "../../utils/theme";
-import SubmitButton from "../../components/Buttons/SubmitButton";
-import EmailField from "../../components/FormFields/EmailField";
-import PasswordField from "../../components/FormFields/PasswordField";
-import ErrorMessage from "../../components/ErrorMessage";
+import { theme } from "../../assets/styles/theme";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -62,13 +68,38 @@ const Login = () => {
                     } else {
                         response
                             .json()
-                            .then(({ token, userId, firstName, lastName }) => {
-                                localStorage.setItem("token", token);
-                                localStorage.setItem("userId", userId);
-                                localStorage.setItem("firstName", firstName);
-                                localStorage.setItem("lastName", lastName);
-                                navigate("/");
-                            });
+                            .then(
+                                ({
+                                    token,
+                                    userId,
+                                    admin,
+                                    firstName,
+                                    lastName,
+                                    email,
+                                }) => {
+                                    store.dispatch(userSetIsLoggedIn());
+                                    store.dispatch(
+                                        userSetInfo({
+                                            id: userId,
+                                            admin,
+                                            firstName,
+                                            lastName,
+                                            email,
+                                        })
+                                    );
+                                    sessionStorage.setItem("token", token);
+                                    // sessionStorage.setItem("userId", userId);
+                                    // sessionStorage.setItem(
+                                    //     "firstName",
+                                    //     firstName
+                                    // );
+                                    // sessionStorage.setItem(
+                                    //     "lastName",
+                                    //     lastName
+                                    // );
+                                    navigate("/");
+                                }
+                            );
                     }
                 })
                 .catch((error) => console.log(error));

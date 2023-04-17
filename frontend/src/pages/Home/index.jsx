@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import Post from "../../components/Cards/Post";
 import CreateMessageForm from "../../components/Forms/CreateMessageForm";
 import PostNewMessageButton from "../../components/Buttons/PostNewMessageButton";
 import ErrorMessage from "../../components/ErrorMessage";
 import Loader from "../../components/Loader";
+
+import { setUserState } from "../../utils/utils";
+
 import { Box, Typography, Collapse } from "@mui/material";
-import { theme } from "../../utils/theme";
+import { theme } from "../../assets/styles/theme";
 
 const Home = () => {
     const [posts, setPosts] = useState([]);
@@ -14,13 +18,16 @@ const Home = () => {
     const [showNewPostForm, setShowNewPostForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
+
+    const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
 
-    const token = localStorage.getItem("token");
+    useEffect(() => {
+        setUserState(token, navigate);
+    }, [token, navigate]);
 
     useEffect(() => {
         setLoading(true);
-        !token && navigate("/login");
 
         fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/all/0`, {
             method: "GET",
@@ -30,7 +37,7 @@ const Home = () => {
         })
             .then((response) => {
                 if (response.status === 401) {
-                    localStorage.clear();
+                    sessionStorage.clear();
                     console.error("Non autorisé.");
                     navigate("/login");
                 } else return response.json();
@@ -57,13 +64,7 @@ const Home = () => {
                                 likes: result.likes,
                                 dislikes: result.dislikes,
                             }}
-                            userData={{
-                                token: token,
-                                admin: data.admin,
-                                loggedUserId: data.loggedUserId,
-                                currentUserLikeValue:
-                                    result.currentUserLikeValue,
-                            }}
+                            currentUserLikeValue={result.currentUserLikeValue}
                             setHasNewPosts={setHasNewPosts}
                         />
                     ));

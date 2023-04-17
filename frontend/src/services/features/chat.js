@@ -4,14 +4,14 @@ const initialState = {
     posts: [],
 };
 
-export const setPostsFromDB = createAction("setPostsFromDB");
+export const setChatPostsFromDB = createAction("setChatPostsFromDB");
 export const addChatPost = createAction("addChatPost");
 export const moderateChatPost = createAction("moderateChatPost");
 export const deleteOldestChatPost = createAction("deleteOldestChatPost");
 
 const chatReducer = createReducer(initialState, (builder) => {
     return builder
-        .addCase(setPostsFromDB, (draft, action) => {
+        .addCase(setChatPostsFromDB, (draft, action) => {
             draft.posts = action.payload;
             return;
         })

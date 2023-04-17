@@ -1,9 +1,18 @@
-import { Link as RouterLink } from "react-router-dom";
+import { useEffect } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+
+import { setUserState } from "../../utils/utils";
+
 import { Box, Link, Typography } from "@mui/material";
-import { theme } from "../../utils/theme";
+import { theme } from "../../assets/styles/theme";
 
 const Error404 = () => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        setUserState(token, navigate);
+    }, [token, navigate]);
 
     return (
         <Box

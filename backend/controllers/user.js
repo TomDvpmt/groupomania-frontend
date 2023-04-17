@@ -15,7 +15,7 @@ const logAfterSignUp = async (connection, email, res) => {
     try {
         const [rows] = await connection.execute(
             `
-            SELECT id, first_name, last_name, admin
+            SELECT id, admin, first_name, last_name, email
             FROM users
             WHERE email = ?
         `,
@@ -24,6 +24,9 @@ const logAfterSignUp = async (connection, email, res) => {
 
         const userId = rows[0].id;
         const admin = rows[0].admin;
+        const firstName = rows[0].first_name;
+        const lastName = rows[0].last_name;
+        const email = rows[0].email;
 
         close(connection);
         console.log(
@@ -36,6 +39,9 @@ const logAfterSignUp = async (connection, email, res) => {
                 process.env.TOKEN_CREATION_PHRASE
             ),
             userId,
+            firstName,
+            lastName,
+            email,
         });
     } catch (error) {
         handleError(res, "Connexion à l'application impossible.", 400, error);
@@ -118,7 +124,7 @@ exports.login = (req, res, next) => {
                         connection
                             .execute(
                                 `
-                            SELECT id, first_name, last_name, password_hash, admin
+                            SELECT id, admin, first_name, last_name, password_hash, admin
                             FROM users
                             WHERE email = ?
                         `,
@@ -126,9 +132,9 @@ exports.login = (req, res, next) => {
                             )
                             .then(([rows]) => {
                                 const userId = rows[0].id;
+                                const admin = rows[0].admin;
                                 const firstName = rows[0].first_name;
                                 const lastName = rows[0].last_name;
-                                const admin = rows[0].admin;
                                 const passwordHash = rows[0].password_hash;
                                 bcrypt
                                     .compare(password, passwordHash)
@@ -144,8 +150,10 @@ exports.login = (req, res, next) => {
                                                         .TOKEN_CREATION_PHRASE
                                                 ),
                                                 userId,
+                                                admin,
                                                 firstName,
                                                 lastName,
+                                                email,
                                             });
                                             console.log(
                                                 "======== Utilisateur connecté à l'application. =========="
@@ -200,8 +208,11 @@ exports.login = (req, res, next) => {
  */
 
 exports.getOneUser = async (req, res, next) => {
-    const paramUserId = parseInt(req.params.userId);
     const userId = req.auth.userId;
+    const paramUserId =
+        parseInt(req.params.userId) === 0
+            ? userId
+            : parseInt(req.params.userId);
     const modifiable = req.auth.admin || paramUserId === userId;
 
     const connection = await connectToDb("getOneUser");
@@ -209,7 +220,7 @@ exports.getOneUser = async (req, res, next) => {
     try {
         const [rows] = await connection.execute(
             `
-            SELECT id, first_name, last_name, email
+            SELECT id, admin, first_name, last_name, email
             FROM users
             WHERE id = ?
             `,
@@ -220,6 +231,8 @@ exports.getOneUser = async (req, res, next) => {
             return res.status(404).json({ message: "Page introuvable." });
         } else {
             return res.status(200).json({
+                id: rows[0].id,
+                admin: rows[0].admin,
                 firstName: rows[0].first_name ? rows[0].first_name : "",
                 lastName: rows[0].last_name ? rows[0].last_name : "",
                 email: rows[0].email,

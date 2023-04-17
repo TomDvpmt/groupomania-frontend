@@ -1,10 +1,19 @@
 import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { formatDate } from "../../../utils/utils";
+import { useSelector } from "react-redux";
+
+import {
+    selectUserId,
+    selectUserAdminStatus,
+} from "../../../services/utils/selectors";
+
 import UpdateMessageForm from "../../Forms/UpdateMessageForm";
 import LikeButtons from "../../Buttons/LikeButtons";
 import UpdateDeleteButtons from "../../Buttons/UpdateDeleteButtons";
 import ErrorMessage from "../../ErrorMessage";
+
+import { formatDate } from "../../../utils/utils";
+
 import {
     Box,
     Card,
@@ -20,12 +29,18 @@ import {
 import { MailOutline } from "@mui/icons-material";
 import PropTypes from "prop-types";
 
-const Comment = ({ commentData, userData, setHasNewComments }) => {
+const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
     Comment.propTypes = {
         commentData: PropTypes.object,
-        userData: PropTypes.object,
+        currentUserLikeValue: PropTypes.number,
         setHasNewComments: PropTypes.func,
     };
+
+    const token = sessionStorage.getItem("token");
+    const isAdmin = useSelector(selectUserAdminStatus());
+    const loggedUserId = useSelector(selectUserId());
+
+    const canModify = isAdmin || commentData.authorId === loggedUserId;
 
     const commentId = commentData.id;
     const parentId = commentData.parentId;
@@ -33,9 +48,6 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
     const authorName = `${commentData.authorFirstName} ${commentData.authorLastName}`;
     const [commentContent, setCommentContent] = useState(commentData.content);
 
-    const canModify =
-        userData.admin || commentData.authorId === userData.loggedUserId;
-    const token = userData.token;
     const imgUrl = commentData.imgUrl;
 
     const [showCommentUpdateForm, setShowCommentUpdateForm] = useState(false);
@@ -119,7 +131,7 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                         postId={commentId}
                         likes={commentData.likes}
                         dislikes={commentData.dislikes}
-                        currentUserLikeValue={userData.currentUserLikeValue}
+                        currentUserLikeValue={currentUserLikeValue}
                     />
                 )}
                 <CardActions>
@@ -129,7 +141,7 @@ const Comment = ({ commentData, userData, setHasNewComments }) => {
                             postId={commentId}
                             likes={commentData.likes}
                             dislikes={commentData.dislikes}
-                            currentUserLikeValue={userData.currentUserLikeValue}
+                            currentUserLikeValue={currentUserLikeValue}
                         />
                     )}
                     {canModify && (

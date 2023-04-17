@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
 import Comment from "../Cards/Comment";
 import CreateMessageForm from "../Forms/CreateMessageForm";
 import ErrorMessage from "../ErrorMessage";
 import Loader from "../Loader";
+
 import { Box, Typography, Stack, Collapse } from "@mui/material";
 import PropTypes from "prop-types";
 
@@ -61,13 +63,7 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
                                         ? 0
                                         : result.dislikes,
                             }}
-                            userData={{
-                                token: token,
-                                admin: data.admin,
-                                loggedUserId: data.loggedUserId,
-                                currentUserLikeValue:
-                                    result.currentUserLikeValue,
-                            }}
+                            currentUserLikeValue={result.currentUserLikeValue}
                             setHasNewComments={setHasNewComments}
                         />
                     ));

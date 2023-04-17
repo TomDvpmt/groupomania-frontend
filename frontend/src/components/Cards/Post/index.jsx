@@ -38,7 +38,6 @@ const Post = ({ postData, currentUserLikeValue, setHasNewPosts }) => {
         setHasNewPosts: PropTypes.func,
     };
 
-    const token = sessionStorage.getItem("token");
     const isAdmin = useSelector(selectUserAdminStatus());
     const loggedUserId = useSelector(selectUserId());
 
@@ -128,7 +127,6 @@ const Post = ({ postData, currentUserLikeValue, setHasNewPosts }) => {
             )}
             {canModify && (
                 <LikeButtons
-                    token={token}
                     postId={postId}
                     likes={postData.likes}
                     dislikes={postData.dislikes}
@@ -145,7 +143,6 @@ const Post = ({ postData, currentUserLikeValue, setHasNewPosts }) => {
                 >
                     {canModify && (
                         <UpdateDeleteButtons
-                            token={token}
                             messageId={postId}
                             imgUrl={postData.imgUrl}
                             setHasNewMessages={setHasNewPosts}
@@ -155,7 +152,6 @@ const Post = ({ postData, currentUserLikeValue, setHasNewPosts }) => {
                     )}
                     {!canModify && (
                         <LikeButtons
-                            token={token}
                             postId={postId}
                             likes={postData.likes}
                             dislikes={postData.dislikes}
@@ -174,7 +170,6 @@ const Post = ({ postData, currentUserLikeValue, setHasNewPosts }) => {
             </CardActions>
             <Collapse in={showPostUpdateForm}>
                 <UpdateMessageForm
-                    token={token}
                     postId={postId}
                     parentId={0}
                     prevContent={postContent}
@@ -186,7 +181,6 @@ const Post = ({ postData, currentUserLikeValue, setHasNewPosts }) => {
             </Collapse>
             {errorMessage && <ErrorMessage errorMessage={errorMessage} />}
             <Comments
-                token={token}
                 parentId={postId}
                 showCommentForm={showCommentForm}
                 setShowCommentForm={setShowCommentForm}

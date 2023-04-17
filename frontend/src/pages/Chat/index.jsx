@@ -2,43 +2,29 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
+import ChatPostForm from "../../components/Forms/ChatPostForm";
 import ChatPost from "../../components/ChatPost";
 import ErrorMessage from "../../components/ErrorMessage";
 
 import store from "../../services/utils/store";
-import { setChatPostsFromDB } from "../../services/features/chat";
-import { addChatPost } from "../../services/features/chat";
-import {
-    selectUserFirstName,
-    selectUserLastName,
-    selectChatPosts,
-} from "../../services/utils/selectors";
+import { chatSetPostsFromDB } from "../../services/features/chat";
+import { selectChatPosts } from "../../services/utils/selectors";
 
 import { setUserState } from "../../utils/utils";
-import { imgMimeTypes, sanitize } from "../../utils/formValidation";
 
-import { Box, TextField, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
 
 const Chat = () => {
     const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
 
-    useEffect(() => {
-        setUserState(token, navigate);
-    }, [token, navigate]);
-
-    const firstName = useSelector(selectUserFirstName());
-    const lastName = useSelector(selectUserLastName());
-    const chatPosts = useSelector(selectChatPosts());
-
-    const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [content, setContent] = useState("");
-    const [chosenFile, setChosenFile] = useState("");
 
     useEffect(() => {
         setLoading(true);
+
+        setUserState(token, navigate);
 
         fetch(`${process.env.REACT_APP_BACKEND_URI}/API/chat/`, {
             method: "GET",
@@ -47,82 +33,17 @@ const Chat = () => {
             },
         })
             .then((response) => response.json())
-            .then((data) => store.dispatch(setChatPostsFromDB(data)))
-            .catch((error) => console.log(error))
-            .finally(setLoading(false));
-    }, [navigate, token]);
-
-    const handleContentChange = (e) => {
-        setContent(e.target.value);
-    };
-
-    const handleFileChange = (e) => {
-        e.target.files[0]
-            ? setChosenFile(`Image choisie : "${e.target.files[0].name}"`)
-            : setChosenFile("");
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setErrorMessage("");
-
-        const uploadedFile = e.target.imageFile.files[0];
-
-        if (!uploadedFile && !content) {
-            setErrorMessage("Le message ne peut pas être vide.");
-            return;
-        } else if (
-            uploadedFile &&
-            !Object.keys(imgMimeTypes).includes(uploadedFile.type)
-        ) {
-            setErrorMessage(
-                "Seuls les formats d'image .jpg, .jpeg, .png, .bpm et .webp sont acceptés."
-            );
-        } else {
-            const sanitizedContent = sanitize(content);
-            const createdAt = Date.now();
-
-            const formData = new FormData();
-            formData.append("imageFile", uploadedFile);
-            formData.append("content", sanitizedContent);
-            formData.append("createdAt", createdAt);
-
-            fetch(`${process.env.REACT_APP_BACKEND_URI}/API/chat/`, {
-                method: "POST",
-                headers: {
-                    Authorization: `BEARER ${token}`,
-                },
-                body: formData,
+            .then((data) => store.dispatch(chatSetPostsFromDB(data)))
+            .catch((error) => {
+                setErrorMessage("Impossible d'afficher les messages.");
+                console.log(error);
             })
-                .then((response) => {
-                    if (response.status >= 400) {
-                        response
-                            .json()
-                            .then(({ message }) => setErrorMessage(message));
-                    } else {
-                        response.json().then((data) => {
-                            store.dispatch(
-                                addChatPost({
-                                    firstName,
-                                    lastName,
-                                    content: sanitizedContent,
-                                    imgUrl: data.imgUrl || "",
-                                    moderated: 0,
-                                    createdAt,
-                                })
-                            );
-                            e.target.imageFile.value = "";
-                            setChosenFile("");
-                            setContent("");
-                        });
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setErrorMessage("Impossible de publier le message.");
-                });
-        }
-    };
+            .finally(setLoading(false));
+    }, [token, navigate]);
+
+    const chatPosts = useSelector(selectChatPosts());
+
+    const [loading, setLoading] = useState(false);
 
     return (
         <Box
@@ -134,10 +55,13 @@ const Chat = () => {
             <Typography component="h2" variant="h4" mb={4}>
                 Chat
             </Typography>
+            {errorMessage !== "" && (
+                <ErrorMessage errorMessage={errorMessage} />
+            )}
             <Box
                 component="section"
                 sx={{
-                    maxHeight: "100vh",
+                    maxHeight: "300vh",
                     overflowY: "scroll",
                     backgroundColor: "white",
                     marginTop: 4,
@@ -149,68 +73,19 @@ const Chat = () => {
                 {!loading && chatPosts.length > 0 ? (
                     chatPosts
                         .slice() // = copy of array, important in strict mode (else error, because original array is freezed (read only))
-                        .sort((a, b) => a.createdAt - b.createdAt)
                         .map((post, index) => (
-                            <ChatPost key={index} post={post} />
+                            <ChatPost
+                                key={index}
+                                postIndex={index}
+                                post={post}
+                            />
                         ))
                 ) : (
                     <p>Aucun message à afficher.</p>
                 )}
             </Box>
             <Box component="section">
-                <Box
-                    component="form"
-                    onSubmit={handleSubmit}
-                    encType="multipart/form-data"
-                >
-                    <TextField
-                        autoFocus={chatPosts.length === 0}
-                        multiline
-                        name="content"
-                        id="content"
-                        label="Votre message : "
-                        fullWidth
-                        minRows={4}
-                        margin="normal"
-                        value={content}
-                        onChange={handleContentChange}
-                    ></TextField>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 2,
-                            mb: 2,
-                        }}
-                    >
-                        <Button
-                            component="label"
-                            variant="text"
-                            sx={{ alignSelf: "start" }}
-                        >
-                            Ajouter une image
-                            <input
-                                hidden
-                                type="file"
-                                name="imageFile"
-                                onChange={handleFileChange}
-                            />
-                        </Button>
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            sx={{ fontWeight: "700" }}
-                        >
-                            Envoyer
-                        </Button>
-                    </Box>
-                    <Typography paragraph variant="body2">
-                        {chosenFile}
-                    </Typography>
-                    {errorMessage !== "" && (
-                        <ErrorMessage errorMessage={errorMessage} />
-                    )}
-                </Box>
+                <ChatPostForm />
             </Box>
         </Box>
     );

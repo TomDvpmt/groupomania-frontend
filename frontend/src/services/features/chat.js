@@ -4,26 +4,27 @@ const initialState = {
     posts: [],
 };
 
-export const setChatPostsFromDB = createAction("setChatPostsFromDB");
-export const addChatPost = createAction("addChatPost");
-export const moderateChatPost = createAction("moderateChatPost");
-export const deleteOldestChatPost = createAction("deleteOldestChatPost");
+export const chatSetPostsFromDB = createAction("chat/setPostsFromDB");
+export const chatAddPost = createAction("chat/addPost");
+export const chatModeratePost = createAction("chat/moderatePost");
+export const chatDeleteOldestPost = createAction("chat/deleteOldestPost");
 
 const chatReducer = createReducer(initialState, (builder) => {
     return builder
-        .addCase(setChatPostsFromDB, (draft, action) => {
+        .addCase(chatSetPostsFromDB, (draft, action) => {
             draft.posts = action.payload;
             return;
         })
-        .addCase(addChatPost, (draft, action) => {
+        .addCase(chatAddPost, (draft, action) => {
             draft.posts.push(action.payload);
             return;
         })
-        .addCase(moderateChatPost, (draft, action) => {
-            //
+        .addCase(chatModeratePost, (draft, action) => {
+            draft.posts[action.payload.index].moderated =
+                action.payload.moderated;
             return;
         })
-        .addCase(deleteOldestChatPost, (draft, action) => {
+        .addCase(chatDeleteOldestPost, (draft, action) => {
             //
             return;
         });

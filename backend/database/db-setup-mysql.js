@@ -176,6 +176,14 @@ const setupDbTables = async (connection, dbName) => {
         WHERE author_id = OLD.id
     `);
 
+    await connection.query(`
+        CREATE TRIGGER IF NOT EXISTS users_chat_posts_before_delete
+        BEFORE DELETE ON users
+        FOR EACH ROW
+        DELETE FROM chat_posts
+        WHERE author_id = OLD.id
+    `);
+
     console.log("========= Tables vérifiées. =========== ");
 };
 

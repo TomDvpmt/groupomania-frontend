@@ -105,7 +105,6 @@ const Home = () => {
                     <Collapse in={showNewPostForm}>
                         <CreateMessageForm
                             isReply={false}
-                            token={token}
                             parentId={0}
                             setHasNewMessages={setHasNewPosts}
                             setShowNewMessageForm={setShowNewPostForm}

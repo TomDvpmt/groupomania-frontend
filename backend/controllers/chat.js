@@ -37,14 +37,14 @@ exports.getAllPosts = (req, res) => {
                         FROM chat_posts as posts
                         JOIN users
                         ON users.id = posts.author_id
-                        ORDER BY created_at DESC
+                        ORDER BY created_at ASC
                     `,
                     []
                 )
                 .then(([rows]) => {
                     const results = rows.map((row) => ({
-                        firstName: row.first_name,
-                        lastName: row.last_name,
+                        firstName: row.first_name ? row.first_name : "",
+                        lastName: row.last_name ? row.last_name : "",
                         content: row.content,
                         imgUrl: row.img_url,
                         moderated: row.moderated,
@@ -104,7 +104,52 @@ exports.createPost = (req, res) => {
 };
 
 exports.moderatePost = (req, res) => {
-    // PUT => moderated = 1
+    const index = req.body.index;
+    const newModeratedValue = req.body.setModeratedTo;
+
+    connectToDb("moderatePost (chat)")
+        .catch((error) => {
+            handleError(
+                res,
+                "Impossible de se connecter à la base de données.",
+                500,
+                error
+            );
+        })
+        .then((connection) => {
+            connection
+                .execute(
+                    `
+                        SELECT id
+                        FROM chat_posts
+                    `
+                )
+                .then(([rows]) => {
+                    const postId = rows[index].id;
+                    console.log("postId : ", postId);
+                    connection.execute(
+                        `
+                            UPDATE chat_posts
+                            SET moderated = ?
+                            WHERE id = ?
+                        `,
+                        [newModeratedValue, postId]
+                    );
+                })
+                .then(() => {
+                    close(connection);
+                    res.status(200).json({ message: "Message modéré." });
+                })
+                .catch((error) => {
+                    close(connection);
+                    handleError(
+                        res,
+                        "Impossible de mettre à jour la modération du post.",
+                        400,
+                        error
+                    );
+                });
+        });
 };
 
 exports.deleteOldestPost = (req, res) => {

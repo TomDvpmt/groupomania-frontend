@@ -1,3 +1,6 @@
+import store from "../services/utils/store";
+import { userLogOut } from "../services/features/user";
+
 /** Sends credentials (for login and signup requests)
  *
  * @param {String} endpoint
@@ -124,7 +127,8 @@ export const deleteUser = (token, userId, setErrorMessage, navigate) => {
             if (response.status >= 400) {
                 response.json().then(({ message }) => setErrorMessage(message));
             } else {
-                sessionStorage.clear();
+                sessionStorage.removeItem("token");
+                store.dispatch(userLogOut());
                 navigate("/login");
             }
         })

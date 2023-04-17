@@ -29,3 +29,7 @@ export const selectUserEmail = () => {
 export const selectChatPosts = () => {
     return (state) => state.chat.posts;
 };
+
+export const selectChatPostModeration = (index) => {
+    return (state) => state.chat.posts[index].moderated;
+};

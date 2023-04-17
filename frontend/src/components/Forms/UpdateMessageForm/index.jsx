@@ -7,7 +7,6 @@ import { theme } from "../../../assets/styles/theme";
 import PropTypes from "prop-types";
 
 const UpdateMessageForm = ({
-    token,
     postId,
     parentId,
     prevContent,
@@ -17,7 +16,6 @@ const UpdateMessageForm = ({
     setHasNewMessages,
 }) => {
     UpdateMessageForm.propTypes = {
-        token: PropTypes.string,
         postId: PropTypes.number,
         parentId: PropTypes.number,
         prevContent: PropTypes.string,
@@ -26,6 +24,8 @@ const UpdateMessageForm = ({
         setShowUpdateForm: PropTypes.func,
         setHasNewMessages: PropTypes.func,
     };
+
+    const token = sessionStorage.getItem("token");
 
     const [updateContent, setUpdateContent] = useState(prevContent);
     const [chosenFile, setChosenFile] = useState("");
@@ -142,7 +142,6 @@ const UpdateMessageForm = ({
                 {showAlert && (
                     <AlertDialog
                         issue="image"
-                        token={token}
                         issueId={postId}
                         updateContent={updateContent}
                         imgUrl={imgUrl}

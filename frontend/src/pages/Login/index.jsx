@@ -88,15 +88,6 @@ const Login = () => {
                                         })
                                     );
                                     sessionStorage.setItem("token", token);
-                                    // sessionStorage.setItem("userId", userId);
-                                    // sessionStorage.setItem(
-                                    //     "firstName",
-                                    //     firstName
-                                    // );
-                                    // sessionStorage.setItem(
-                                    //     "lastName",
-                                    //     lastName
-                                    // );
                                     navigate("/");
                                 }
                             );

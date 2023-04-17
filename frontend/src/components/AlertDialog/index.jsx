@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 import { deletePost, deleteImage, deleteUser } from "../../utils/requests";
+
 import {
     Button,
     Dialog,
@@ -12,7 +15,6 @@ import PropTypes from "prop-types";
 const AlertDialog = ({
     issue,
     issueId,
-    token,
     updateContent,
     imgUrl,
     setHasNewMessages,
@@ -20,20 +22,20 @@ const AlertDialog = ({
     setErrorMessage,
     showAlert,
     setShowAlert,
-    navigate,
 }) => {
     AlertDialog.propTypes = {
         issue: PropTypes.string,
         issueId: PropTypes.number,
-        token: PropTypes.string,
         updateContent: PropTypes.string,
         imgUrl: PropTypes.string,
         setHasNewMessages: PropTypes.func,
         setShowUpdateForm: PropTypes.func,
         showAlert: PropTypes.bool,
         setShowAlert: PropTypes.func,
-        navigate: PropTypes.func,
     };
+
+    const token = sessionStorage.getItem("token");
+    const navigate = useNavigate();
 
     let issueTitle, issueDescription;
 

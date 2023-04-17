@@ -1,3 +1,11 @@
+import { useSelector } from "react-redux";
+
+import {
+    selectUserFirstName,
+    selectUserLastName,
+    selectUserEmail,
+} from "../../services/utils/selectors";
+
 import {
     TableContainer,
     Table,
@@ -5,14 +13,11 @@ import {
     TableRow,
     TableCell,
 } from "@mui/material";
-import PropTypes from "prop-types";
 
-const ProfileData = ({ firstName, lastName, email }) => {
-    ProfileData.propTypes = {
-        firstName: PropTypes.string,
-        lastName: PropTypes.string,
-        email: PropTypes.string,
-    };
+const ProfileData = () => {
+    const firstName = useSelector(selectUserFirstName());
+    const lastName = useSelector(selectUserLastName());
+    const email = useSelector(selectUserEmail());
 
     const rows = [
         {

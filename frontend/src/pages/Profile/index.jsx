@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import ProfileData from "../../components/ProfileData";
@@ -9,9 +9,9 @@ import ErrorMessage from "../../components/ErrorMessage";
 import Loader from "../../components/Loader";
 
 import {
+    selectUserId,
     selectUserFirstName,
     selectUserLastName,
-    selectUserEmail,
 } from "../../services/utils/selectors";
 
 import { setUserState } from "../../utils/utils";
@@ -20,15 +20,10 @@ import { Box, Container, Typography, Button, Stack } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
 
 const Profile = () => {
-    const { userId } = useParams();
-
+    const userId = useSelector(selectUserId());
     const firstName = useSelector(selectUserFirstName());
     const lastName = useSelector(selectUserLastName());
-    const email = useSelector(selectUserEmail());
 
-    // const [firstName, setFirstName] = useState("");
-    // const [lastName, setLastName] = useState("");
-    // const [email, setEmail] = useState("");
     const [modifiable, setModifiable] = useState(false);
     const [showUserUpdateForm, setShowUserUpdateForm] = useState(false);
     const [showValidationMessage, setShowValidationMessage] = useState(false);
@@ -72,17 +67,10 @@ const Profile = () => {
                 }
             })
             .then((data) => {
-                // setFirstName(data.firstName);
-                // setLastName(data.lastName);
-                // setEmail(data.email);
                 setModifiable(data.modifiable);
             })
             .catch((error) => {
-                console.log(
-                    // "Impossible d'afficher les données de l'utilisateur :",
-                    error
-                );
-                // setErrorMessage("Impossible d'afficher les données.");
+                console.log(error);
             })
             .finally(setLoading(false));
     }, [token, userId, navigate]);
@@ -122,11 +110,7 @@ const Profile = () => {
                                 Les informations ont été mises à jour.
                             </Typography>
                         )}
-                        <ProfileData
-                            firstName={firstName}
-                            lastName={lastName}
-                            email={email}
-                        />
+                        <ProfileData />
                     </Container>
                     {modifiable && (
                         <Stack
@@ -153,14 +137,6 @@ const Profile = () => {
                     )}
                     {showUserUpdateForm && (
                         <UserUpdateForm
-                            token={token}
-                            userId={parseInt(userId)}
-                            // prevFirstName={firstName}
-                            // prevLastName={lastName}
-                            // prevEmail={email}
-                            // setFirstName={setFirstName}
-                            // setLastName={setLastName}
-                            // setEmail={setEmail}
                             setErrorMessage={setErrorMessage}
                             setShowUserUpdateForm={setShowUserUpdateForm}
                             setShowValidationMessage={setShowValidationMessage}
@@ -170,11 +146,9 @@ const Profile = () => {
                         <AlertDialog
                             issue="user"
                             issueId={parseInt(userId)}
-                            token={token}
                             setErrorMessage={setErrorMessage}
                             showAlert={showAlert}
                             setShowAlert={setShowAlert}
-                            navigate={navigate}
                         />
                     )}
                     {errorMessage && (

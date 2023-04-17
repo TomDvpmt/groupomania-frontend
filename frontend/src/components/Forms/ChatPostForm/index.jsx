@@ -1,61 +1,65 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
+
 import ErrorMessage from "../../ErrorMessage";
+
+import store from "../../../services/utils/store";
+import { chatAddPost } from "../../../services/features/chat";
+import {
+    selectUserFirstName,
+    selectUserLastName,
+    selectChatPosts,
+} from "../../../services/utils/selectors";
+
 import { imgMimeTypes, sanitize } from "../../../utils/formValidation";
+
 import { Box, TextField, Button, Typography } from "@mui/material";
-import { theme } from "../../../assets/styles/theme";
-import PropTypes from "prop-types";
 
-const CreateMessageForm = ({
-    isReply,
-    parentId,
-    setHasNewMessages,
-    setShowNewMessageForm,
-}) => {
-    CreateMessageForm.propTypes = {
-        isReply: PropTypes.bool,
-        parentId: PropTypes.number,
-        setHasNewMessages: PropTypes.func,
-        setShowNewMessageForm: PropTypes.func,
-    };
-
+const ChatPostForm = () => {
     const token = sessionStorage.getItem("token");
 
-    const [errorMessage, setErrorMessage] = useState("");
+    const chatPosts = useSelector(selectChatPosts());
+    const firstName = useSelector(selectUserFirstName());
+    const lastName = useSelector(selectUserLastName());
+
     const [content, setContent] = useState("");
     const [chosenFile, setChosenFile] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleContentChange = (e) => {
         setContent(e.target.value);
     };
-
     const handleFileChange = (e) => {
         e.target.files[0]
             ? setChosenFile(`Image choisie : "${e.target.files[0].name}"`)
             : setChosenFile("");
     };
-
     const handleSubmit = (e) => {
         e.preventDefault();
         setErrorMessage("");
 
         const uploadedFile = e.target.imageFile.files[0];
 
-        if (
+        if (!uploadedFile && !content) {
+            setErrorMessage("Le message ne peut pas être vide.");
+            return;
+        } else if (
             uploadedFile &&
             !Object.keys(imgMimeTypes).includes(uploadedFile.type)
         ) {
             setErrorMessage(
-                "Seuls les formats .jpg, .jpeg, .png, .bpm et .webp sont acceptés."
+                "Seuls les formats d'image .jpg, .jpeg, .png, .bpm et .webp sont acceptés."
             );
         } else {
             const sanitizedContent = sanitize(content);
+            const createdAt = Date.now();
 
             const formData = new FormData();
-            formData.append("parentId", parentId);
             formData.append("imageFile", uploadedFile);
             formData.append("content", sanitizedContent);
+            formData.append("createdAt", createdAt);
 
-            fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts`, {
+            fetch(`${process.env.REACT_APP_BACKEND_URI}/API/chat/`, {
                 method: "POST",
                 headers: {
                     Authorization: `BEARER ${token}`,
@@ -68,13 +72,21 @@ const CreateMessageForm = ({
                             .json()
                             .then(({ message }) => setErrorMessage(message));
                     } else {
-                        e.target.imageFile.value = "";
-                        setChosenFile("");
-                        setShowNewMessageForm(false);
-                        setHasNewMessages(
-                            (hasNewMessages) => hasNewMessages + 1
-                        );
-                        setContent("");
+                        response.json().then((data) => {
+                            store.dispatch(
+                                chatAddPost({
+                                    firstName,
+                                    lastName,
+                                    content: sanitizedContent,
+                                    imgUrl: data.imgUrl || "",
+                                    moderated: 0,
+                                    createdAt,
+                                })
+                            );
+                            e.target.imageFile.value = "";
+                            setChosenFile("");
+                            setContent("");
+                        });
                     }
                 })
                 .catch((error) => {
@@ -86,24 +98,21 @@ const CreateMessageForm = ({
     return (
         <Box
             component="form"
-            sx={theme.form}
             onSubmit={handleSubmit}
             encType="multipart/form-data"
         >
             <TextField
+                autoFocus={chatPosts.length === 0}
                 multiline
-                autoFocus={isReply}
-                label={`Votre ${
-                    parentId === 0 ? "message" : "commentaire"
-                } :${" "}`}
                 name="content"
                 id="content"
+                label="Votre message : "
                 fullWidth
-                minRows={8}
+                minRows={4}
                 margin="normal"
                 value={content}
                 onChange={handleContentChange}
-            />
+            ></TextField>
             <Box
                 sx={{
                     display: "flex",
@@ -143,4 +152,4 @@ const CreateMessageForm = ({
     );
 };
 
-export default CreateMessageForm;
+export default ChatPostForm;

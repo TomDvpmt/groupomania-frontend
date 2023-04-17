@@ -9,20 +9,15 @@ import {
 } from "@mui/icons-material";
 import PropTypes from "prop-types";
 
-const LikeButtons = ({
-    token,
-    postId,
-    likes,
-    dislikes,
-    currentUserLikeValue,
-}) => {
+const LikeButtons = ({ postId, likes, dislikes, currentUserLikeValue }) => {
     LikeButtons.propTypes = {
-        token: PropTypes.string,
         postId: PropTypes.number,
         likes: PropTypes.number,
         dislikes: PropTypes.number,
         currentUserLikeValue: PropTypes.number,
     };
+
+    const token = sessionStorage.getItem("token");
 
     const [likesCount, setLikesCount] = useState(likes);
     const [dislikesCount, setDislikesCount] = useState(dislikes);

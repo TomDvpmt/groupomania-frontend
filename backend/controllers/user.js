@@ -15,7 +15,7 @@ const logAfterSignUp = async (connection, email, res) => {
     try {
         const [rows] = await connection.execute(
             `
-            SELECT id, admin, first_name, last_name, email
+            SELECT id, admin, first_name, last_name
             FROM users
             WHERE email = ?
         `,
@@ -26,7 +26,6 @@ const logAfterSignUp = async (connection, email, res) => {
         const admin = rows[0].admin;
         const firstName = rows[0].first_name;
         const lastName = rows[0].last_name;
-        const email = rows[0].email;
 
         close(connection);
         console.log(

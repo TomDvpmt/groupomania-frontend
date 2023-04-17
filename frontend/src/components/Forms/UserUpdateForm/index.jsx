@@ -12,6 +12,7 @@ import {
     userSetEmail,
 } from "../../../services/features/user";
 import {
+    selectUserId,
     selectUserFirstName,
     selectUserLastName,
     selectUserEmail,
@@ -21,20 +22,19 @@ import { Box, Button } from "@mui/material";
 import PropTypes from "prop-types";
 
 const UserUpdateForm = ({
-    userId,
-    token,
     setErrorMessage,
     setShowUserUpdateForm,
     setShowValidationMessage,
 }) => {
     UserUpdateForm.propTypes = {
-        token: PropTypes.string,
-        userId: PropTypes.number,
         setErrorMessage: PropTypes.func,
         setShowUserUpdateForm: PropTypes.func,
         setShowValidationMessage: PropTypes.func,
     };
 
+    const token = sessionStorage.getItem("token");
+
+    const userId = useSelector(selectUserId());
     const prevFirstName = useSelector(selectUserFirstName());
     const prevLastName = useSelector(selectUserLastName());
     const prevEmail = useSelector(selectUserEmail());

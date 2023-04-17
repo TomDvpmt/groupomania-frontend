@@ -186,11 +186,13 @@ exports.updatePost = (req, res, next) => {
                 console.log("postId : ", postId, "prevImgUrl :", prevImgUrl);
                 connection
                     .execute(
-                        `UPDATE posts
-                SET 
-                    img_url = "",
-                    modified = 1
-                WHERE id = ?`,
+                        `
+                            UPDATE posts
+                            SET 
+                                img_url = "",
+                                modified = 1
+                            WHERE id = ?
+                        `,
                         [postId]
                     )
                     .then(() => {

@@ -9,9 +9,8 @@ import Loader from "../Loader";
 import { Box, Typography, Stack, Collapse } from "@mui/material";
 import PropTypes from "prop-types";
 
-const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
+const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
     Comments.propTypes = {
-        token: PropTypes.string,
         parentId: PropTypes.number,
         showCommentForm: PropTypes.bool,
         setShowCommentForm: PropTypes.func,
@@ -23,6 +22,7 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -89,7 +89,6 @@ const Comments = ({ token, parentId, showCommentForm, setShowCommentForm }) => {
             <Collapse in={showCommentForm}>
                 <CreateMessageForm
                     isReply={true}
-                    token={token}
                     parentId={parentId}
                     setHasNewMessages={setHasNewComments}
                     setShowNewMessageForm={setShowCommentForm}

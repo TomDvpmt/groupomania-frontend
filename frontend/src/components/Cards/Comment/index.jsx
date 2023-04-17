@@ -36,7 +36,6 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
         setHasNewComments: PropTypes.func,
     };
 
-    const token = sessionStorage.getItem("token");
     const isAdmin = useSelector(selectUserAdminStatus());
     const loggedUserId = useSelector(selectUserId());
 
@@ -127,7 +126,6 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
                 )}
                 {canModify && (
                     <LikeButtons
-                        token={token}
                         postId={commentId}
                         likes={commentData.likes}
                         dislikes={commentData.dislikes}
@@ -137,7 +135,6 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
                 <CardActions>
                     {!canModify && (
                         <LikeButtons
-                            token={token}
                             postId={commentId}
                             likes={commentData.likes}
                             dislikes={commentData.dislikes}
@@ -146,7 +143,6 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
                     )}
                     {canModify && (
                         <UpdateDeleteButtons
-                            token={token}
                             messageId={commentId}
                             imgUrl={imgUrl}
                             setHasNewMessages={setHasNewComments}
@@ -158,7 +154,6 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
                 </CardActions>
                 <Collapse in={showCommentUpdateForm}>
                     <UpdateMessageForm
-                        token={token}
                         postId={commentId}
                         parentId={parentId}
                         prevContent={commentContent}

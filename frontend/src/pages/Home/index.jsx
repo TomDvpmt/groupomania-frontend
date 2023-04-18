@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { useDispatch } from "react-redux";
 
-import Post from "../../components/Cards/Post";
+import Post from "../../components/Post";
 import CreateMessageForm from "../../components/Forms/CreateMessageForm";
 import PostNewMessageButton from "../../components/Buttons/PostNewMessageButton";
 import ErrorMessage from "../../components/ErrorMessage";

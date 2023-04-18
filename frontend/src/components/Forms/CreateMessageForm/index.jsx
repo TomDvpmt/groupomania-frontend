@@ -33,12 +33,12 @@ const CreateMessageForm = ({
     };
 
     const token = sessionStorage.getItem("token");
-    const userId = useSelector(selectUserId());
-    const firstName = useSelector(selectUserFirstName());
-    const lastName = useSelector(selectUserLastName());
-    const email = useSelector(selectUserEmail());
-    const admin = useSelector(selectUserAdminStatus());
-    const dispatch = useDispatch();
+    // const userId = useSelector(selectUserId());
+    // const firstName = useSelector(selectUserFirstName());
+    // const lastName = useSelector(selectUserLastName());
+    // const email = useSelector(selectUserEmail());
+    // const admin = useSelector(selectUserAdminStatus());
+    // const dispatch = useDispatch();
 
     const [errorMessage, setErrorMessage] = useState("");
     const [content, setContent] = useState("");
@@ -77,7 +77,9 @@ const CreateMessageForm = ({
             formData.append("content", sanitizedContent);
             formData.append("createdAt", createdAt);
 
-            fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts`, {
+            const endpoint = parentId === 0 ? "posts" : "comments";
+
+            fetch(`${process.env.REACT_APP_BACKEND_URI}/API/${endpoint}`, {
                 method: "POST",
                 headers: {
                     Authorization: `BEARER ${token}`,

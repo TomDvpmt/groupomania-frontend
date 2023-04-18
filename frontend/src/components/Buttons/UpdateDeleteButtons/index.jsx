@@ -7,6 +7,7 @@ import { Box, Button } from "@mui/material";
 import PropTypes from "prop-types";
 
 const UpdateDeleteButtons = ({
+    issue,
     messageId,
     imgUrl,
     setHasNewMessages,
@@ -14,6 +15,7 @@ const UpdateDeleteButtons = ({
     setShowMessageUpdateForm,
 }) => {
     UpdateDeleteButtons.propTypes = {
+        issue: PropTypes.string,
         messageId: PropTypes.number,
         imgUrl: PropTypes.string,
         setHasNewMessages: PropTypes.func,
@@ -43,7 +45,7 @@ const UpdateDeleteButtons = ({
             </Button>
             {showAlert && (
                 <AlertDialog
-                    issue="message"
+                    issue={issue}
                     issueId={messageId}
                     imgUrl={imgUrl}
                     setHasNewMessages={setHasNewMessages}

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import { deletePost, deleteImage, deleteUser } from "../../utils/requests";
+import { deleteMessage, deleteImage, deleteUser } from "../../utils/requests";
 
 import {
     Button,
@@ -42,7 +42,7 @@ const AlertDialog = ({
     if (issue === "image") {
         issueTitle = "l'image";
         issueDescription = "La suppression de l'image est définitive.";
-    } else if (issue === "message") {
+    } else if (issue === "post" || issue === "comment") {
         issueTitle = "le message";
         issueDescription = "La suppression du message est définitive.";
     } else if (issue === "user") {
@@ -58,17 +58,19 @@ const AlertDialog = ({
     const handleYes = () => {
         if (issue === "image") {
             deleteImage(
-                updateContent,
-                imgUrl,
-                issueId,
                 token,
+                issue,
+                issueId,
+                imgUrl,
+                updateContent,
                 setShowUpdateForm,
                 setHasNewMessages,
                 setErrorMessage
             );
-        } else if (issue === "message") {
-            deletePost(
+        } else if (issue === "post" || issue === "comment") {
+            deleteMessage(
                 token,
+                issue,
                 issueId,
                 imgUrl,
                 setHasNewMessages,

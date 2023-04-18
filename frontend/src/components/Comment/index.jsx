@@ -5,14 +5,14 @@ import { useSelector } from "react-redux";
 import {
     selectUserId,
     selectUserAdminStatus,
-} from "../../../services/utils/selectors";
+} from "../../services/utils/selectors";
 
-import UpdateMessageForm from "../../Forms/UpdateMessageForm";
-import LikeButtons from "../../Buttons/LikeButtons";
-import UpdateDeleteButtons from "../../Buttons/UpdateDeleteButtons";
-import ErrorMessage from "../../ErrorMessage";
+import UpdateMessageForm from "../Forms/UpdateMessageForm";
+import LikeButtons from "../Buttons/LikeButtons";
+import UpdateDeleteButtons from "../Buttons/UpdateDeleteButtons";
+import ErrorMessage from "../ErrorMessage";
 
-import { formatDate } from "../../../utils/utils";
+import { formatDate } from "../../utils/utils";
 
 import {
     Box,
@@ -126,7 +126,8 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
                 )}
                 {canModify && (
                     <LikeButtons
-                        postId={commentId}
+                        messageType="comment"
+                        messageId={commentId}
                         likes={commentData.likes}
                         dislikes={commentData.dislikes}
                         currentUserLikeValue={currentUserLikeValue}
@@ -135,7 +136,8 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
                 <CardActions>
                     {!canModify && (
                         <LikeButtons
-                            postId={commentId}
+                            messageType="comment"
+                            messageId={commentId}
                             likes={commentData.likes}
                             dislikes={commentData.dislikes}
                             currentUserLikeValue={currentUserLikeValue}
@@ -144,6 +146,7 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
                     {canModify && (
                         <UpdateDeleteButtons
                             messageId={commentId}
+                            issue="comment"
                             imgUrl={imgUrl}
                             setHasNewMessages={setHasNewComments}
                             setShowMessageUpdateForm={setShowCommentUpdateForm}
@@ -154,7 +157,7 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
                 </CardActions>
                 <Collapse in={showCommentUpdateForm}>
                     <UpdateMessageForm
-                        postId={commentId}
+                        messageId={commentId}
                         parentId={parentId}
                         prevContent={commentContent}
                         setMessageContent={setCommentContent}

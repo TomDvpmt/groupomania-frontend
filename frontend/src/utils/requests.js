@@ -32,14 +32,15 @@ export const fetchCredentials = (endpoint, credentialsData) => {
  * @returns {Response}
  */
 
-export const deletePost = (
+export const deleteMessage = (
     token,
-    postId,
+    issue,
+    messageId,
     imgUrl,
     setHasNewMessages,
     setErrorMessage
 ) => {
-    fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URI}/API/${issue}s/${messageId}`, {
         method: "DELETE",
         headers: {
             Authorization: `BEARER ${token}`,
@@ -72,10 +73,11 @@ export const deletePost = (
  */
 
 export const deleteImage = (
-    updateContent,
-    imgUrl,
-    postId,
     token,
+    issue,
+    messageId,
+    imgUrl,
+    updateContent,
     setShowUpdateForm,
     setHasNewMessages,
     setErrorMessage
@@ -87,7 +89,7 @@ export const deleteImage = (
     formData.append("imgUrl", imgUrl);
     formData.append("deleteImg", true);
 
-    fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URI}/API/${issue}s/${messageId}`, {
         method: "PUT",
         headers: {
             Authorization: `BEARER ${token}`,

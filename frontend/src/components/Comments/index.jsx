@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 
-import Comment from "../Cards/Comment";
+import Comment from "../Comment";
 import CreateMessageForm from "../Forms/CreateMessageForm";
 import ErrorMessage from "../ErrorMessage";
 import Loader from "../Loader";
 
-import { forumSetPostCommentsFromDB } from "../../services/features/forum";
+// import { forumSetPostCommentsFromDB } from "../../services/features/forum";
 
 import { Box, Typography, Stack, Collapse } from "@mui/material";
 import PropTypes from "prop-types";
@@ -22,7 +22,7 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
     const token = sessionStorage.getItem("token");
 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
 
     const [comments, setComments] = useState([]);
     const [hasNewComments, setHasNewComments] = useState(0);
@@ -33,7 +33,7 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
     useEffect(() => {
         setLoading(true);
         fetch(
-            `${process.env.REACT_APP_BACKEND_URI}/API/posts/all/${parentId}`,
+            `${process.env.REACT_APP_BACKEND_URI}/API/comments/all/${parentId}`,
             {
                 method: "GET",
                 headers: {
@@ -47,12 +47,12 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
                     return <p>Aucun message à afficher.</p>;
                 } else {
                     setCommentsNumber(data.results.length);
-                    dispatch(
-                        forumSetPostCommentsFromDB({
-                            postId: parentId,
-                            comments: data.results,
-                        })
-                    );
+                    // dispatch(
+                    //     forumSetPostCommentsFromDB({
+                    //         postId: parentId,
+                    //         comments: data.results,
+                    //     })
+                    // );
                     return data.results.map((result) => (
                         <Comment
                             key={result.id}
@@ -89,7 +89,7 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
                 setErrorMessage("Impossible d'afficher les commentaires.");
             })
             .finally(setLoading(false));
-    }, [parentId, hasNewComments, token, navigate, dispatch]);
+    }, [parentId, hasNewComments, token, navigate]);
 
     useEffect(() => {
         setShowCommentForm(false);

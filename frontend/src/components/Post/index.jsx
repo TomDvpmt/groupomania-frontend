@@ -2,18 +2,18 @@ import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import Comments from "../../Comments";
-import UpdateMessageForm from "../../Forms/UpdateMessageForm";
-import LikeButtons from "../../Buttons/LikeButtons";
-import UpdateDeleteButtons from "../../Buttons/UpdateDeleteButtons";
-import ErrorMessage from "../../ErrorMessage";
+import Comments from "../Comments";
+import UpdateMessageForm from "../Forms/UpdateMessageForm";
+import LikeButtons from "../Buttons/LikeButtons";
+import UpdateDeleteButtons from "../Buttons/UpdateDeleteButtons";
+import ErrorMessage from "../ErrorMessage";
 
 import {
     selectUserId,
     selectUserAdminStatus,
-} from "../../../services/utils/selectors";
+} from "../../services/utils/selectors";
 
-import { formatDate } from "../../../utils/utils";
+import { formatDate } from "../../utils/utils";
 
 import {
     Box,
@@ -127,7 +127,8 @@ const Post = ({ postData, currentUserLikeValue, setHasNewPosts }) => {
             )}
             {canModify && (
                 <LikeButtons
-                    postId={postId}
+                    messageType="post"
+                    messageId={postId}
                     likes={postData.likes}
                     dislikes={postData.dislikes}
                     currentUserLikeValue={currentUserLikeValue}
@@ -144,6 +145,7 @@ const Post = ({ postData, currentUserLikeValue, setHasNewPosts }) => {
                     {canModify && (
                         <UpdateDeleteButtons
                             messageId={postId}
+                            issue="post"
                             imgUrl={postData.imgUrl}
                             setHasNewMessages={setHasNewPosts}
                             setErrorMessage={setErrorMessage}
@@ -152,7 +154,8 @@ const Post = ({ postData, currentUserLikeValue, setHasNewPosts }) => {
                     )}
                     {!canModify && (
                         <LikeButtons
-                            postId={postId}
+                            messageType="post"
+                            messageId={postId}
                             likes={postData.likes}
                             dislikes={postData.dislikes}
                             currentUserLikeValue={currentUserLikeValue}
@@ -170,7 +173,7 @@ const Post = ({ postData, currentUserLikeValue, setHasNewPosts }) => {
             </CardActions>
             <Collapse in={showPostUpdateForm}>
                 <UpdateMessageForm
-                    postId={postId}
+                    messageId={postId}
                     parentId={0}
                     prevContent={postContent}
                     setMessageContent={setPostContent}

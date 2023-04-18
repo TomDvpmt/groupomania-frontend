@@ -1,5 +1,7 @@
 import { useState } from "react";
+
 import ErrorMessage from "../../ErrorMessage";
+
 import { Box, Button } from "@mui/material";
 import {
     ThumbUpAltOutlined,
@@ -7,11 +9,19 @@ import {
     ThumbDownAltOutlined,
     ThumbDown,
 } from "@mui/icons-material";
+
 import PropTypes from "prop-types";
 
-const LikeButtons = ({ postId, likes, dislikes, currentUserLikeValue }) => {
+const LikeButtons = ({
+    messageType,
+    messageId,
+    likes,
+    dislikes,
+    currentUserLikeValue,
+}) => {
     LikeButtons.propTypes = {
-        postId: PropTypes.number,
+        messageType: PropTypes.string,
+        messageId: PropTypes.number,
         likes: PropTypes.number,
         dislikes: PropTypes.number,
         currentUserLikeValue: PropTypes.number,
@@ -27,14 +37,17 @@ const LikeButtons = ({ postId, likes, dislikes, currentUserLikeValue }) => {
     const changeLike = (clickValue) => {
         setErrorMessage("");
 
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}/like`, {
-            method: "PUT",
-            headers: {
-                Authorization: `BEARER ${token}`,
-                "Content-type": "application/json",
-            },
-            body: JSON.stringify({ clickValue: clickValue }),
-        })
+        fetch(
+            `${process.env.REACT_APP_BACKEND_URI}/API/${messageType}s/${messageId}/like`,
+            {
+                method: "PUT",
+                headers: {
+                    Authorization: `BEARER ${token}`,
+                    "Content-type": "application/json",
+                },
+                body: JSON.stringify({ clickValue: clickValue }),
+            }
+        )
             .then((response) => response.json())
             .then((data) => {
                 setLikeStatus(data.newUserLikeValue);

@@ -7,7 +7,7 @@ import { theme } from "../../../assets/styles/theme";
 import PropTypes from "prop-types";
 
 const UpdateMessageForm = ({
-    postId,
+    messageId,
     parentId,
     prevContent,
     setMessageContent,
@@ -16,7 +16,7 @@ const UpdateMessageForm = ({
     setHasNewMessages,
 }) => {
     UpdateMessageForm.propTypes = {
-        postId: PropTypes.number,
+        messageId: PropTypes.number,
         parentId: PropTypes.number,
         prevContent: PropTypes.string,
         setMessageContent: PropTypes.func,
@@ -66,13 +66,18 @@ const UpdateMessageForm = ({
             formData.append("content", sanitizedContent);
             imgUrl && formData.append("imgUrl", imgUrl);
 
-            fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}`, {
-                method: "PUT",
-                headers: {
-                    Authorization: `BEARER ${token}`,
-                },
-                body: formData,
-            })
+            const endpoint = parentId === 0 ? "posts" : "comments";
+
+            fetch(
+                `${process.env.REACT_APP_BACKEND_URI}/API/${endpoint}/${messageId}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        Authorization: `BEARER ${token}`,
+                    },
+                    body: formData,
+                }
+            )
                 .then((response) => {
                     if (response.status >= 400) {
                         response
@@ -142,7 +147,7 @@ const UpdateMessageForm = ({
                 {showAlert && (
                     <AlertDialog
                         issue="image"
-                        issueId={postId}
+                        issueId={messageId}
                         updateContent={updateContent}
                         imgUrl={imgUrl}
                         setHasNewMessages={setHasNewMessages}

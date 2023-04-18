@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import Comment from "../Cards/Comment";
 import CreateMessageForm from "../Forms/CreateMessageForm";
 import ErrorMessage from "../ErrorMessage";
 import Loader from "../Loader";
 
-import store from "../../services/utils/store";
 import { forumSetPostCommentsFromDB } from "../../services/features/forum";
 
 import { Box, Typography, Stack, Collapse } from "@mui/material";
@@ -19,14 +19,16 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
         setShowCommentForm: PropTypes.func,
     };
 
+    const token = sessionStorage.getItem("token");
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const [comments, setComments] = useState([]);
     const [hasNewComments, setHasNewComments] = useState(0);
     const [commentsNumber, setCommentsNumber] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
-
-    const token = sessionStorage.getItem("token");
-    const navigate = useNavigate();
 
     useEffect(() => {
         setLoading(true);
@@ -45,7 +47,7 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
                     return <p>Aucun message à afficher.</p>;
                 } else {
                     setCommentsNumber(data.results.length);
-                    store.dispatch(
+                    dispatch(
                         forumSetPostCommentsFromDB({
                             postId: parentId,
                             comments: data.results,
@@ -87,7 +89,7 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
                 setErrorMessage("Impossible d'afficher les commentaires.");
             })
             .finally(setLoading(false));
-    }, [parentId, hasNewComments, token, navigate]);
+    }, [parentId, hasNewComments, token, navigate, dispatch]);
 
     useEffect(() => {
         setShowCommentForm(false);

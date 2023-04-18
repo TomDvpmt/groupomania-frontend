@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
-import store from "../../services/utils/store";
 import { userLogOut } from "../../services/features/user";
 import {
     selectUserIsLoggedIn,
     selectUserId,
 } from "../../services/utils/selectors";
+
+import { setUserState } from "../../utils/utils";
 
 import logo from "../../assets/img/brand/icon-left-font-cropped.png";
 
@@ -31,11 +32,19 @@ const Header = ({ page }) => {
         page: PropTypes.string,
     };
 
-    const [anchorEl, setAnchorEl] = useState(null);
+    const token = sessionStorage.getItem("token");
+
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const isLogged = useSelector(selectUserIsLoggedIn());
     const loggedUserId = useSelector(selectUserId());
+    const [anchorEl, setAnchorEl] = useState(null);
+
     const open = Boolean(anchorEl);
+
+    useEffect(() => {
+        setUserState(token, navigate);
+    }, [token, navigate]);
 
     const handleAvatarClick = (e) => {
         setAnchorEl(e.currentTarget);
@@ -51,8 +60,9 @@ const Header = ({ page }) => {
     };
 
     const handleLogOut = () => {
+        setAnchorEl(null);
         sessionStorage.clear();
-        store.dispatch(userLogOut());
+        dispatch(userLogOut());
         navigate("/login");
     };
 
@@ -124,6 +134,7 @@ const Header = ({ page }) => {
                         <IconButton onClick={handleAvatarClick} size="small">
                             <Avatar />
                         </IconButton>
+
                         <Menu
                             open={open}
                             onClose={handleClose}

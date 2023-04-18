@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import ChatPostForm from "../../components/Forms/ChatPostForm";
 import ChatPost from "../../components/ChatPost";
 import ErrorMessage from "../../components/ErrorMessage";
 
-import store from "../../services/utils/store";
 import { chatSetPostsFromDB } from "../../services/features/chat";
 import { selectChatPosts } from "../../services/utils/selectors";
-
-import { setUserState } from "../../utils/utils";
 
 import { Box, Typography } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
@@ -18,13 +15,12 @@ import { theme } from "../../assets/styles/theme";
 const Chat = () => {
     const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         setLoading(true);
-
-        setUserState(token, navigate);
 
         fetch(`${process.env.REACT_APP_BACKEND_URI}/API/chat/`, {
             method: "GET",
@@ -33,13 +29,13 @@ const Chat = () => {
             },
         })
             .then((response) => response.json())
-            .then((data) => store.dispatch(chatSetPostsFromDB(data)))
+            .then((data) => dispatch(chatSetPostsFromDB(data)))
             .catch((error) => {
                 setErrorMessage("Impossible d'afficher les messages.");
                 console.log(error);
             })
             .finally(setLoading(false));
-    }, [token, navigate]);
+    }, [token, navigate, dispatch]);
 
     const chatPosts = useSelector(selectChatPosts());
 

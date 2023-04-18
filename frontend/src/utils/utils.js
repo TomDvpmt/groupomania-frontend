@@ -38,6 +38,15 @@ export const setUserState = (token, navigate) => {
             })
             .catch((error) => console.log(error));
     } else {
+        store.dispatch(
+            userSetInfo({
+                id: 0,
+                admin: 0,
+                firstName: "",
+                lastName: "",
+                email: "",
+            })
+        );
         navigate("/login");
     }
 };

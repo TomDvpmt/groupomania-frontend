@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import SubmitButton from "../../components/Buttons/SubmitButton";
 import EmailField from "../../components/FormFields/EmailField";
 import PasswordField from "../../components/FormFields/PasswordField";
 import ErrorMessage from "../../components/ErrorMessage";
 
-import store from "../../services/utils/store";
 import { userSetIsLoggedIn, userSetInfo } from "../../services/features/user";
 
 import { fetchCredentials } from "../../utils/requests";
@@ -28,6 +28,7 @@ const Login = () => {
     const [globalErrorMessage, setGlobalErrorMessage] = useState("");
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -77,8 +78,8 @@ const Login = () => {
                                     lastName,
                                     email,
                                 }) => {
-                                    store.dispatch(userSetIsLoggedIn());
-                                    store.dispatch(
+                                    dispatch(userSetIsLoggedIn());
+                                    dispatch(
                                         userSetInfo({
                                             id: userId,
                                             admin,

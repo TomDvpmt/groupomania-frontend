@@ -14,8 +14,6 @@ import {
     selectUserLastName,
 } from "../../services/utils/selectors";
 
-import { setUserState } from "../../utils/utils";
-
 import { Box, Container, Typography, Button, Stack } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
 
@@ -33,10 +31,6 @@ const Profile = () => {
 
     const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
-
-    useEffect(() => {
-        setUserState(token, navigate);
-    }, [token, navigate]);
 
     const handleUpdate = () => {
         setShowUserUpdateForm((showUserUpdateForm) => !showUserUpdateForm);

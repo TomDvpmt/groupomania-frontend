@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import ErrorMessage from "../../ErrorMessage";
 
-import store from "../../../services/utils/store";
 import { chatAddPost } from "../../../services/features/chat";
 import {
     selectUserFirstName,
@@ -17,6 +16,7 @@ import { Box, TextField, Button, Typography } from "@mui/material";
 
 const ChatPostForm = () => {
     const token = sessionStorage.getItem("token");
+    const dispatch = useDispatch();
 
     const chatPosts = useSelector(selectChatPosts());
     const firstName = useSelector(selectUserFirstName());
@@ -73,7 +73,7 @@ const ChatPostForm = () => {
                             .then(({ message }) => setErrorMessage(message));
                     } else {
                         response.json().then((data) => {
-                            store.dispatch(
+                            dispatch(
                                 chatAddPost({
                                     firstName,
                                     lastName,

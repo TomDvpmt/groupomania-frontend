@@ -12,7 +12,7 @@ const { handleError } = require("../utils/utils");
 
 exports.getAllPosts = (req, res, next) => {
     const userId = req.auth.userId;
-    const parentId = req.params.parentId;
+    const parentId = parseInt(req.params.parentId);
 
     connectToDb("getAllPosts" + parentId === 0 ? "posts" : "comments")
         .catch((error) => {
@@ -131,42 +131,46 @@ exports.createPost = (req, res, next) => {
     const userId = req.auth.userId;
     const content = req.body.content;
     const parentId = req.body.parentId;
-    const createdAt = Date.now();
-    connectToDb("createPost")
-        .catch((error) => {
-            handleError(
-                res,
-                "Impossible de se connecter à la base de données.",
-                500,
-                error
-            );
-        })
-        .then((connection) => {
-            if (!req.file && !req.body.content) {
-                handleError(res, "Le message ne peut pas être vide.", 400);
-            }
-            const imgUrl = req.file
-                ? `${req.protocol}://${req.get("host")}/images/${
-                      req.file.filename
-                  }`
-                : "";
-            connection.execute(
-                `
-            INSERT INTO posts (parent_id, author_id, content, img_url, created_at)
-            VALUES (?, ?, ?, ?, ?)
-            `,
-                [parentId, userId, content, imgUrl, createdAt]
-            );
-            close(connection);
-        })
-        .then(() => {
-            console.log("Message ajouté à la base de données.");
-            res.status(201).json();
-        })
-        .catch((error) => {
-            close(connection);
-            handleError(res, "Impossible de publier le message.", 400, error);
-        });
+    const createdAt = req.body.createdAt;
+    const imgUrl = req.file
+        ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+        : "";
+    if (!req.file && !req.body.content) {
+        handleError(res, "Le message ne peut pas être vide.", 400);
+    } else {
+        connectToDb("createPost")
+            .catch((error) => {
+                handleError(
+                    res,
+                    "Impossible de se connecter à la base de données.",
+                    500,
+                    error
+                );
+            })
+            .then((connection) => {
+                connection.execute(
+                    `
+                    INSERT INTO posts (parent_id, author_id, content, img_url, created_at)
+                    VALUES (?, ?, ?, ?, ?)
+                    `,
+                    [parentId, userId, content, imgUrl, createdAt]
+                );
+                close(connection);
+            })
+            .then(() => {
+                console.log("Message ajouté à la base de données.");
+                res.status(201).json({ imgUrl });
+            })
+            .catch((error) => {
+                handleError(
+                    res,
+                    "Impossible de publier le message.",
+                    400,
+                    error
+                );
+                process.exit(1);
+            });
+    }
 };
 
 /** Updates a message (post or comment)

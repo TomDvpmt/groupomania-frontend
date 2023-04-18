@@ -21,7 +21,6 @@ const forumReducer = createReducer(initialState, (builder) => {
             draft.posts.filter(
                 (post) => post.id === action.payload.postId
             )[0].comments = action.payload.comments;
-            // draft.test = draft.posts.filter((post) => post.id === 12);
         })
         .addCase(forumAddPost, (draft, action) => {
             draft.posts.push(action.payload);

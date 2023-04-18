@@ -1,8 +1,22 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
 import ErrorMessage from "../../ErrorMessage";
+
+import { forumAddPost } from "../../../services/features/forum";
+import {
+    selectUserId,
+    selectUserFirstName,
+    selectUserLastName,
+    selectUserEmail,
+    selectUserAdminStatus,
+} from "../../../services/utils/selectors";
+
 import { imgMimeTypes, sanitize } from "../../../utils/formValidation";
+
 import { Box, TextField, Button, Typography } from "@mui/material";
 import { theme } from "../../../assets/styles/theme";
+
 import PropTypes from "prop-types";
 
 const CreateMessageForm = ({
@@ -19,6 +33,12 @@ const CreateMessageForm = ({
     };
 
     const token = sessionStorage.getItem("token");
+    const userId = useSelector(selectUserId());
+    const firstName = useSelector(selectUserFirstName());
+    const lastName = useSelector(selectUserLastName());
+    const email = useSelector(selectUserEmail());
+    const admin = useSelector(selectUserAdminStatus());
+    const dispatch = useDispatch();
 
     const [errorMessage, setErrorMessage] = useState("");
     const [content, setContent] = useState("");
@@ -49,11 +69,13 @@ const CreateMessageForm = ({
             );
         } else {
             const sanitizedContent = sanitize(content);
+            const createdAt = Date.now();
 
             const formData = new FormData();
             formData.append("parentId", parentId);
             formData.append("imageFile", uploadedFile);
             formData.append("content", sanitizedContent);
+            formData.append("createdAt", createdAt);
 
             fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts`, {
                 method: "POST",
@@ -68,13 +90,32 @@ const CreateMessageForm = ({
                             .json()
                             .then(({ message }) => setErrorMessage(message));
                     } else {
-                        e.target.imageFile.value = "";
-                        setChosenFile("");
-                        setShowNewMessageForm(false);
-                        setHasNewMessages(
-                            (hasNewMessages) => hasNewMessages + 1
-                        );
-                        setContent("");
+                        response.json().then((data) => {
+                            e.target.imageFile.value = "";
+                            setChosenFile("");
+                            setContent("");
+                            setShowNewMessageForm(false);
+                            setHasNewMessages(
+                                (hasNewMessages) => hasNewMessages + 1
+                            );
+                            // dispatch(
+                            //     forumAddPost({
+                            //         parentId,
+                            //         authorId: userId,
+                            //         firstName: firstName ? firstName : "",
+                            //         lastName: lastName ? lastName : "",
+                            //         admin,
+                            //         email,
+                            //         content: sanitizedContent,
+                            //         imgUrl: data.imgUrl || "",
+                            //         date: createdAt,
+                            //         modified: 0,
+                            //         likes: 0,
+                            //         dislikes: 0,
+                            //         currentUserLikeValue: 0,
+                            //     })
+                            // );
+                        });
                     }
                 })
                 .catch((error) => {

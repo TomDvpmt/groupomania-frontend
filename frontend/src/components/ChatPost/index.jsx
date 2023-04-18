@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import ErrorMessage from "../ErrorMessage";
 
-import store from "../../services/utils/store";
 import { chatModeratePost } from "../../services/features/chat";
 import {
     selectUserAdminStatus,
@@ -23,6 +22,7 @@ const ChatPost = ({ postIndex, post }) => {
 
     const token = sessionStorage.getItem("token");
 
+    const dispatch = useDispatch();
     const admin = useSelector(selectUserAdminStatus());
     const moderated = useSelector(selectChatPostModeration(postIndex));
 
@@ -51,7 +51,7 @@ const ChatPost = ({ postIndex, post }) => {
         })
             .then((response) => {
                 if (response.ok) {
-                    store.dispatch(
+                    dispatch(
                         chatModeratePost({
                             index: postIndex,
                             moderated: newModeratedValue,

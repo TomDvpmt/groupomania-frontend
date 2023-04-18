@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+// import { useDispatch } from "react-redux";
 
 import Post from "../../components/Cards/Post";
 import CreateMessageForm from "../../components/Forms/CreateMessageForm";
@@ -8,27 +8,21 @@ import PostNewMessageButton from "../../components/Buttons/PostNewMessageButton"
 import ErrorMessage from "../../components/ErrorMessage";
 import Loader from "../../components/Loader";
 
-import store from "../../services/utils/store";
-import { forumSetPostsFromDB } from "../../services/features/forum";
-
-import { setUserState } from "../../utils/utils";
+// import { forumSetPostsFromDB } from "../../services/features/forum";
 
 import { Box, Typography, Collapse } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
 
 const Home = () => {
+    const token = sessionStorage.getItem("token");
+    const navigate = useNavigate();
+    // const dispatch = useDispatch();
+
     const [posts, setPosts] = useState([]);
     const [hasNewPosts, setHasNewPosts] = useState(0);
     const [showNewPostForm, setShowNewPostForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
-
-    const token = sessionStorage.getItem("token");
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        setUserState(token, navigate);
-    }, [token, navigate]);
 
     useEffect(() => {
         setLoading(true);
@@ -41,7 +35,7 @@ const Home = () => {
         })
             .then((response) => {
                 if (response.status === 401) {
-                    sessionStorage.clear();
+                    sessionStorage.removeItem("token");
                     console.error("Non autorisé.");
                     navigate("/login");
                 } else return response.json();
@@ -50,7 +44,7 @@ const Home = () => {
                 if (data.results.length === 0) {
                     return <p>Aucun message à afficher.</p>;
                 } else {
-                    store.dispatch(forumSetPostsFromDB(data.results));
+                    // dispatch(forumSetPostsFromDB(data.results));
                     return data.results.map((result) => (
                         <Post
                             key={result.id}

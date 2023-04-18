@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import ProfileData from "../../components/ProfileData";
 import UserUpdateForm from "../../components/Forms/UserUpdateForm";
 import AlertDialog from "../../components/AlertDialog";
 import ErrorMessage from "../../components/ErrorMessage";
 import Loader from "../../components/Loader";
+
+import { pageUpdateLocation } from "../../services/features/page";
 
 import {
     selectUserId,
@@ -31,6 +33,11 @@ const Profile = () => {
 
     const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(pageUpdateLocation("profile"));
+    }, []);
 
     const handleUpdate = () => {
         setShowUserUpdateForm((showUserUpdateForm) => !showUserUpdateForm);

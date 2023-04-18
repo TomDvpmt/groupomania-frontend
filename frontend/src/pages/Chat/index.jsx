@@ -6,6 +6,7 @@ import ChatPostForm from "../../components/Forms/ChatPostForm";
 import ChatPost from "../../components/ChatPost";
 import ErrorMessage from "../../components/ErrorMessage";
 
+import { pageUpdateLocation } from "../../services/features/page";
 import { chatSetPostsFromDB } from "../../services/features/chat";
 import { selectChatPosts } from "../../services/utils/selectors";
 
@@ -18,6 +19,10 @@ const Chat = () => {
     const dispatch = useDispatch();
 
     const [errorMessage, setErrorMessage] = useState("");
+
+    useEffect(() => {
+        dispatch(pageUpdateLocation("chat"));
+    }, []);
 
     useEffect(() => {
         setLoading(true);

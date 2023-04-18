@@ -24,6 +24,12 @@ export const selectUserEmail = () => {
     return (state) => state.user.email;
 };
 
+// Page
+
+export const selectPageLocation = () => {
+    return (state) => state.page.location;
+};
+
 // Forum
 
 export const selectForumPosts = () => {

@@ -193,19 +193,27 @@ const setupDbTables = async (connection, dbName) => {
         console.log(`========= Table "comments_likes" créée. =========`);
 
     await connection.query(`
-        CREATE TRIGGER IF NOT EXISTS posts_likes_before_delete
-        BEFORE DELETE ON posts
-        FOR EACH ROW
-        DELETE FROM posts_likes
-        WHERE post_id = OLD.id
-    `);
-
-    await connection.query(`
-        CREATE TRIGGER IF NOT EXISTS users_likes_before_delete
+        CREATE TRIGGER IF NOT EXISTS users_posts_likes_before_delete
         BEFORE DELETE ON users
         FOR EACH ROW
         DELETE FROM posts_likes
         WHERE user_id = OLD.id
+    `);
+
+    await connection.query(`
+        CREATE TRIGGER IF NOT EXISTS users_comments_likes_before_delete
+        BEFORE DELETE ON users
+        FOR EACH ROW
+        DELETE FROM comments_likes
+        WHERE user_id = OLD.id
+    `);
+
+    await connection.query(`
+        CREATE TRIGGER IF NOT EXISTS users_chat_posts_before_delete
+        BEFORE DELETE ON users
+        FOR EACH ROW
+        DELETE FROM chat_posts
+        WHERE author_id = OLD.id
     `);
 
     await connection.query(`
@@ -217,11 +225,35 @@ const setupDbTables = async (connection, dbName) => {
     `);
 
     await connection.query(`
-        CREATE TRIGGER IF NOT EXISTS users_chat_posts_before_delete
+        CREATE TRIGGER IF NOT EXISTS users_comments_before_delete
         BEFORE DELETE ON users
         FOR EACH ROW
-        DELETE FROM chat_posts
+        DELETE FROM comments
         WHERE author_id = OLD.id
+    `);
+
+    await connection.query(`
+        CREATE TRIGGER IF NOT EXISTS posts_likes_before_delete
+        BEFORE DELETE ON posts
+        FOR EACH ROW
+        DELETE FROM posts_likes
+        WHERE post_id = OLD.id
+    `);
+
+    await connection.query(`
+        CREATE TRIGGER IF NOT EXISTS posts_comments_before_delete
+        BEFORE DELETE ON posts
+        FOR EACH ROW
+        DELETE FROM comments
+        WHERE parent_id = OLD.id
+    `);
+
+    await connection.query(`
+        CREATE TRIGGER IF NOT EXISTS comments_likes_before_delete
+        BEFORE DELETE ON comments
+        FOR EACH ROW
+        DELETE FROM comments_likes
+        WHERE comment_id = OLD.id
     `);
 
     console.log("========= Tables et triggers vérifiés. =========== ");

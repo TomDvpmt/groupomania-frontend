@@ -6,6 +6,7 @@ import { userLogOut } from "../../services/features/user";
 import {
     selectUserIsLoggedIn,
     selectUserId,
+    selectPageLocation,
 } from "../../services/utils/selectors";
 
 import { setUserState } from "../../utils/utils";
@@ -25,25 +26,20 @@ import {
 import { Logout } from "@mui/icons-material";
 import { theme } from "../../assets/styles/theme";
 
-import PropTypes from "prop-types";
-
-const Header = ({ page }) => {
-    Header.propTypes = {
-        page: PropTypes.string,
-    };
-
+const Header = () => {
     const token = sessionStorage.getItem("token");
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const isLogged = useSelector(selectUserIsLoggedIn());
     const loggedUserId = useSelector(selectUserId());
+    const page = useSelector(selectPageLocation());
     const [anchorEl, setAnchorEl] = useState(null);
 
     const open = Boolean(anchorEl);
 
     useEffect(() => {
-        setUserState(token, navigate);
+        setUserState(token, navigate, page);
     }, [token, navigate]);
 
     const handleAvatarClick = (e) => {
@@ -90,7 +86,7 @@ const Header = ({ page }) => {
 
                 <>
                     <Typography
-                        component={page === "home" ? "h1" : "p"}
+                        paragraph
                         variant="h2"
                         sx={{
                             fontSize: "2rem",

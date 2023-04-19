@@ -24,12 +24,6 @@ export const selectUserEmail = () => {
     return (state) => state.user.email;
 };
 
-// Page
-
-export const selectPageLocation = () => {
-    return (state) => state.page.location;
-};
-
 // Forum
 
 export const selectAllPosts = () => {
@@ -48,4 +42,18 @@ export const selectChatMessageModeration = (index) => {
 
 export const selectChatMessageAlert = (index) => {
     return (state) => state.chat.messages[index].alert;
+};
+
+// Profile
+
+export const selectProfileFirstName = () => {
+    return (state) => state.profile.firstName;
+};
+
+export const selectProfileLastName = () => {
+    return (state) => state.profile.lastName;
+};
+
+export const selectProfileEmail = () => {
+    return (state) => state.profile.email;
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import ProfileData from "../../components/ProfileData";
@@ -8,32 +8,45 @@ import AlertDialog from "../../components/AlertDialog";
 import ErrorMessage from "../../components/ErrorMessage";
 import Loader from "../../components/Loader";
 
+import { profileUpdate } from "../../services/features/profile";
 import { pageUpdateLocation } from "../../services/features/page";
 
 import {
     selectUserId,
     selectUserFirstName,
     selectUserLastName,
+    selectUserEmail,
+    selectProfileFirstName,
+    selectProfileLastName,
 } from "../../services/utils/selectors";
 
 import { Box, Container, Typography, Button, Stack } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
 
 const Profile = () => {
-    const userId = useSelector(selectUserId());
-    const firstName = useSelector(selectUserFirstName());
-    const lastName = useSelector(selectUserLastName());
+    const token = sessionStorage.getItem("token");
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    const [modifiable, setModifiable] = useState(false);
+    const postAuthorId = parseInt(useParams().userId);
+
+    const loggedUserId = useSelector(selectUserId());
+    const userFirstName = useSelector(selectUserFirstName());
+    const userLastName = useSelector(selectUserLastName());
+    const userEmail = useSelector(selectUserEmail());
+
+    const userIsAuthor = postAuthorId === loggedUserId;
+
+    const profileFirstName = useSelector(selectProfileFirstName());
+    const profileLastName = useSelector(selectProfileLastName());
+
     const [showUserUpdateForm, setShowUserUpdateForm] = useState(false);
     const [showValidationMessage, setShowValidationMessage] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const token = sessionStorage.getItem("token");
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const userId = userIsAuthor ? loggedUserId : postAuthorId;
 
     useEffect(() => {
         dispatch(pageUpdateLocation("profile"));
@@ -68,13 +81,36 @@ const Profile = () => {
                 }
             })
             .then((data) => {
-                setModifiable(data.modifiable);
+                userIsAuthor
+                    ? dispatch(
+                          profileUpdate({
+                              firstName: userFirstName,
+                              lastName: userLastName,
+                              email: userEmail,
+                          })
+                      )
+                    : dispatch(
+                          profileUpdate({
+                              firstName: data.firstName,
+                              lastName: data.lastName,
+                              email: data.email,
+                          })
+                      );
             })
             .catch((error) => {
                 console.log(error);
             })
             .finally(setLoading(false));
-    }, [token, userId, navigate]);
+    }, [
+        token,
+        userId,
+        userIsAuthor,
+        userFirstName,
+        userLastName,
+        userEmail,
+        navigate,
+        dispatch,
+    ]);
 
     return (
         <>
@@ -100,7 +136,7 @@ const Profile = () => {
                         mt={4}
                         mb={4}
                     >
-                        {firstName + " " + lastName}
+                        {profileFirstName + " " + profileLastName}
                     </Typography>
                     <Container sx={{ padding: 0, maxWidth: "500px" }}>
                         {showValidationMessage && (
@@ -113,7 +149,7 @@ const Profile = () => {
                         )}
                         <ProfileData />
                     </Container>
-                    {modifiable && (
+                    {userIsAuthor && (
                         <Stack
                             direction="row"
                             spacing={2}

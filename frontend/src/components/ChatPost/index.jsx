@@ -16,27 +16,6 @@ import { theme } from "../../assets/styles/theme";
 
 import PropTypes from "prop-types";
 
-import styled from "@emotion/styled";
-
-const StyledImgContainer = styled.div`
-    grid-column: 1 / 3;
-    padding: 1rem;
-    display: flex;
-    justify-content: center;
-
-    img {
-        max-width: 100%;
-    }
-`;
-
-const adminAlertStyle = {
-    backgroundColor: theme.palette.primary.light,
-    margin: "1rem",
-    padding: "3rem",
-    color: theme.palette.primary.main,
-    fontSize: "1.2rem",
-};
-
 const ChatPost = ({ postIndex, post }) => {
     ChatPost.propTypes = {
         postIndex: PropTypes.number,
@@ -58,8 +37,6 @@ const ChatPost = ({ postIndex, post }) => {
             : "(Anonyme)";
 
     const authorIsAdmin = post.authorIsAdmin;
-
-    // const [isAdminAlert, setIsAdminAlert] = useState(false);
 
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -103,43 +80,10 @@ const ChatPost = ({ postIndex, post }) => {
 
     const handleModerate = () => {
         updatePost("moderation", moderation);
-
-        // const updatedValue = moderation === 0 ? 1 : 0;
-
-        // fetch(`${process.env.REACT_APP_BACKEND_URI}/API/chat/update`, {
-        //     method: "PUT",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //         Authorization: `BEARER ${token}`,
-        //     },
-        //     body: JSON.stringify({
-        //         index: postIndex,
-        //         property: "moderation",
-        //         updatedValue: updatedValue,
-        //     }),
-        // })
-        //     .then((response) => {
-        //         if (response.ok) {
-        //             dispatch(
-        //                 chatModerate({
-        //                     index: postIndex,
-        //                     moderation: updatedValue,
-        //                 })
-        //             );
-        //             setErrorMessage("");
-        //         } else {
-        //             setErrorMessage("Impossible de mettre à jour le message.");
-        //         }
-        //     })
-        //     .catch((error) => {
-        //         console.log(error);
-        //     });
     };
 
     const handleAlert = () => {
         updatePost("alert", alert);
-
-        // setIsAdminAlert((isAdminAlert) => !isAdminAlert);
     };
 
     return (
@@ -207,17 +151,33 @@ const ChatPost = ({ postIndex, post }) => {
                     <Typography
                         sx={
                             alert
-                                ? adminAlertStyle
-                                : { display: "inline-block" }
+                                ? {
+                                      backgroundColor:
+                                          theme.palette.primary.light,
+                                      margin: "1rem",
+                                      padding: "3rem",
+                                      color: theme.palette.primary.main,
+                                      fontSize: "1.2rem",
+                                  }
+                                : { display: "inline" }
                         }
                     >
                         {post.content}
                     </Typography>
                 )}
                 {post.imgUrl !== "" && moderation === 0 && (
-                    <StyledImgContainer>
+                    <Box
+                        sx={{
+                            padding: "1rem",
+                            display: "flex",
+                            justifyContent: "center",
+                            img: {
+                                maxWidth: "100%",
+                            },
+                        }}
+                    >
                         <img src={post.imgUrl} alt="Illustration du post" />
-                    </StyledImgContainer>
+                    </Box>
                 )}
             </Box>
             {errorMessage !== "" && (

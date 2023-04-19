@@ -84,7 +84,7 @@ const Home = () => {
                 setErrorMessage("Impossible d'afficher les messages.");
             })
             .finally(setLoading(false));
-    }, [hasNewPosts, token, navigate]);
+    }, [hasNewPosts, token, navigate, dispatch]);
 
     return (
         <>
@@ -94,7 +94,12 @@ const Home = () => {
                 margin="auto"
                 padding="2rem .5rem"
             >
-                <Typography component="h2" variant="h4" mb={4}>
+                <Typography
+                    component="h2"
+                    variant="h4"
+                    align="center"
+                    margin="2rem 0 4rem"
+                >
                     Forum
                 </Typography>
                 <Box

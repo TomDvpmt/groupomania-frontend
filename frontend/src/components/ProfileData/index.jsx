@@ -1,9 +1,9 @@
 import { useSelector } from "react-redux";
 
 import {
-    selectUserFirstName,
-    selectUserLastName,
-    selectUserEmail,
+    selectProfileFirstName,
+    selectProfileLastName,
+    selectProfileEmail,
 } from "../../services/utils/selectors";
 
 import {
@@ -15,22 +15,22 @@ import {
 } from "@mui/material";
 
 const ProfileData = () => {
-    const firstName = useSelector(selectUserFirstName());
-    const lastName = useSelector(selectUserLastName());
-    const email = useSelector(selectUserEmail());
+    const profileFirstName = useSelector(selectProfileFirstName());
+    const profileLastName = useSelector(selectProfileLastName());
+    const profileEmail = useSelector(selectProfileEmail());
 
     const rows = [
         {
             label: "Prénom",
-            value: firstName,
+            value: profileFirstName,
         },
         {
             label: "Nom",
-            value: lastName,
+            value: profileLastName,
         },
         {
             label: "E-mail",
-            value: email,
+            value: profileEmail,
         },
     ];
 

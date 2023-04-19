@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 import ErrorMessage from "../../ErrorMessage";
 
-import { forumAddPost } from "../../../services/features/forum";
+import { postsAdd } from "../../../services/features/posts";
+import { commentsAdd } from "../../../services/features/comments";
 import {
     selectUserId,
     selectUserFirstName,
@@ -33,12 +34,12 @@ const CreateMessageForm = ({
     };
 
     const token = sessionStorage.getItem("token");
-    // const userId = useSelector(selectUserId());
-    // const firstName = useSelector(selectUserFirstName());
-    // const lastName = useSelector(selectUserLastName());
-    // const email = useSelector(selectUserEmail());
-    // const admin = useSelector(selectUserAdminStatus());
-    // const dispatch = useDispatch();
+    const dispatch = useDispatch();
+    const userId = useSelector(selectUserId());
+    const firstName = useSelector(selectUserFirstName());
+    const lastName = useSelector(selectUserLastName());
+    const email = useSelector(selectUserEmail());
+    const admin = useSelector(selectUserAdminStatus());
 
     const [errorMessage, setErrorMessage] = useState("");
     const [content, setContent] = useState("");
@@ -100,23 +101,26 @@ const CreateMessageForm = ({
                             setHasNewMessages(
                                 (hasNewMessages) => hasNewMessages + 1
                             );
-                            // dispatch(
-                            //     forumAddPost({
-                            //         parentId,
-                            //         authorId: userId,
-                            //         firstName: firstName ? firstName : "",
-                            //         lastName: lastName ? lastName : "",
-                            //         admin,
-                            //         email,
-                            //         content: sanitizedContent,
-                            //         imgUrl: data.imgUrl || "",
-                            //         date: createdAt,
-                            //         modified: 0,
-                            //         likes: 0,
-                            //         dislikes: 0,
-                            //         currentUserLikeValue: 0,
-                            //     })
-                            // );
+                            const message = {
+                                parentId,
+                                authorId: userId,
+                                firstName: firstName ? firstName : "",
+                                lastName: lastName ? lastName : "",
+                                admin,
+                                email,
+                                content: sanitizedContent,
+                                imgUrl: data.imgUrl || "",
+                                date: createdAt,
+                                modified: 0,
+                                likes: 0,
+                                dislikes: 0,
+                                currentUserLikeValue: 0,
+                            };
+                            dispatch(
+                                parentId === 0
+                                    ? postsAdd(message)
+                                    : commentsAdd(message)
+                            );
                         });
                     }
                 })

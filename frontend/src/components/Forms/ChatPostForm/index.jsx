@@ -3,11 +3,12 @@ import { useSelector, useDispatch } from "react-redux";
 
 import ErrorMessage from "../../ErrorMessage";
 
-import { chatAddPost } from "../../../services/features/chat";
+import { chatAdd } from "../../../services/features/chat";
 import {
     selectUserFirstName,
     selectUserLastName,
-    selectChatPosts,
+    selectAllChatMessages,
+    selectUserAdminStatus,
 } from "../../../services/utils/selectors";
 
 import { imgMimeTypes, sanitize } from "../../../utils/formValidation";
@@ -18,7 +19,8 @@ const ChatPostForm = () => {
     const token = sessionStorage.getItem("token");
     const dispatch = useDispatch();
 
-    const chatPosts = useSelector(selectChatPosts());
+    const chatPosts = useSelector(selectAllChatMessages());
+    const admin = useSelector(selectUserAdminStatus());
     const firstName = useSelector(selectUserFirstName());
     const lastName = useSelector(selectUserLastName());
 
@@ -74,12 +76,14 @@ const ChatPostForm = () => {
                     } else {
                         response.json().then((data) => {
                             dispatch(
-                                chatAddPost({
+                                chatAdd({
+                                    authorIsAdmin: admin,
                                     firstName,
                                     lastName,
                                     content: sanitizedContent,
                                     imgUrl: data.imgUrl || "",
-                                    moderated: 0,
+                                    moderation: 0,
+                                    alert: 0,
                                     createdAt,
                                 })
                             );

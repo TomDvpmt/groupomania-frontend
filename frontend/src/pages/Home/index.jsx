@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import Post from "../../components/Post";
 import CreateMessageForm from "../../components/Forms/CreateMessageForm";
@@ -8,8 +8,9 @@ import PostNewMessageButton from "../../components/Buttons/PostNewMessageButton"
 import ErrorMessage from "../../components/ErrorMessage";
 import Loader from "../../components/Loader";
 
-// import { forumSetPostsFromDB } from "../../services/features/forum";
+import { postsSetFromDB } from "../../services/features/posts";
 import { pageUpdateLocation } from "../../services/features/page";
+import { selectAllPosts } from "../../services/utils/selectors";
 
 import { Box, Typography, Collapse } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
@@ -19,7 +20,9 @@ const Home = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const [posts, setPosts] = useState([]);
+    const posts = useSelector(selectAllPosts());
+
+    // const [posts, setPosts] = useState([]);
     const [hasNewPosts, setHasNewPosts] = useState(0);
     const [showNewPostForm, setShowNewPostForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -27,7 +30,7 @@ const Home = () => {
 
     useEffect(() => {
         dispatch(pageUpdateLocation("home"));
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
         setLoading(true);
@@ -49,32 +52,33 @@ const Home = () => {
                 if (data.results.length === 0) {
                     return <p>Aucun message à afficher.</p>;
                 } else {
-                    // dispatch(forumSetPostsFromDB(data.results));
-                    return data.results.map((result) => (
-                        <Post
-                            key={result.id}
-                            postData={{
-                                id: result.id,
-                                parentId: 0,
-                                authorId: result.authorId,
-                                authorFirstName: result.firstName,
-                                authorLastName: result.lastName,
-                                authorIsAdmin: result.admin,
-                                authorEmail: result.email,
-                                imgUrl: result.imgUrl,
-                                content: result.content,
-                                date: result.date,
-                                modified: result.modified,
-                                likes: result.likes,
-                                dislikes: result.dislikes,
-                            }}
-                            currentUserLikeValue={result.currentUserLikeValue}
-                            setHasNewPosts={setHasNewPosts}
-                        />
-                    ));
+                    dispatch(postsSetFromDB(data.results));
+                    // return data.results.map((result, index) => (
+                    //     <Post
+                    //         key={result.id}
+                    //         postIndex={index}
+                    //         postData={{
+                    //             id: result.id,
+                    //             parentId: 0,
+                    //             authorId: result.authorId,
+                    //             authorFirstName: result.firstName,
+                    //             authorLastName: result.lastName,
+                    //             authorIsAdmin: result.admin,
+                    //             authorEmail: result.email,
+                    //             imgUrl: result.imgUrl,
+                    //             content: result.content,
+                    //             date: result.date,
+                    //             modified: result.modified,
+                    //             likes: result.likes,
+                    //             dislikes: result.dislikes,
+                    //         }}
+                    //         currentUserLikeValue={result.currentUserLikeValue}
+                    //         setHasNewPosts={setHasNewPosts}
+                    //     />
+                    // ));
                 }
             })
-            .then((postsList) => setPosts(postsList))
+            // .then((postsList) => setPosts(postsList))
             .catch((error) => {
                 console.error("Impossible d'afficher les messages :", error);
                 setErrorMessage("Impossible d'afficher les messages.");
@@ -124,7 +128,30 @@ const Home = () => {
                             marginTop: 8,
                         }}
                     >
-                        {posts}
+                        {/* {posts} */}
+                        {posts.map((post, index) => (
+                            <Post
+                                key={post.id}
+                                postIndex={index}
+                                postData={{
+                                    id: post.id,
+                                    parentId: 0,
+                                    authorId: post.authorId,
+                                    authorFirstName: post.firstName,
+                                    authorLastName: post.lastName,
+                                    authorIsAdmin: post.authorIsAdmin,
+                                    authorEmail: post.email,
+                                    imgUrl: post.imgUrl,
+                                    content: post.content,
+                                    date: post.date,
+                                    modified: post.modified,
+                                    likes: post.likes,
+                                    dislikes: post.dislikes,
+                                }}
+                                currentUserLikeValue={post.currentUserLikeValue}
+                                setHasNewPosts={setHasNewPosts}
+                            />
+                        ))}
                         {errorMessage && (
                             <ErrorMessage errorMessage={errorMessage} />
                         )}

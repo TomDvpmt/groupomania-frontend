@@ -32,16 +32,20 @@ export const selectPageLocation = () => {
 
 // Forum
 
-export const selectForumPosts = () => {
-    return (state) => state.forum.posts;
+export const selectAllPosts = () => {
+    return (state) => state.posts.messages;
 };
 
 // Chat
 
-export const selectChatPosts = () => {
-    return (state) => state.chat.posts;
+export const selectAllChatMessages = () => {
+    return (state) => state.chat.messages;
 };
 
-export const selectChatPostModeration = (index) => {
-    return (state) => state.chat.posts[index].moderated;
+export const selectChatMessageModeration = (index) => {
+    return (state) => state.chat.messages[index].moderation;
+};
+
+export const selectChatMessageAlert = (index) => {
+    return (state) => state.chat.messages[index].alert;
 };

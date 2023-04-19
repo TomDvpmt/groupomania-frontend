@@ -13,7 +13,7 @@ const Error404 = () => {
 
     useEffect(() => {
         dispatch(pageUpdateLocation("error404"));
-    }, []);
+    }, [dispatch]);
 
     return (
         <Box

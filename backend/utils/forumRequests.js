@@ -93,7 +93,7 @@ exports.getAllMessages = (req, res, config) => {
                         authorId: row.author_id,
                         firstName: row.first_name ? row.first_name : "",
                         lastName: row.last_name ? row.last_name : "",
-                        admin: row.admin,
+                        authorIsAdmin: row.admin,
                         email: row.email,
                         content: row.content,
                         imgUrl: row.img_url,

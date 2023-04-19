@@ -41,7 +41,7 @@ const SignUp = () => {
 
     useEffect(() => {
         dispatch(pageUpdateLocation("signup"));
-    }, []);
+    }, [dispatch]);
 
     const handleSubmit = (e) => {
         e.preventDefault();

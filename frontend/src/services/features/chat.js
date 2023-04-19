@@ -1,32 +1,32 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 
 const initialState = {
-    posts: [],
+    messages: [],
 };
 
-export const chatSetPostsFromDB = createAction("chat/setPostsFromDB");
-export const chatAddPost = createAction("chat/addPost");
-export const chatModeratePost = createAction("chat/moderatePost");
-export const chatDeleteOldestPost = createAction("chat/deleteOldestPost");
+export const chatSetFromDB = createAction("chat/setFromDB");
+export const chatAdd = createAction("chat/add");
+export const chatModerate = createAction("chat/moderate");
+export const chatAlert = createAction("chat/alert");
+export const chatDeleteOldest = createAction("chat/deleteOldest");
 
 const chatReducer = createReducer(initialState, (builder) => {
     return builder
-        .addCase(chatSetPostsFromDB, (draft, action) => {
-            draft.posts = action.payload;
-            return;
+        .addCase(chatSetFromDB, (draft, action) => {
+            draft.messages = action.payload;
         })
-        .addCase(chatAddPost, (draft, action) => {
-            draft.posts.push(action.payload);
-            return;
+        .addCase(chatAdd, (draft, action) => {
+            draft.messages.push(action.payload);
         })
-        .addCase(chatModeratePost, (draft, action) => {
-            draft.posts[action.payload.index].moderated =
-                action.payload.moderated;
-            return;
+        .addCase(chatModerate, (draft, action) => {
+            draft.messages[action.payload.index].moderation =
+                action.payload.moderation;
         })
-        .addCase(chatDeleteOldestPost, (draft, action) => {
+        .addCase(chatAlert, (draft, action) => {
+            draft.messages[action.payload.index].alert = action.payload.alert;
+        })
+        .addCase(chatDeleteOldest, (draft, action) => {
             //
-            return;
         });
 });
 

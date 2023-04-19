@@ -37,7 +37,7 @@ const Profile = () => {
 
     useEffect(() => {
         dispatch(pageUpdateLocation("profile"));
-    }, []);
+    }, [dispatch]);
 
     const handleUpdate = () => {
         setShowUserUpdateForm((showUserUpdateForm) => !showUserUpdateForm);

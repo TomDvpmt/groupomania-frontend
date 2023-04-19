@@ -6,7 +6,6 @@ import { userLogOut } from "../../services/features/user";
 import {
     selectUserIsLoggedIn,
     selectUserId,
-    selectPageLocation,
 } from "../../services/utils/selectors";
 
 import { setUserState } from "../../utils/utils";
@@ -33,14 +32,13 @@ const Header = () => {
     const dispatch = useDispatch();
     const isLogged = useSelector(selectUserIsLoggedIn());
     const loggedUserId = useSelector(selectUserId());
-    const page = useSelector(selectPageLocation());
     const [anchorEl, setAnchorEl] = useState(null);
 
     const open = Boolean(anchorEl);
 
     useEffect(() => {
-        setUserState(token, navigate, page);
-    }, [token, navigate]);
+        setUserState(token);
+    }, [token]);
 
     const handleAvatarClick = (e) => {
         setAnchorEl(e.currentTarget);

@@ -7,8 +7,8 @@ import ChatPost from "../../components/ChatPost";
 import ErrorMessage from "../../components/ErrorMessage";
 
 import { pageUpdateLocation } from "../../services/features/page";
-import { chatSetPostsFromDB } from "../../services/features/chat";
-import { selectChatPosts } from "../../services/utils/selectors";
+import { chatSetFromDB } from "../../services/features/chat";
+import { selectAllChatMessages } from "../../services/utils/selectors";
 
 import { Box, Typography } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
@@ -22,7 +22,7 @@ const Chat = () => {
 
     useEffect(() => {
         dispatch(pageUpdateLocation("chat"));
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
         setLoading(true);
@@ -34,7 +34,7 @@ const Chat = () => {
             },
         })
             .then((response) => response.json())
-            .then((data) => dispatch(chatSetPostsFromDB(data)))
+            .then((data) => dispatch(chatSetFromDB(data)))
             .catch((error) => {
                 setErrorMessage("Impossible d'afficher les messages.");
                 console.log(error);
@@ -42,7 +42,7 @@ const Chat = () => {
             .finally(setLoading(false));
     }, [token, navigate, dispatch]);
 
-    const chatPosts = useSelector(selectChatPosts());
+    const chatPosts = useSelector(selectAllChatMessages());
 
     const [loading, setLoading] = useState(false);
 

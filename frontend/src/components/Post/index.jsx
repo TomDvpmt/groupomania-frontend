@@ -29,10 +29,19 @@ import {
     Collapse,
 } from "@mui/material";
 import { MailOutline } from "@mui/icons-material";
+
+import { theme } from "../../assets/styles/theme";
+
 import PropTypes from "prop-types";
 
-const Post = ({ postData, currentUserLikeValue, setHasNewPosts }) => {
+const Post = ({
+    postIndex,
+    postData,
+    currentUserLikeValue,
+    setHasNewPosts,
+}) => {
     Post.propTypes = {
+        postIndex: PropTypes.number,
         postData: PropTypes.object,
         currentUserLikeValue: PropTypes.number,
         setHasNewPosts: PropTypes.func,
@@ -62,7 +71,13 @@ const Post = ({ postData, currentUserLikeValue, setHasNewPosts }) => {
                 component="header"
                 title={
                     postData.authorIsAdmin ? (
-                        <Typography color="primary" fontWeight="700">
+                        <Typography
+                            width="min-content"
+                            padding="0 .3rem"
+                            bgcolor={theme.palette.primary.light}
+                            color="primary"
+                            fontWeight="700"
+                        >
                             ADMIN
                         </Typography>
                     ) : (

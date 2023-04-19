@@ -24,7 +24,7 @@ export const formatDate = (timestamp) => {
  * @param {String} token
  */
 
-export const setUserState = (token, navigate, page) => {
+export const setUserState = (token) => {
     if (
         token !== undefined &&
         token !== null &&
@@ -47,6 +47,5 @@ export const setUserState = (token, navigate, page) => {
                 email: "",
             })
         );
-        page !== "signup" && page !== "login" && navigate("/login");
     }
 };

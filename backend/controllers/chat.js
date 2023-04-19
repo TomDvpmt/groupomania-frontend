@@ -28,11 +28,14 @@ exports.getAllPosts = (req, res) => {
                     `
                         SELECT
                             posts.id as id,
+                            users.id as author_id,
                             users.first_name as first_name,
                             users.last_name as last_name,
+                            users.admin as admin,
                             posts.content as content,
                             posts.img_url as img_url,
-                            posts.moderated as moderated,
+                            posts.moderation as moderation,
+                            posts.alert as alert,
                             posts.created_at as created_at
                         FROM chat_posts as posts
                         JOIN users
@@ -43,11 +46,14 @@ exports.getAllPosts = (req, res) => {
                 )
                 .then(([rows]) => {
                     const results = rows.map((row) => ({
+                        authorIsAdmin: row.admin,
+                        authorId: row.author_id,
                         firstName: row.first_name ? row.first_name : "",
                         lastName: row.last_name ? row.last_name : "",
                         content: row.content,
                         imgUrl: row.img_url,
-                        moderated: row.moderated,
+                        moderation: row.moderation,
+                        alert: row.alert,
                         createdAt: row.created_at,
                     }));
                     close(connection);
@@ -103,11 +109,12 @@ exports.createPost = (req, res) => {
         });
 };
 
-exports.moderatePost = (req, res) => {
+exports.updatePost = (req, res) => {
     const index = req.body.index;
-    const newModeratedValue = req.body.setModeratedTo;
+    const property = req.body.property;
+    const updatedValue = req.body.updatedValue;
 
-    connectToDb("moderatePost (chat)")
+    connectToDb("updatePost (chat)")
         .catch((error) => {
             handleError(
                 res,
@@ -120,31 +127,31 @@ exports.moderatePost = (req, res) => {
             connection
                 .execute(
                     `
-                        SELECT id
+                        SELECT id, created_at
                         FROM chat_posts
+                        ORDER BY created_at ASC
                     `
                 )
                 .then(([rows]) => {
                     const postId = rows[index].id;
-                    console.log("postId : ", postId);
                     connection.execute(
                         `
                             UPDATE chat_posts
-                            SET moderated = ?
+                            SET ${property} = ?
                             WHERE id = ?
                         `,
-                        [newModeratedValue, postId]
+                        [updatedValue, postId]
                     );
                 })
                 .then(() => {
                     close(connection);
-                    res.status(200).json({ message: "Message modéré." });
+                    res.status(200).json({ message: "Message mis à jour." });
                 })
                 .catch((error) => {
                     close(connection);
                     handleError(
                         res,
-                        "Impossible de mettre à jour la modération du post.",
+                        "Impossible de mettre à jour le message.",
                         400,
                         error
                     );

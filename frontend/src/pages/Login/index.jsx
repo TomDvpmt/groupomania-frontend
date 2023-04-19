@@ -33,7 +33,7 @@ const Login = () => {
 
     useEffect(() => {
         dispatch(pageUpdateLocation("login"));
-    }, []);
+    }, [dispatch]);
 
     const handleSubmit = (e) => {
         e.preventDefault();

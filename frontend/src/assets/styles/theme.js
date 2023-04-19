@@ -6,6 +6,7 @@ export const theme = createTheme({
             // red-pink
             main: "#FD2D01",
             light: "#FFD7D7",
+            dark: "#ab1f02",
         },
         secondary: {
             // dark blue-grey

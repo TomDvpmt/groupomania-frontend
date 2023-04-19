@@ -3,12 +3,16 @@ import { useSelector, useDispatch } from "react-redux";
 
 import ErrorMessage from "../../ErrorMessage";
 
-import { chatAddMessage } from "../../../services/features/chat";
+import {
+    chatAddMessage,
+    chatRemoveOldest,
+} from "../../../services/features/chat";
 import {
     selectUserFirstName,
     selectUserLastName,
-    selectAllChatMessages,
     selectUserAdminStatus,
+    selectChatLimit,
+    selectAllChatMessages,
 } from "../../../services/utils/selectors";
 
 import { imgMimeTypes, sanitize } from "../../../utils/formValidation";
@@ -19,6 +23,7 @@ const ChatPostForm = () => {
     const token = sessionStorage.getItem("token");
     const dispatch = useDispatch();
 
+    const chatLimit = useSelector(selectChatLimit());
     const chatPosts = useSelector(selectAllChatMessages());
     const admin = useSelector(selectUserAdminStatus());
     const firstName = useSelector(selectUserFirstName());
@@ -75,6 +80,8 @@ const ChatPostForm = () => {
                             .then(({ message }) => setErrorMessage(message));
                     } else {
                         response.json().then((data) => {
+                            chatPosts.length === chatLimit &&
+                                dispatch(chatRemoveOldest());
                             dispatch(
                                 chatAddMessage({
                                     authorIsAdmin: admin,

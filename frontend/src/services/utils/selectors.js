@@ -32,6 +32,10 @@ export const selectAllPosts = () => {
 
 // Chat
 
+export const selectChatLimit = () => {
+    return (state) => state.chat.limit;
+};
+
 export const selectAllChatMessages = () => {
     return (state) => state.chat.messages;
 };

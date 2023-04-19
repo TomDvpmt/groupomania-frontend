@@ -4,6 +4,8 @@ const { connectToDb } = require("../database/db-connect-mysql");
 const { close } = require("../utils/utils");
 const { handleError } = require("../utils/utils");
 
+const limit = process.env.CHAT_POSTS_LIMIT;
+
 /**
  * Get all the chat posts
  *
@@ -26,23 +28,27 @@ exports.getAllPosts = (req, res) => {
             connection
                 .execute(
                     `
-                        SELECT
-                            posts.id as id,
-                            users.id as author_id,
-                            users.first_name as first_name,
-                            users.last_name as last_name,
-                            users.admin as admin,
-                            posts.content as content,
-                            posts.img_url as img_url,
-                            posts.moderation as moderation,
-                            posts.alert as alert,
-                            posts.created_at as created_at
-                        FROM chat_posts as posts
-                        JOIN users
-                        ON users.id = posts.author_id
+                        SELECT *
+                        FROM (
+                            SELECT
+                                posts.id as id,
+                                users.id as author_id,
+                                users.first_name as first_name,
+                                users.last_name as last_name,
+                                users.admin as admin,
+                                posts.content as content,
+                                posts.img_url as img_url,
+                                posts.moderation as moderation,
+                                posts.alert as alert,
+                                posts.created_at as created_at
+                            FROM chat_posts as posts
+                            JOIN users
+                            ON users.id = posts.author_id
+                            ORDER BY created_at DESC
+                            LIMIT ${limit}
+                        ) results
                         ORDER BY created_at ASC
-                    `,
-                    []
+                    `
                 )
                 .then(([rows]) => {
                     const results = rows.map((row) => ({

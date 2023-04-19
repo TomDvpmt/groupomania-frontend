@@ -2,20 +2,21 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 
 const initialState = {
     messages: [],
+    users: [],
 };
 
-export const chatSetFromDB = createAction("chat/setFromDB");
-export const chatAdd = createAction("chat/add");
-export const chatModerate = createAction("chat/moderate");
-export const chatAlert = createAction("chat/alert");
-export const chatDeleteOldest = createAction("chat/deleteOldest");
+export const chatSetFromDB = createAction("chat/messages/setFromDB");
+export const chatAddMessage = createAction("chat/messages/add");
+export const chatModerate = createAction("chat/messages/moderate");
+export const chatAlert = createAction("chat/messages/alert");
+export const chatDeleteOldest = createAction("chat/messages/deleteOldest");
 
 const chatReducer = createReducer(initialState, (builder) => {
     return builder
         .addCase(chatSetFromDB, (draft, action) => {
             draft.messages = action.payload;
         })
-        .addCase(chatAdd, (draft, action) => {
+        .addCase(chatAddMessage, (draft, action) => {
             draft.messages.push(action.payload);
         })
         .addCase(chatModerate, (draft, action) => {

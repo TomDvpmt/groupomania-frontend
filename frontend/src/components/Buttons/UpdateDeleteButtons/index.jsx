@@ -1,29 +1,12 @@
-import { useState } from "react";
-
-import AlertDialog from "../../AlertDialog";
-
 import { Box, Button } from "@mui/material";
 
 import PropTypes from "prop-types";
 
-const UpdateDeleteButtons = ({
-    issue,
-    messageId,
-    imgUrl,
-    setHasNewMessages,
-    setErrorMessage,
-    setShowMessageUpdateForm,
-}) => {
+const UpdateDeleteButtons = ({ setShowMessageUpdateForm, setShowAlert }) => {
     UpdateDeleteButtons.propTypes = {
-        issue: PropTypes.string,
-        messageId: PropTypes.number,
-        imgUrl: PropTypes.string,
-        setHasNewMessages: PropTypes.func,
-        setErrorMessage: PropTypes.func,
         setShowMessageUpdateForm: PropTypes.func,
+        setShowAlert: PropTypes.func,
     };
-
-    const [showAlert, setShowAlert] = useState(false);
 
     const handleUpdate = () => {
         setShowMessageUpdateForm(
@@ -43,17 +26,6 @@ const UpdateDeleteButtons = ({
             <Button variant="outlined" onClick={handleDelete} size="small">
                 Supprimer
             </Button>
-            {showAlert && (
-                <AlertDialog
-                    issue={issue}
-                    issueId={messageId}
-                    imgUrl={imgUrl}
-                    setHasNewMessages={setHasNewMessages}
-                    setErrorMessage={setErrorMessage}
-                    showAlert={showAlert}
-                    setShowAlert={setShowAlert}
-                />
-            )}
         </Box>
     );
 };

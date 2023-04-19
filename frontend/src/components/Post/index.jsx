@@ -6,6 +6,7 @@ import Comments from "../Comments";
 import UpdateMessageForm from "../Forms/UpdateMessageForm";
 import LikeButtons from "../Buttons/LikeButtons";
 import UpdateDeleteButtons from "../Buttons/UpdateDeleteButtons";
+import AlertDialog from "../AlertDialog";
 import ErrorMessage from "../ErrorMessage";
 
 import {
@@ -60,6 +61,7 @@ const Post = ({
     const [showCommentForm, setShowCommentForm] = useState(false);
     const [showPostUpdateForm, setShowPostUpdateForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [showAlert, setShowAlert] = useState(false);
 
     const handleReply = () => {
         setShowCommentForm((showCommentForm) => !showCommentForm);
@@ -158,14 +160,23 @@ const Post = ({
                     gap={1}
                 >
                     {canModify && (
-                        <UpdateDeleteButtons
-                            messageId={postId}
-                            issue="post"
-                            imgUrl={postData.imgUrl}
-                            setHasNewMessages={setHasNewPosts}
-                            setErrorMessage={setErrorMessage}
-                            setShowMessageUpdateForm={setShowPostUpdateForm}
-                        />
+                        <>
+                            <UpdateDeleteButtons
+                                setShowAlert={setShowAlert}
+                                setShowMessageUpdateForm={setShowPostUpdateForm}
+                            />
+                            {showAlert && (
+                                <AlertDialog
+                                    issue="post"
+                                    issueId={postId}
+                                    imgUrl={postData.imgUrl}
+                                    setHasNewMessages={setHasNewPosts}
+                                    setErrorMessage={setErrorMessage}
+                                    showAlert={showAlert}
+                                    setShowAlert={setShowAlert}
+                                />
+                            )}
+                        </>
                     )}
                     {!canModify && (
                         <LikeButtons

@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import ErrorMessage from "../../ErrorMessage";
 
-import { chatAdd } from "../../../services/features/chat";
+import { chatAddMessage } from "../../../services/features/chat";
 import {
     selectUserFirstName,
     selectUserLastName,
@@ -76,7 +76,7 @@ const ChatPostForm = () => {
                     } else {
                         response.json().then((data) => {
                             dispatch(
-                                chatAdd({
+                                chatAddMessage({
                                     authorIsAdmin: admin,
                                     firstName,
                                     lastName,

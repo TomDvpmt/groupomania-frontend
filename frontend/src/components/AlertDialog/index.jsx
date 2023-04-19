@@ -15,9 +15,10 @@ import PropTypes from "prop-types";
 const AlertDialog = ({
     issue,
     issueId,
+    parentId,
     updateContent,
     imgUrl,
-    setHasNewMessages,
+    // setHasNewMessages,
     setShowUpdateForm,
     setErrorMessage,
     showAlert,
@@ -26,9 +27,10 @@ const AlertDialog = ({
     AlertDialog.propTypes = {
         issue: PropTypes.string,
         issueId: PropTypes.number,
+        parentId: PropTypes.number,
         updateContent: PropTypes.string,
         imgUrl: PropTypes.string,
-        setHasNewMessages: PropTypes.func,
+        // setHasNewMessages: PropTypes.func,
         setShowUpdateForm: PropTypes.func,
         showAlert: PropTypes.bool,
         setShowAlert: PropTypes.func,
@@ -64,7 +66,7 @@ const AlertDialog = ({
                 imgUrl,
                 updateContent,
                 setShowUpdateForm,
-                setHasNewMessages,
+                // setHasNewMessages,
                 setErrorMessage
             );
         } else if (issue === "post" || issue === "comment") {
@@ -72,8 +74,9 @@ const AlertDialog = ({
                 token,
                 issue,
                 issueId,
+                parentId,
                 imgUrl,
-                setHasNewMessages,
+                // setHasNewMessages,
                 setErrorMessage
             );
         } else if (issue === "user") {

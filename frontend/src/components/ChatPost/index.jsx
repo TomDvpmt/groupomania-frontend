@@ -51,7 +51,7 @@ const ChatPost = ({ postIndex, post }) => {
             },
             body: JSON.stringify({
                 index: postIndex,
-                property: propertyName,
+                propertyName: propertyName,
                 updatedValue: updatedValue,
             }),
         })

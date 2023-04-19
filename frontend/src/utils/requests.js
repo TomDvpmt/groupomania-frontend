@@ -1,5 +1,7 @@
 import store from "../services/utils/store";
 import { userLogOut } from "../services/features/user";
+import { postsDelete } from "../services/features/posts";
+import { postCommentDelete } from "../services/features/posts";
 
 /** Sends credentials (for login and signup requests)
  *
@@ -36,8 +38,9 @@ export const deleteMessage = (
     token,
     issue,
     messageId,
+    parentId,
     imgUrl,
-    setHasNewMessages,
+    // setHasNewMessages,
     setErrorMessage
 ) => {
     fetch(`${process.env.REACT_APP_BACKEND_URI}/API/${issue}s/${messageId}`, {
@@ -52,7 +55,12 @@ export const deleteMessage = (
             if (response.status >= 400) {
                 response.json().then(({ message }) => setErrorMessage(message));
             } else {
-                setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
+                // setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
+                issue === "post"
+                    ? store.dispatch(postsDelete(messageId))
+                    : store.dispatch(
+                          postCommentDelete({ parentId, commentId: messageId })
+                      );
             }
         })
         .catch((error) => {
@@ -79,7 +87,7 @@ export const deleteImage = (
     imgUrl,
     updateContent,
     setShowUpdateForm,
-    setHasNewMessages,
+    // setHasNewMessages,
     setErrorMessage
 ) => {
     const content = updateContent;
@@ -101,7 +109,7 @@ export const deleteImage = (
                 response.json().then(({ message }) => setErrorMessage(message));
             } else {
                 setShowUpdateForm(false);
-                setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
+                // setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
             }
         })
         .catch((error) => {

@@ -67,8 +67,6 @@ const Chat = () => {
             <Box
                 component="section"
                 sx={{
-                    maxHeight: "300vh",
-                    overflowY: "scroll",
                     backgroundColor: "white",
                     marginTop: 4,
                     padding: 4,

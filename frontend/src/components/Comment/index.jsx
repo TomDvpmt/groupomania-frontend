@@ -11,6 +11,7 @@ import UpdateMessageForm from "../Forms/UpdateMessageForm";
 import LikeButtons from "../Buttons/LikeButtons";
 import UpdateDeleteButtons from "../Buttons/UpdateDeleteButtons";
 import ErrorMessage from "../ErrorMessage";
+import AlertDialog from "../AlertDialog";
 
 import { formatDate } from "../../utils/utils";
 
@@ -33,7 +34,7 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
     Comment.propTypes = {
         commentData: PropTypes.object,
         currentUserLikeValue: PropTypes.number,
-        setHasNewComments: PropTypes.func,
+        // setHasNewComments: PropTypes.func,
     };
 
     const isAdmin = useSelector(selectUserAdminStatus());
@@ -50,6 +51,7 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
     const imgUrl = commentData.imgUrl;
 
     const [showCommentUpdateForm, setShowCommentUpdateForm] = useState(false);
+    const [showAlert, setShowAlert] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
     return (
@@ -144,15 +146,26 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
                         />
                     )}
                     {canModify && (
-                        <UpdateDeleteButtons
-                            messageId={commentId}
-                            issue="comment"
-                            imgUrl={imgUrl}
-                            setHasNewMessages={setHasNewComments}
-                            setShowMessageUpdateForm={setShowCommentUpdateForm}
-                            setErrorMessage={setErrorMessage}
-                            setShowUpdateForm={setShowCommentUpdateForm}
-                        />
+                        <>
+                            <UpdateDeleteButtons
+                                setShowMessageUpdateForm={
+                                    setShowCommentUpdateForm
+                                }
+                                setShowAlert={setShowAlert}
+                            />
+                            {showAlert && (
+                                <AlertDialog
+                                    issue="comment"
+                                    issueId={commentId}
+                                    parentId={parentId}
+                                    imgUrl={commentData.imgUrl}
+                                    // setHasNewMessages={setHasNewComments}
+                                    setErrorMessage={setErrorMessage}
+                                    showAlert={showAlert}
+                                    setShowAlert={setShowAlert}
+                                />
+                            )}
+                        </>
                     )}
                 </CardActions>
                 <Collapse in={showCommentUpdateForm}>
@@ -163,7 +176,7 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
                         setMessageContent={setCommentContent}
                         imgUrl={imgUrl}
                         setShowUpdateForm={setShowCommentUpdateForm}
-                        setHasNewMessages={setHasNewComments}
+                        // setHasNewMessages={setHasNewComments}
                     />
                 </Collapse>
                 {errorMessage && <ErrorMessage errorMessage={errorMessage} />}

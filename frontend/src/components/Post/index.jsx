@@ -39,13 +39,13 @@ const Post = ({
     postIndex,
     postData,
     currentUserLikeValue,
-    setHasNewPosts,
+    // setHasNewPosts,
 }) => {
     Post.propTypes = {
         postIndex: PropTypes.number,
         postData: PropTypes.object,
         currentUserLikeValue: PropTypes.number,
-        setHasNewPosts: PropTypes.func,
+        // setHasNewPosts: PropTypes.func,
     };
 
     const isAdmin = useSelector(selectUserAdminStatus());
@@ -60,8 +60,8 @@ const Post = ({
 
     const [showCommentForm, setShowCommentForm] = useState(false);
     const [showPostUpdateForm, setShowPostUpdateForm] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
     const [showAlert, setShowAlert] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleReply = () => {
         setShowCommentForm((showCommentForm) => !showCommentForm);
@@ -169,8 +169,9 @@ const Post = ({
                                 <AlertDialog
                                     issue="post"
                                     issueId={postId}
+                                    parentId={0}
                                     imgUrl={postData.imgUrl}
-                                    setHasNewMessages={setHasNewPosts}
+                                    // setHasNewMessages={setHasNewPosts}
                                     setErrorMessage={setErrorMessage}
                                     showAlert={showAlert}
                                     setShowAlert={setShowAlert}
@@ -205,7 +206,7 @@ const Post = ({
                     setMessageContent={setPostContent}
                     imgUrl={postData.imgUrl}
                     setShowUpdateForm={setShowPostUpdateForm}
-                    setHasNewMessages={setHasNewPosts}
+                    // setHasNewMessages={setHasNewPosts}
                 />
             </Collapse>
             {errorMessage && <ErrorMessage errorMessage={errorMessage} />}

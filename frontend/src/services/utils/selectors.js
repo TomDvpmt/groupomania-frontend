@@ -24,10 +24,21 @@ export const selectUserEmail = () => {
     return (state) => state.user.email;
 };
 
-// Forum
+// Posts & Comments
 
-export const selectAllPosts = () => {
-    return (state) => state.posts.messages;
+export const selectPostsCount = () => {
+    return (state) => state.posts.messages.length;
+};
+
+export const selectPostCommentsCount = (postId) => {
+    return (state) => {
+        const post = state.posts.messages.filter(
+            (post) => post.id === postId
+        )[0];
+        if (post && post.comments) {
+            return post.comments.length;
+        } else return 0;
+    };
 };
 
 // Chat

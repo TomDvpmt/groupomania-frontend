@@ -13,7 +13,7 @@ const UpdateMessageForm = ({
     setMessageContent,
     imgUrl,
     setShowUpdateForm,
-    setHasNewMessages,
+    // setHasNewMessages,
 }) => {
     UpdateMessageForm.propTypes = {
         messageId: PropTypes.number,
@@ -22,7 +22,7 @@ const UpdateMessageForm = ({
         setMessageContent: PropTypes.func,
         imgUrl: PropTypes.string,
         setShowUpdateForm: PropTypes.func,
-        setHasNewMessages: PropTypes.func,
+        // setHasNewMessages: PropTypes.func,
     };
 
     const token = sessionStorage.getItem("token");
@@ -86,9 +86,9 @@ const UpdateMessageForm = ({
                     } else {
                         setMessageContent(sanitizedContent);
                         setShowUpdateForm(false);
-                        setHasNewMessages(
-                            (hasNewMessages) => hasNewMessages + 1
-                        );
+                        // setHasNewMessages(
+                        //     (hasNewMessages) => hasNewMessages + 1
+                        // );
                     }
                 })
                 .catch((error) => {
@@ -150,7 +150,7 @@ const UpdateMessageForm = ({
                         issueId={messageId}
                         updateContent={updateContent}
                         imgUrl={imgUrl}
-                        setHasNewMessages={setHasNewMessages}
+                        // setHasNewMessages={setHasNewMessages}
                         setShowUpdateForm={setShowUpdateForm}
                         setErrorMessage={setErrorMessage}
                         showAlert={showAlert}

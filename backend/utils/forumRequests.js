@@ -102,6 +102,7 @@ exports.getAllMessages = (req, res, config) => {
                         likes: row.likes_count,
                         dislikes: row.dislikes_count,
                         currentUserLikeValue: row.current_user_like_value,
+                        comments: [],
                     }));
                     close(connection);
                     return {

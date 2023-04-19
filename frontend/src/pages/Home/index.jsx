@@ -10,7 +10,7 @@ import Loader from "../../components/Loader";
 
 import { postsSetFromDB } from "../../services/features/posts";
 import { pageUpdateLocation } from "../../services/features/page";
-import { selectAllPosts } from "../../services/utils/selectors";
+import { selectPostsCount } from "../../services/utils/selectors";
 
 import { Box, Typography, Collapse } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
@@ -20,10 +20,10 @@ const Home = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const posts = useSelector(selectAllPosts());
+    const postsCount = useSelector(selectPostsCount());
 
-    // const [posts, setPosts] = useState([]);
-    const [hasNewPosts, setHasNewPosts] = useState(0);
+    const [posts, setPosts] = useState([]);
+    // const [hasNewPosts, setHasNewPosts] = useState(0);
     const [showNewPostForm, setShowNewPostForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -53,38 +53,38 @@ const Home = () => {
                     return <p>Aucun message à afficher.</p>;
                 } else {
                     dispatch(postsSetFromDB(data.results));
-                    // return data.results.map((result, index) => (
-                    //     <Post
-                    //         key={result.id}
-                    //         postIndex={index}
-                    //         postData={{
-                    //             id: result.id,
-                    //             parentId: 0,
-                    //             authorId: result.authorId,
-                    //             authorFirstName: result.firstName,
-                    //             authorLastName: result.lastName,
-                    //             authorIsAdmin: result.admin,
-                    //             authorEmail: result.email,
-                    //             imgUrl: result.imgUrl,
-                    //             content: result.content,
-                    //             date: result.date,
-                    //             modified: result.modified,
-                    //             likes: result.likes,
-                    //             dislikes: result.dislikes,
-                    //         }}
-                    //         currentUserLikeValue={result.currentUserLikeValue}
-                    //         setHasNewPosts={setHasNewPosts}
-                    //     />
-                    // ));
+                    return data.results.map((result, index) => (
+                        <Post
+                            key={result.id}
+                            postIndex={index}
+                            postData={{
+                                id: result.id,
+                                parentId: 0,
+                                authorId: result.authorId,
+                                authorFirstName: result.firstName,
+                                authorLastName: result.lastName,
+                                authorIsAdmin: result.admin,
+                                authorEmail: result.email,
+                                imgUrl: result.imgUrl,
+                                content: result.content,
+                                date: result.date,
+                                modified: result.modified,
+                                likes: result.likes,
+                                dislikes: result.dislikes,
+                            }}
+                            currentUserLikeValue={result.currentUserLikeValue}
+                            // setHasNewPosts={setHasNewPosts}
+                        />
+                    ));
                 }
             })
-            // .then((postsList) => setPosts(postsList))
+            .then((postsList) => setPosts(postsList))
             .catch((error) => {
                 console.error("Impossible d'afficher les messages :", error);
                 setErrorMessage("Impossible d'afficher les messages.");
             })
             .finally(setLoading(false));
-    }, [hasNewPosts, token, navigate, dispatch]);
+    }, [postsCount, token, navigate, dispatch]);
 
     return (
         <>
@@ -119,7 +119,7 @@ const Home = () => {
                         <CreateMessageForm
                             isReply={false}
                             parentId={0}
-                            setHasNewMessages={setHasNewPosts}
+                            // setHasNewMessages={setHasNewPosts}
                             setShowNewMessageForm={setShowNewPostForm}
                         />
                     </Collapse>
@@ -133,8 +133,8 @@ const Home = () => {
                             marginTop: 8,
                         }}
                     >
-                        {/* {posts} */}
-                        {posts.map((post, index) => (
+                        {posts}
+                        {/* {posts.map((post, index) => (
                             <Post
                                 key={post.id}
                                 postIndex={index}
@@ -156,7 +156,7 @@ const Home = () => {
                                 currentUserLikeValue={post.currentUserLikeValue}
                                 setHasNewPosts={setHasNewPosts}
                             />
-                        ))}
+                        ))} */}
                         {errorMessage && (
                             <ErrorMessage errorMessage={errorMessage} />
                         )}

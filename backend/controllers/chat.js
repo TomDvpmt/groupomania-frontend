@@ -117,8 +117,11 @@ exports.createPost = (req, res) => {
 
 exports.updatePost = (req, res) => {
     const index = req.body.index;
-    const property = req.body.property;
+    const property = req.body.propertyName;
     const updatedValue = req.body.updatedValue;
+
+    console.log("property :", property);
+    console.log("updatedValue :", updatedValue);
 
     connectToDb("updatePost (chat)")
         .catch((error) => {
@@ -133,13 +136,19 @@ exports.updatePost = (req, res) => {
             connection
                 .execute(
                     `
-                        SELECT id, created_at
-                        FROM chat_posts
+                        SELECT * 
+                        FROM (
+                            SELECT id, created_at
+                            FROM chat_posts
+                            ORDER BY created_at DESC
+                            LIMIT ${limit}
+                        ) results
                         ORDER BY created_at ASC
                     `
                 )
                 .then(([rows]) => {
                     const postId = rows[index].id;
+                    console.log("postId :", postId);
                     connection.execute(
                         `
                             UPDATE chat_posts

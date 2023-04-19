@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import Comment from "../Comment";
 import CreateMessageForm from "../Forms/CreateMessageForm";
 import ErrorMessage from "../ErrorMessage";
 import Loader from "../Loader";
 
-// import { forumSetPostCommentsFromDB } from "../../services/features/forum";
+import { postSetCommentsFromDB } from "../../services/features/posts";
+import { selectPostCommentsCount } from "../../services/utils/selectors";
 
 import { Box, Typography, Stack, Collapse } from "@mui/material";
 import PropTypes from "prop-types";
@@ -20,12 +21,13 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
     };
 
     const token = sessionStorage.getItem("token");
-
     const navigate = useNavigate();
-    // const dispatch = useDispatch();
+    const dispatch = useDispatch();
+
+    const postCommentsCount = useSelector(selectPostCommentsCount(parentId));
 
     const [comments, setComments] = useState([]);
-    const [hasNewComments, setHasNewComments] = useState(0);
+    // const [hasNewComments, setHasNewComments] = useState(0);
     const [commentsNumber, setCommentsNumber] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -47,12 +49,12 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
                     return <p>Aucun message à afficher.</p>;
                 } else {
                     setCommentsNumber(data.results.length);
-                    // dispatch(
-                    //     forumSetPostCommentsFromDB({
-                    //         postId: parentId,
-                    //         comments: data.results,
-                    //     })
-                    // );
+                    dispatch(
+                        postSetCommentsFromDB({
+                            postId: parentId,
+                            comments: data.results,
+                        })
+                    );
                     return data.results.map((result) => (
                         <Comment
                             key={result.id}
@@ -75,7 +77,7 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
                                         : result.dislikes,
                             }}
                             currentUserLikeValue={result.currentUserLikeValue}
-                            setHasNewComments={setHasNewComments}
+                            // setHasNewComments={setHasNewComments}
                         />
                     ));
                 }
@@ -89,11 +91,11 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
                 setErrorMessage("Impossible d'afficher les commentaires.");
             })
             .finally(setLoading(false));
-    }, [parentId, hasNewComments, token, navigate]);
+    }, [parentId, postCommentsCount, token, navigate]);
 
     useEffect(() => {
         setShowCommentForm(false);
-    }, [hasNewComments, setShowCommentForm]);
+    }, [postCommentsCount, setShowCommentForm]);
 
     return (
         <>
@@ -101,7 +103,7 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
                 <CreateMessageForm
                     isReply={true}
                     parentId={parentId}
-                    setHasNewMessages={setHasNewComments}
+                    // setHasNewMessages={setHasNewComments}
                     setShowNewMessageForm={setShowCommentForm}
                 />
             </Collapse>

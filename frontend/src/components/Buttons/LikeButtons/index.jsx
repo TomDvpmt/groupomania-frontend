@@ -37,17 +37,14 @@ const LikeButtons = ({
     const changeLike = (clickValue) => {
         setErrorMessage("");
 
-        fetch(
-            `${process.env.REACT_APP_BACKEND_URI}/API/${messageType}s/${messageId}/like`,
-            {
-                method: "PUT",
-                headers: {
-                    Authorization: `BEARER ${token}`,
-                    "Content-type": "application/json",
-                },
-                body: JSON.stringify({ clickValue: clickValue }),
-            }
-        )
+        fetch(`/API/${messageType}s/${messageId}/like`, {
+            method: "PUT",
+            headers: {
+                Authorization: `BEARER ${token}`,
+                "Content-type": "application/json",
+            },
+            body: JSON.stringify({ clickValue: clickValue }),
+        })
             .then((response) => response.json())
             .then((data) => {
                 setLikeStatus(data.newUserLikeValue);

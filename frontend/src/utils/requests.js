@@ -11,16 +11,13 @@ import { postCommentDelete } from "../services/features/posts";
  */
 
 export const fetchCredentials = (endpoint, credentialsData) => {
-    const response = fetch(
-        `${process.env.REACT_APP_BACKEND_URI}/API/auth/${endpoint}`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(credentialsData),
-        }
-    );
+    const response = fetch(`/API/auth/${endpoint}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentialsData),
+    });
     return response;
 };
 
@@ -43,7 +40,7 @@ export const deleteMessage = (
     // setHasNewMessages,
     setErrorMessage
 ) => {
-    fetch(`${process.env.REACT_APP_BACKEND_URI}/API/${issue}s/${messageId}`, {
+    fetch(`/API/${issue}s/${messageId}`, {
         method: "DELETE",
         headers: {
             Authorization: `BEARER ${token}`,
@@ -97,7 +94,7 @@ export const deleteImage = (
     formData.append("imgUrl", imgUrl);
     formData.append("deleteImg", true);
 
-    fetch(`${process.env.REACT_APP_BACKEND_URI}/API/${issue}s/${messageId}`, {
+    fetch(`/API/${issue}s/${messageId}`, {
         method: "PUT",
         headers: {
             Authorization: `BEARER ${token}`,
@@ -127,7 +124,7 @@ export const deleteImage = (
  */
 
 export const deleteUser = (token, userId, setErrorMessage, navigate) => {
-    fetch(`${process.env.REACT_APP_BACKEND_URI}/API/auth/${userId}`, {
+    fetch(`/API/auth/${userId}`, {
         method: "DELETE",
         headers: {
             Authorization: `BEARER ${token}`,
@@ -174,7 +171,7 @@ export const setLike = (
 ) => {
     const clickValue = e.target.dataset.likevalue;
 
-    fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}/like`, {
+    fetch(`/API/posts/${postId}/like`, {
         method: "PUT",
         headers: {
             Authorization: `BEARER ${token}`,
@@ -206,15 +203,12 @@ export const setLike = (
  */
 
 export const setUserLikeStatus = (token, postId, setLikeStatus) => {
-    fetch(
-        `${process.env.REACT_APP_BACKEND_URI}/API/posts/${postId}/like/user`,
-        {
-            method: "GET",
-            headers: {
-                Authorization: `BEARER ${token}`,
-            },
-        }
-    )
+    fetch(`/API/posts/${postId}/like/user`, {
+        method: "GET",
+        headers: {
+            Authorization: `BEARER ${token}`,
+        },
+    })
         .then((response) => response.json())
         .then((data) => setLikeStatus(data))
         .catch((error) => console.log(error));
@@ -228,15 +222,12 @@ export const setUserLikeStatus = (token, postId, setLikeStatus) => {
 
 export const getUserInfo = async (token) => {
     try {
-        const response = await fetch(
-            `${process.env.REACT_APP_BACKEND_URI}/API/auth/0`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `BEARER ${token}`,
-                },
-            }
-        );
+        const response = await fetch(`/API/auth/0`, {
+            method: "GET",
+            headers: {
+                Authorization: `BEARER ${token}`,
+            },
+        });
         const data = response.json();
         return data;
     } catch (error) {

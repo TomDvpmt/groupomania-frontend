@@ -35,7 +35,7 @@ const Home = () => {
     useEffect(() => {
         setLoading(true);
 
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/posts/all/0`, {
+        fetch(`/API/posts/all/0`, {
             method: "GET",
             headers: {
                 Authorization: `BEARER ${token}`,

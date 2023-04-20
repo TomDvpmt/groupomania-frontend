@@ -67,7 +67,7 @@ const Profile = () => {
 
     useEffect(() => {
         setLoading(true);
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/auth/${userId}`, {
+        fetch(`/API/auth/${userId}`, {
             method: "GET",
             headers: {
                 Authorization: `BEARER ${token}`,

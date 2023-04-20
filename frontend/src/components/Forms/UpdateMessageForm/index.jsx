@@ -68,16 +68,13 @@ const UpdateMessageForm = ({
 
             const endpoint = parentId === 0 ? "posts" : "comments";
 
-            fetch(
-                `${process.env.REACT_APP_BACKEND_URI}/API/${endpoint}/${messageId}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        Authorization: `BEARER ${token}`,
-                    },
-                    body: formData,
-                }
-            )
+            fetch(`/API/${endpoint}/${messageId}`, {
+                method: "PUT",
+                headers: {
+                    Authorization: `BEARER ${token}`,
+                },
+                body: formData,
+            })
                 .then((response) => {
                     if (response.status >= 400) {
                         response

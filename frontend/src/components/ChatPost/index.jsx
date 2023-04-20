@@ -43,7 +43,7 @@ const ChatPost = ({ postIndex, post }) => {
     const updatePost = (propertyName, property) => {
         const updatedValue = property === 0 ? 1 : 0;
 
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/chat/update`, {
+        fetch(`/API/chat/update`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

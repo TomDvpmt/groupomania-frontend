@@ -79,7 +79,7 @@ const CreateMessageForm = ({
 
             const endpoint = parentId === 0 ? "posts" : "comments";
 
-            fetch(`${process.env.REACT_APP_BACKEND_URI}/API/${endpoint}`, {
+            fetch(`/API/${endpoint}`, {
                 method: "POST",
                 headers: {
                     Authorization: `BEARER ${token}`,

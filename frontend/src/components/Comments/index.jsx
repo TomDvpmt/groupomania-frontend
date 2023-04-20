@@ -34,15 +34,12 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
 
     useEffect(() => {
         setLoading(true);
-        fetch(
-            `${process.env.REACT_APP_BACKEND_URI}/API/comments/all/${parentId}`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `BEARER ${token}`,
-                },
-            }
-        )
+        fetch(`/API/comments/all/${parentId}`, {
+            method: "GET",
+            headers: {
+                Authorization: `BEARER ${token}`,
+            },
+        })
             .then((response) => response.json())
             .then((data) => {
                 if (data.results.length === 0) {

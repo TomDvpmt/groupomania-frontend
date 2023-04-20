@@ -27,7 +27,7 @@ const Chat = () => {
     useEffect(() => {
         setLoading(true);
 
-        fetch(`${process.env.REACT_APP_BACKEND_URI}/API/chat/`, {
+        fetch(`/API/chat/`, {
             method: "GET",
             headers: {
                 Authorization: `BEARER ${token}`,

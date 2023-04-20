@@ -66,7 +66,7 @@ const ChatPostForm = () => {
             formData.append("content", sanitizedContent);
             formData.append("createdAt", createdAt);
 
-            fetch(`${process.env.REACT_APP_BACKEND_URI}/API/chat/`, {
+            fetch(`/API/chat/`, {
                 method: "POST",
                 headers: {
                     Authorization: `BEARER ${token}`,

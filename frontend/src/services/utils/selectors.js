@@ -41,6 +41,16 @@ export const selectPostCommentsCount = (postId) => {
     };
 };
 
+// export const selectOneMessage = (type, parentId, messageId) => {
+//     return (state) => {
+//         return type === "post"
+//             ? state.posts.find((post) => post.id === messageId)
+//             : state.posts
+//                   .find((post) => post.id === parentId)
+//                   .comments.find((comment) => comment.id === messageId);
+//     };
+// };
+
 // Chat
 
 export const selectChatLimit = () => {

@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
-import { deleteMessage, deleteImage, deleteUser } from "../../utils/requests";
+import { postUpdate, postCommentUpdate } from "../../services/features/posts";
+
+import { deleteMessage, deleteUser } from "../../utils/requests";
 
 import {
     Button,
@@ -18,7 +21,7 @@ const AlertDialog = ({
     parentId,
     updateContent,
     imgUrl,
-    // setHasNewMessages,
+    setHasNewMessages,
     setShowUpdateForm,
     setErrorMessage,
     showAlert,
@@ -30,7 +33,7 @@ const AlertDialog = ({
         parentId: PropTypes.number,
         updateContent: PropTypes.string,
         imgUrl: PropTypes.string,
-        // setHasNewMessages: PropTypes.func,
+        setHasNewMessages: PropTypes.func,
         setShowUpdateForm: PropTypes.func,
         showAlert: PropTypes.bool,
         setShowAlert: PropTypes.func,
@@ -38,6 +41,7 @@ const AlertDialog = ({
 
     const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     let issueTitle, issueDescription;
 
@@ -59,16 +63,56 @@ const AlertDialog = ({
 
     const handleYes = () => {
         if (issue === "image") {
-            deleteImage(
-                token,
-                issue,
-                issueId,
-                imgUrl,
-                updateContent,
-                setShowUpdateForm,
-                // setHasNewMessages,
-                setErrorMessage
-            );
+            const messageType = parentId === 0 ? "post" : "comment";
+            console.log(messageType);
+            const content = updateContent;
+            const formData = new FormData();
+
+            formData.append("content", content);
+            formData.append("imgUrl", imgUrl);
+            formData.append("deleteImg", true);
+
+            fetch(`/API/${messageType}s/${issueId}`, {
+                method: "PUT",
+                headers: {
+                    Authorization: `BEARER ${token}`,
+                },
+                body: formData,
+            })
+                .then((response) => {
+                    if (response.status >= 400) {
+                        response
+                            .json()
+                            .then(({ message }) => setErrorMessage(message));
+                    } else {
+                        setShowUpdateForm(false);
+                        dispatch(
+                            messageType === "post"
+                                ? postUpdate({
+                                      parentId: 0,
+                                      messageId: issueId,
+                                      type: "imgUrl",
+                                      content: "",
+                                  })
+                                : postCommentUpdate({
+                                      parentId,
+                                      messageId: issueId,
+                                      type: "imgUrl",
+                                      content: "",
+                                  })
+                        );
+                        setHasNewMessages(
+                            (hasNewMessages) => hasNewMessages + 1
+                        );
+                    }
+                })
+                .catch((error) => {
+                    setErrorMessage("Impossible de modifier le message.");
+                    console.error(
+                        "Impossible de modifier le message : ",
+                        error
+                    );
+                });
         } else if (issue === "post" || issue === "comment") {
             deleteMessage(
                 token,
@@ -76,7 +120,7 @@ const AlertDialog = ({
                 issueId,
                 parentId,
                 imgUrl,
-                // setHasNewMessages,
+                setHasNewMessages,
                 setErrorMessage
             );
         } else if (issue === "user") {

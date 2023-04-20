@@ -27,7 +27,7 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
     const postCommentsCount = useSelector(selectPostCommentsCount(parentId));
 
     const [comments, setComments] = useState([]);
-    // const [hasNewComments, setHasNewComments] = useState(0);
+    const [hasNewComments, setHasNewComments] = useState(0);
     const [commentsNumber, setCommentsNumber] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -74,7 +74,7 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
                                         : result.dislikes,
                             }}
                             currentUserLikeValue={result.currentUserLikeValue}
-                            // setHasNewComments={setHasNewComments}
+                            setHasNewComments={setHasNewComments}
                         />
                     ));
                 }
@@ -88,11 +88,11 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
                 setErrorMessage("Impossible d'afficher les commentaires.");
             })
             .finally(setLoading(false));
-    }, [parentId, postCommentsCount, token, navigate]);
+    }, [parentId, hasNewComments, token, navigate]);
 
     useEffect(() => {
         setShowCommentForm(false);
-    }, [postCommentsCount, setShowCommentForm]);
+    }, [hasNewComments, setShowCommentForm]);
 
     return (
         <>
@@ -100,7 +100,7 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
                 <CreateMessageForm
                     isReply={true}
                     parentId={parentId}
-                    // setHasNewMessages={setHasNewComments}
+                    setHasNewMessages={setHasNewComments}
                     setShowNewMessageForm={setShowCommentForm}
                 />
             </Collapse>

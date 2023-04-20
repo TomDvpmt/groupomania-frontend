@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import ErrorMessage from "../../ErrorMessage";
 
-import { postsAdd, postAddComment } from "../../../services/features/posts";
+import { postAdd, postAddComment } from "../../../services/features/posts";
 import {
     selectUserId,
     selectUserFirstName,
@@ -22,13 +22,13 @@ import PropTypes from "prop-types";
 const CreateMessageForm = ({
     isReply,
     parentId,
-    // setHasNewMessages,
+    setHasNewMessages,
     setShowNewMessageForm,
 }) => {
     CreateMessageForm.propTypes = {
         isReply: PropTypes.bool,
         parentId: PropTypes.number,
-        // setHasNewMessages: PropTypes.func,
+        setHasNewMessages: PropTypes.func,
         setShowNewMessageForm: PropTypes.func,
     };
 
@@ -97,9 +97,9 @@ const CreateMessageForm = ({
                             setChosenFile("");
                             setContent("");
                             setShowNewMessageForm(false);
-                            // setHasNewMessages(
-                            //     (hasNewMessages) => hasNewMessages + 1
-                            // );
+                            setHasNewMessages(
+                                (hasNewMessages) => hasNewMessages + 1
+                            );
                             const message = {
                                 parentId,
                                 authorId: userId,
@@ -117,7 +117,7 @@ const CreateMessageForm = ({
                             };
                             dispatch(
                                 parentId === 0
-                                    ? postsAdd(message)
+                                    ? postAdd(message)
                                     : postAddComment({
                                           postId: parentId,
                                           comment: message,

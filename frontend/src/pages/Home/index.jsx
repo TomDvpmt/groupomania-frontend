@@ -23,7 +23,7 @@ const Home = () => {
     const postsCount = useSelector(selectPostsCount());
 
     const [posts, setPosts] = useState([]);
-    // const [hasNewPosts, setHasNewPosts] = useState(0);
+    const [hasNewPosts, setHasNewPosts] = useState(0);
     const [showNewPostForm, setShowNewPostForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -73,7 +73,7 @@ const Home = () => {
                                 dislikes: result.dislikes,
                             }}
                             currentUserLikeValue={result.currentUserLikeValue}
-                            // setHasNewPosts={setHasNewPosts}
+                            setHasNewPosts={setHasNewPosts}
                         />
                     ));
                 }
@@ -84,7 +84,7 @@ const Home = () => {
                 setErrorMessage("Impossible d'afficher les messages.");
             })
             .finally(setLoading(false));
-    }, [postsCount, token, navigate, dispatch]);
+    }, [hasNewPosts, token, navigate, dispatch]);
 
     return (
         <>
@@ -119,7 +119,7 @@ const Home = () => {
                         <CreateMessageForm
                             isReply={false}
                             parentId={0}
-                            // setHasNewMessages={setHasNewPosts}
+                            setHasNewMessages={setHasNewPosts}
                             setShowNewMessageForm={setShowNewPostForm}
                         />
                     </Collapse>

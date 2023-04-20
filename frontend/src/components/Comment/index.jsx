@@ -34,7 +34,7 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
     Comment.propTypes = {
         commentData: PropTypes.object,
         currentUserLikeValue: PropTypes.number,
-        // setHasNewComments: PropTypes.func,
+        setHasNewComments: PropTypes.func,
     };
 
     const isAdmin = useSelector(selectUserAdminStatus());
@@ -159,7 +159,7 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
                                     issueId={commentId}
                                     parentId={parentId}
                                     imgUrl={commentData.imgUrl}
-                                    // setHasNewMessages={setHasNewComments}
+                                    setHasNewMessages={setHasNewComments}
                                     setErrorMessage={setErrorMessage}
                                     showAlert={showAlert}
                                     setShowAlert={setShowAlert}
@@ -176,7 +176,7 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
                         setMessageContent={setCommentContent}
                         imgUrl={imgUrl}
                         setShowUpdateForm={setShowCommentUpdateForm}
-                        // setHasNewMessages={setHasNewComments}
+                        setHasNewMessages={setHasNewComments}
                     />
                 </Collapse>
                 {errorMessage && <ErrorMessage errorMessage={errorMessage} />}

@@ -39,21 +39,21 @@ const Post = ({
     postIndex,
     postData,
     currentUserLikeValue,
-    // setHasNewPosts,
+    setHasNewPosts,
 }) => {
     Post.propTypes = {
         postIndex: PropTypes.number,
         postData: PropTypes.object,
         currentUserLikeValue: PropTypes.number,
-        // setHasNewPosts: PropTypes.func,
+        setHasNewPosts: PropTypes.func,
     };
 
     const isAdmin = useSelector(selectUserAdminStatus());
     const loggedUserId = useSelector(selectUserId());
+    const postId = postData.id;
 
     const canModify = isAdmin || postData.authorId === loggedUserId;
 
-    const postId = postData.id;
     const authorName = `${postData.authorFirstName} ${postData.authorLastName}`;
     const formatedDate = formatDate(postData.date);
     const [postContent, setPostContent] = useState(postData.content);
@@ -171,7 +171,7 @@ const Post = ({
                                     issueId={postId}
                                     parentId={0}
                                     imgUrl={postData.imgUrl}
-                                    // setHasNewMessages={setHasNewPosts}
+                                    setHasNewMessages={setHasNewPosts}
                                     setErrorMessage={setErrorMessage}
                                     showAlert={showAlert}
                                     setShowAlert={setShowAlert}
@@ -206,7 +206,7 @@ const Post = ({
                     setMessageContent={setPostContent}
                     imgUrl={postData.imgUrl}
                     setShowUpdateForm={setShowPostUpdateForm}
-                    // setHasNewMessages={setHasNewPosts}
+                    setHasNewMessages={setHasNewPosts}
                 />
             </Collapse>
             {errorMessage && <ErrorMessage errorMessage={errorMessage} />}

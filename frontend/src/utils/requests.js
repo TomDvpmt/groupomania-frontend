@@ -1,6 +1,6 @@
 import store from "../services/utils/store";
 import { userLogOut } from "../services/features/user";
-import { postsDelete } from "../services/features/posts";
+import { postDelete } from "../services/features/posts";
 import { postCommentDelete } from "../services/features/posts";
 
 /** Sends credentials (for login and signup requests)
@@ -37,7 +37,7 @@ export const deleteMessage = (
     messageId,
     parentId,
     imgUrl,
-    // setHasNewMessages,
+    setHasNewMessages,
     setErrorMessage
 ) => {
     fetch(`/API/${issue}s/${messageId}`, {
@@ -52,9 +52,9 @@ export const deleteMessage = (
             if (response.status >= 400) {
                 response.json().then(({ message }) => setErrorMessage(message));
             } else {
-                // setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
+                setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
                 issue === "post"
-                    ? store.dispatch(postsDelete(messageId))
+                    ? store.dispatch(postDelete(messageId))
                     : store.dispatch(
                           postCommentDelete({ parentId, commentId: messageId })
                       );
@@ -66,54 +66,54 @@ export const deleteMessage = (
         });
 };
 
-/** Sends a request to delete the image of a message (post or comment)
- *
- * @param {String} updateContent
- * @param {String} imgUrl
- * @param {Number} postId
- * @param {String} token
- * @param {import("react").SetStateAction} setShowUpdateForm
- * @param {import("react").SetStateAction} setHasNewMessages
- * @param {import("react").SetStateAction} setErrorMessage
- */
+// /** Sends a request to delete the image of a message (post or comment)
+//  *
+//  * @param {String} updateContent
+//  * @param {String} imgUrl
+//  * @param {Number} postId
+//  * @param {String} token
+//  * @param {import("react").SetStateAction} setShowUpdateForm
+//  * @param {import("react").SetStateAction} setHasNewMessages
+//  * @param {import("react").SetStateAction} setErrorMessage
+//  */
 
-export const deleteImage = (
-    token,
-    issue,
-    messageId,
-    imgUrl,
-    updateContent,
-    setShowUpdateForm,
-    // setHasNewMessages,
-    setErrorMessage
-) => {
-    const content = updateContent;
-    const formData = new FormData();
+// export const deleteImage = (
+//     token,
+//     messageType,
+//     messageId,
+//     imgUrl,
+//     updateContent,
+//     setShowUpdateForm,
+//     // setHasNewMessages,
+//     setErrorMessage
+// ) => {
+//     const content = updateContent;
+//     const formData = new FormData();
 
-    formData.append("content", content);
-    formData.append("imgUrl", imgUrl);
-    formData.append("deleteImg", true);
+//     formData.append("content", content);
+//     formData.append("imgUrl", imgUrl);
+//     formData.append("deleteImg", true);
 
-    fetch(`/API/${issue}s/${messageId}`, {
-        method: "PUT",
-        headers: {
-            Authorization: `BEARER ${token}`,
-        },
-        body: formData,
-    })
-        .then((response) => {
-            if (response.status >= 400) {
-                response.json().then(({ message }) => setErrorMessage(message));
-            } else {
-                setShowUpdateForm(false);
-                // setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
-            }
-        })
-        .catch((error) => {
-            setErrorMessage("Impossible de modifier le message.");
-            console.error("Impossible de modifier le message : ", error);
-        });
-};
+//     fetch(`/API/${messageType}s/${messageId}`, {
+//         method: "PUT",
+//         headers: {
+//             Authorization: `BEARER ${token}`,
+//         },
+//         body: formData,
+//     })
+//         .then((response) => {
+//             if (response.status >= 400) {
+//                 response.json().then(({ message }) => setErrorMessage(message));
+//             } else {
+//                 setShowUpdateForm(false);
+//                 // setHasNewMessages((hasNewMessages) => hasNewMessages + 1);
+//             }
+//         })
+//         .catch((error) => {
+//             setErrorMessage("Impossible de modifier le message.");
+//             console.error("Impossible de modifier le message : ", error);
+//         });
+// };
 
 /** Sends a request to delete a user's account
  *

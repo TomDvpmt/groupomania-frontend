@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import Post from "../../components/Post";
 import CreateMessageForm from "../../components/Forms/CreateMessageForm";
@@ -10,7 +10,6 @@ import Loader from "../../components/Loader";
 
 import { postsSetFromDB } from "../../services/features/posts";
 import { pageUpdateLocation } from "../../services/features/page";
-import { selectPostsCount } from "../../services/utils/selectors";
 
 import { Box, Typography, Collapse } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
@@ -19,8 +18,6 @@ const Home = () => {
     const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
-    const postsCount = useSelector(selectPostsCount());
 
     const [posts, setPosts] = useState([]);
     const [hasNewPosts, setHasNewPosts] = useState(0);

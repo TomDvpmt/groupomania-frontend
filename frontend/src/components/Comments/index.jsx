@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import Comment from "../Comment";
 import CreateMessageForm from "../Forms/CreateMessageForm";
@@ -8,7 +8,6 @@ import ErrorMessage from "../ErrorMessage";
 import Loader from "../Loader";
 
 import { postSetCommentsFromDB } from "../../services/features/posts";
-import { selectPostCommentsCount } from "../../services/utils/selectors";
 
 import { Box, Typography, Stack, Collapse } from "@mui/material";
 import PropTypes from "prop-types";
@@ -23,8 +22,6 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
     const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
-    const postCommentsCount = useSelector(selectPostCommentsCount(parentId));
 
     const [comments, setComments] = useState([]);
     const [hasNewComments, setHasNewComments] = useState(0);
@@ -88,7 +85,7 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
                 setErrorMessage("Impossible d'afficher les commentaires.");
             })
             .finally(setLoading(false));
-    }, [parentId, hasNewComments, token, navigate]);
+    }, [parentId, hasNewComments, token, navigate, dispatch]);
 
     useEffect(() => {
         setShowCommentForm(false);

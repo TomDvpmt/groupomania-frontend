@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import Header from "./layout/Header";
@@ -12,38 +12,51 @@ import Error404 from "./pages/Error404";
 
 import { selectUserIsLoggedIn } from "./services/utils/selectors";
 
-import { CssBaseline } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "./assets/styles/theme";
+const RouterWrapper = () => {
+    return (
+        <>
+            <Header />
+            <Outlet />
+        </>
+    );
+};
 
 const Router = () => {
     const isLoggedIn = useSelector(selectUserIsLoggedIn());
 
-    return (
-        <BrowserRouter>
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <Header />
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/signup" element={<SignUp />} />
-                    <Route
-                        path="/users/:userId"
-                        element={isLoggedIn ? <Profile /> : <Login />}
-                    />
-                    <Route
-                        path="/"
-                        element={isLoggedIn ? <Home /> : <Login />}
-                    />
-                    <Route
-                        path="/chat"
-                        element={isLoggedIn ? <Chat /> : <Login />}
-                    />
-                    <Route path="*" element={<Error404 />} />
-                </Routes>
-            </ThemeProvider>
-        </BrowserRouter>
-    );
+    const router = createBrowserRouter([
+        {
+            element: <RouterWrapper />,
+            children: [
+                {
+                    path: "/",
+                    element: isLoggedIn ? <Home /> : <Login />,
+                },
+                {
+                    path: "/login",
+                    element: <Login />,
+                },
+                {
+                    path: "/signup",
+                    element: <SignUp />,
+                },
+                {
+                    path: "/users/:userId",
+                    element: isLoggedIn ? <Profile /> : <Login />,
+                },
+                {
+                    path: "/chat",
+                    element: isLoggedIn ? <Chat /> : <Login />,
+                },
+                {
+                    path: "*",
+                    element: <Error404 />,
+                },
+            ],
+        },
+    ]);
+
+    return <RouterProvider router={router} />;
 };
 
 export default Router;

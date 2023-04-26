@@ -9,13 +9,13 @@ export const sanitize = (input) => {
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;",
+        // '"': "&quot;",
+        // "'": "&#39;",
         "/": "&#x2F;",
         "`": "&#x60;",
         "=": "&#x3D;",
     };
-    const regExp = /[&<>"'`=/]/gi;
+    const regExp = /[&<>`=/]/gi;
     return input.replace(regExp, (match) => htmlCodes[match]);
 };
 

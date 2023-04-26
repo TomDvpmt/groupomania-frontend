@@ -13,6 +13,8 @@ import { selectAllChatMessages } from "../../services/utils/selectors";
 import { Box, Typography } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
 
+import socket from "../../socket";
+
 const Chat = () => {
     const token = sessionStorage.getItem("token");
     const navigate = useNavigate();

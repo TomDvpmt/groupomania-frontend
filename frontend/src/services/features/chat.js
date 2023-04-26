@@ -1,7 +1,7 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 
 const initialState = {
-    limit: 5, // if change, also change .env in backend !
+    limit: 100, // if change, also change .env in backend !
     messages: [],
     users: [],
 };

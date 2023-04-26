@@ -18,6 +18,7 @@ import {
     selectUserEmail,
     selectProfileFirstName,
     selectProfileLastName,
+    selectUserAdminStatus,
 } from "../../services/utils/selectors";
 
 import { Box, Container, Typography, Button, Stack } from "@mui/material";
@@ -35,7 +36,9 @@ const Profile = () => {
     const userLastName = useSelector(selectUserLastName());
     const userEmail = useSelector(selectUserEmail());
 
+    const userIsAdmin = useSelector(selectUserAdminStatus());
     const userIsAuthor = postAuthorId === loggedUserId;
+    const userCanModify = userIsAuthor || userIsAdmin === 1;
 
     const profileFirstName = useSelector(selectProfileFirstName());
     const profileLastName = useSelector(selectProfileLastName());
@@ -149,7 +152,7 @@ const Profile = () => {
                         )}
                         <ProfileData />
                     </Container>
-                    {userIsAuthor && (
+                    {userCanModify && (
                         <Stack
                             direction="row"
                             spacing={2}

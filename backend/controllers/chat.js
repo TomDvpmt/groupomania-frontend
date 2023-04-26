@@ -120,9 +120,6 @@ exports.updatePost = (req, res) => {
     const property = req.body.propertyName;
     const updatedValue = req.body.updatedValue;
 
-    console.log("property :", property);
-    console.log("updatedValue :", updatedValue);
-
     connectToDb("updatePost (chat)")
         .catch((error) => {
             handleError(
@@ -148,7 +145,6 @@ exports.updatePost = (req, res) => {
                 )
                 .then(([rows]) => {
                     const postId = rows[index].id;
-                    console.log("postId :", postId);
                     connection.execute(
                         `
                             UPDATE chat_posts

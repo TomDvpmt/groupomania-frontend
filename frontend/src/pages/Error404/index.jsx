@@ -28,7 +28,11 @@ const Error404 = () => {
             <Typography paragraph>
                 La page que vous cherchez n'existe pas.
             </Typography>
-            {!token && (
+            {token ? (
+                <Link component={RouterLink} to="/">
+                    Retour à l'accueil
+                </Link>
+            ) : (
                 <Link component={RouterLink} to="/login">
                     Se connecter
                 </Link>

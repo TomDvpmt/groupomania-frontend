@@ -6,6 +6,7 @@ import { userLogOut } from "../../services/features/user";
 import {
     selectUserIsLoggedIn,
     selectUserId,
+    selectUserFirstName,
 } from "../../services/utils/selectors";
 
 import { setUserState } from "../../utils/utils";
@@ -32,6 +33,8 @@ const Header = () => {
     const dispatch = useDispatch();
     const isLogged = useSelector(selectUserIsLoggedIn());
     const loggedUserId = useSelector(selectUserId());
+    const firstName = useSelector(selectUserFirstName());
+
     const [anchorEl, setAnchorEl] = useState(null);
 
     const open = Boolean(anchorEl);
@@ -125,38 +128,54 @@ const Header = () => {
                                 Chat
                             </Button>
                         </Box>
-                        <IconButton onClick={handleAvatarClick} size="small">
-                            <Avatar />
-                        </IconButton>
-
-                        <Menu
-                            open={open}
-                            onClose={handleClose}
-                            anchorEl={anchorEl}
-                            transformOrigin={{
-                                horizontal: "right",
-                                vertical: "top",
-                            }}
-                            anchorOrigin={{
-                                horizontal: "right",
-                                vertical: "bottom",
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: ".5rem",
                             }}
                         >
-                            <MenuItem
-                                onClick={handleProfileClick}
-                                sx={{ display: "flex", gap: 1 }}
+                            {firstName && (
+                                <Typography color="primary">
+                                    {firstName}
+                                </Typography>
+                            )}
+                            <IconButton
+                                onClick={handleAvatarClick}
+                                size="small"
                             >
-                                <Avatar fontSize="small" />
-                                Mon profil
-                            </MenuItem>
-                            <MenuItem
-                                onClick={handleLogOut}
-                                sx={{ display: "flex", gap: 1 }}
+                                <Avatar />
+                            </IconButton>
+
+                            <Menu
+                                open={open}
+                                onClose={handleClose}
+                                anchorEl={anchorEl}
+                                transformOrigin={{
+                                    horizontal: "right",
+                                    vertical: "top",
+                                }}
+                                anchorOrigin={{
+                                    horizontal: "right",
+                                    vertical: "bottom",
+                                }}
                             >
-                                <Logout />
-                                Déconnexion
-                            </MenuItem>
-                        </Menu>
+                                <MenuItem
+                                    onClick={handleProfileClick}
+                                    sx={{ display: "flex", gap: 1 }}
+                                >
+                                    <Avatar fontSize="small" />
+                                    Mon profil
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={handleLogOut}
+                                    sx={{ display: "flex", gap: 1 }}
+                                >
+                                    <Logout />
+                                    Déconnexion
+                                </MenuItem>
+                            </Menu>
+                        </Box>
                     </Box>
                 </Toolbar>
             )}

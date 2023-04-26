@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import ErrorMessage from "../../ErrorMessage";
@@ -18,6 +18,8 @@ import {
 import { imgMimeTypes, sanitize } from "../../../utils/formValidation";
 
 import { Box, TextField, Button, Typography } from "@mui/material";
+
+import { socket } from "../../../socket";
 
 const ChatPostForm = () => {
     const token = sessionStorage.getItem("token");
@@ -82,18 +84,21 @@ const ChatPostForm = () => {
                         response.json().then((data) => {
                             chatPosts.length === chatLimit &&
                                 dispatch(chatRemoveOldest());
-                            dispatch(
-                                chatAddMessage({
-                                    authorIsAdmin: admin,
-                                    firstName,
-                                    lastName,
-                                    content: sanitizedContent,
-                                    imgUrl: data.imgUrl || "",
-                                    moderation: 0,
-                                    alert: 0,
-                                    createdAt,
-                                })
-                            );
+
+                            const chatMessage = {
+                                authorIsAdmin: admin,
+                                firstName,
+                                lastName,
+                                content: sanitizedContent,
+                                imgUrl: data.imgUrl || "",
+                                moderation: 0,
+                                alert: 0,
+                                createdAt,
+                            };
+
+                            dispatch(chatAddMessage(chatMessage));
+                            socket.emit("sendMessage", chatMessage);
+
                             e.target.imageFile.value = "";
                             setChosenFile("");
                             setContent("");
@@ -106,6 +111,7 @@ const ChatPostForm = () => {
                 });
         }
     };
+
     return (
         <Box
             component="form"

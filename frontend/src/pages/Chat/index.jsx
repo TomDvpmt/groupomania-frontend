@@ -13,7 +13,7 @@ import { selectAllChatMessages } from "../../services/utils/selectors";
 import { Box, Typography } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
 
-import socket from "../../socket";
+import { socket } from "../../socket";
 
 const Chat = () => {
     const token = sessionStorage.getItem("token");
@@ -36,7 +36,9 @@ const Chat = () => {
             },
         })
             .then((response) => response.json())
-            .then((data) => dispatch(chatSetFromDB(data)))
+            .then((data) => {
+                dispatch(chatSetFromDB(data));
+            })
             .catch((error) => {
                 setErrorMessage("Impossible d'afficher les messages.");
                 console.log(error);
@@ -47,6 +49,12 @@ const Chat = () => {
     const chatPosts = useSelector(selectAllChatMessages());
 
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        socket.on("receiveMessage", (message) => {
+            console.log("message :", message);
+        });
+    }, [socket]);
 
     return (
         <Box

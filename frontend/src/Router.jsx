@@ -1,6 +1,7 @@
 import React from "react";
+import { useEffect } from "react";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import Header from "./layout/Header";
 import Login from "./pages/Login";
@@ -11,6 +12,9 @@ import Profile from "./pages/Profile";
 import Error404 from "./pages/Error404";
 
 import { selectUserIsLoggedIn } from "./services/utils/selectors";
+
+import { chatSetFromSocket } from "./services/features/chat";
+import { socket } from "./socket";
 
 const RouterWrapper = () => {
     return (
@@ -55,6 +59,19 @@ const Router = () => {
             ],
         },
     ]);
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        socket.on("receiveAllMessages", (messages) => {
+            console.log("messages :", messages);
+            dispatch(chatSetFromSocket(messages));
+        });
+
+        return () => {
+            socket.off("receiveAllMessages");
+        };
+    }, [dispatch]);
 
     return <RouterProvider router={router} />;
 };

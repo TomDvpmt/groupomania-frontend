@@ -11,11 +11,19 @@ const io = new Server(server, {
     },
 });
 
+let allMessages = [];
+
 io.on("connection", (socket) => {
     console.log(`--- Nouvelle connexion WebSocket (user id : ${socket.id} ---`);
 
+    socket.on("sendMessagesFromDB", (messages) => {
+        allMessages = [...messages];
+        socket.emit("receiveAllMessages", allMessages);
+    });
+
     socket.on("sendMessage", (message) => {
-        socket.emit("receiveMessage", "test");
+        allMessages.push(message);
+        socket.broadcast.emit("receiveAllMessages", allMessages);
     });
 
     socket.on("disconnect", (socket) => {

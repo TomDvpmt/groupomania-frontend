@@ -7,7 +7,8 @@ import ChatPost from "../../components/ChatPost";
 import ErrorMessage from "../../components/ErrorMessage";
 
 import { pageUpdateLocation } from "../../services/features/page";
-import { chatSetFromDB } from "../../services/features/chat";
+// import { chatSetFromDB } from "../../services/features/chat";
+import { chatSetFromSocket } from "../../services/features/chat";
 import { selectAllChatMessages } from "../../services/utils/selectors";
 
 import { Box, Typography } from "@mui/material";
@@ -19,8 +20,6 @@ const Chat = () => {
     const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
-    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         dispatch(pageUpdateLocation("chat"));
@@ -37,7 +36,9 @@ const Chat = () => {
         })
             .then((response) => response.json())
             .then((data) => {
-                dispatch(chatSetFromDB(data));
+                console.log("sendMessagesFromDB");
+                socket.emit("sendMessagesFromDB", data);
+                // dispatch(chatSetFromDB(data));
             })
             .catch((error) => {
                 setErrorMessage("Impossible d'afficher les messages.");
@@ -49,12 +50,18 @@ const Chat = () => {
     const chatPosts = useSelector(selectAllChatMessages());
 
     const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
-    useEffect(() => {
-        socket.on("receiveMessage", (message) => {
-            console.log("message :", message);
-        });
-    }, [socket]);
+    // useEffect(() => {
+    //     socket.on("receiveAllMessages", (allMessages) => {
+    //         console.log("messages :", allMessages);
+    //         dispatch(chatSetFromSocket(allMessages));
+    //     });
+
+    //     return () => {
+    //         socket.off("receiveAllMessages");
+    //     };
+    // }, [dispatch, socket]);
 
     return (
         <Box

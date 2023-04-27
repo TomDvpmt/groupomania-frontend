@@ -18,6 +18,8 @@ import { theme } from "../../assets/styles/theme";
 
 import PropTypes from "prop-types";
 
+import { socket } from "../../socket";
+
 const ChatPost = ({ postIndex, post }) => {
     ChatPost.propTypes = {
         postIndex: PropTypes.number,
@@ -36,6 +38,23 @@ const ChatPost = ({ postIndex, post }) => {
     const authorIsAdmin = post.authorIsAdmin;
 
     const [errorMessage, setErrorMessage] = useState("");
+
+    const sendUpdatedChatPosts = () => {
+        fetch(`/API/chat/`, {
+            method: "GET",
+            headers: {
+                Authorization: `BEARER ${token}`,
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                socket.emit("sendUpdatedMessages", data);
+            })
+            .catch((error) => {
+                setErrorMessage("Impossible d'afficher les messages.");
+                console.log(error);
+            });
+    };
 
     const updatePost = (propertyName, property) => {
         const updatedValue = property === 0 ? 1 : 0;
@@ -65,6 +84,7 @@ const ChatPost = ({ postIndex, post }) => {
                                   alert: updatedValue,
                               })
                     );
+                    sendUpdatedChatPosts();
                     setErrorMessage("");
                 } else {
                     setErrorMessage("Impossible de mettre à jour le message.");
@@ -76,10 +96,12 @@ const ChatPost = ({ postIndex, post }) => {
     };
 
     const handleModerate = () => {
+        // sendUpdatedChatPosts();
         updatePost("moderation", moderation);
     };
 
     const handleAlert = () => {
+        // sendUpdatedChatPosts();
         updatePost("alert", alert);
     };
 

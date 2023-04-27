@@ -19,18 +19,28 @@ export const formatDate = (timestamp) => {
     return `Le ${rawDate.toLocaleDateString()} à ${hours}:${minutes}`;
 };
 
+/** Get a user's full name
+ *
+ * @param {Object} data
+ * @returns {String}
+ */
+
+export const getFullName = (data) => {
+    if (!data.firstName && !data.lastName) {
+        return data.email;
+    }
+    return `${data.firstName}${data.firstName && data.lastName && " "}${
+        data.lastName
+    }`;
+};
+
 /**
  * Set Redux's state.user
  * @param {String} token
  */
 
 export const setUserState = (token) => {
-    if (
-        token !== undefined &&
-        token !== null &&
-        token !== "null" &&
-        token !== ""
-    ) {
+    if (token && token !== "null") {
         getUserInfo(token)
             .then((data) => {
                 store.dispatch(userSetIsLoggedIn());

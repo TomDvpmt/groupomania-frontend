@@ -1,16 +1,19 @@
 import { Link as RouterLink } from "react-router-dom";
+
+import { getFullName } from "../../utils/utils";
+
 import { Typography, Link } from "@mui/material";
 
 const ChatUser = ({ user }) => {
-    const firstName = user.firstName || "";
-    const lastName = user.lastName || "";
-    const fullName =
-        firstName || lastName
-            ? `${firstName}${firstName && lastName ? " " : ""}${lastName}`
-            : `Anonyme (${user.email})`;
+    const fullName = getFullName(user);
+
     return (
         <Typography component="span">
-            <Link component={RouterLink} to={`/users/${user.id}`}>
+            <Link
+                component={RouterLink}
+                to={`/users/${user.id}`}
+                underline="none"
+            >
                 {fullName}
             </Link>
         </Typography>

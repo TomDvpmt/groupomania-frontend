@@ -12,6 +12,12 @@ export const theme = createTheme({
             // dark blue-grey
             main: "#4E5166",
         },
+        tertiary: {
+            // blue
+            main: "#07759F",
+            light: "#A8D7E9",
+            dark: "#034761",
+        },
         text: {
             main: "black",
             light: "#9395a3",

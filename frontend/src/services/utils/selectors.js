@@ -24,6 +24,10 @@ export const selectUserEmail = () => {
     return (state) => state.user.email;
 };
 
+export const selectUserHasJoinedChat = () => {
+    return (state) => state.user.hasJoinedChat;
+};
+
 // Posts & Comments
 
 export const selectPostsCount = () => {
@@ -57,7 +61,7 @@ export const selectChatLimit = () => {
     return (state) => state.chat.limit;
 };
 
-export const selectAllChatMessages = () => {
+export const selectChatAllMessages = () => {
     return (state) => state.chat.messages;
 };
 

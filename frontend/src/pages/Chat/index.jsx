@@ -7,17 +7,19 @@ import ChatPostForm from "../../components/Forms/ChatPostForm";
 import ChatPost from "../../components/ChatPost";
 import ErrorMessage from "../../components/ErrorMessage";
 
+import { userToggleHasJoinedChat } from "../../services/features/user";
 import { pageUpdateLocation } from "../../services/features/page";
 import {
-    selectAllChatMessages,
-    selectChatUsers,
     selectUserEmail,
     selectUserFirstName,
+    selectUserHasJoinedChat,
     selectUserId,
     selectUserLastName,
+    selectChatUsers,
+    selectChatAllMessages,
 } from "../../services/utils/selectors";
 
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
 
 import { socket } from "../../socket";
@@ -27,14 +29,15 @@ const Chat = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const chatUserData = {
+    const userData = {
         id: useSelector(selectUserId()),
         firstName: useSelector(selectUserFirstName()),
         lastName: useSelector(selectUserLastName()),
         email: useSelector(selectUserEmail()),
     };
-    const chatPosts = useSelector(selectAllChatMessages());
+    const chatPosts = useSelector(selectChatAllMessages());
     const chatUsers = useSelector(selectChatUsers());
+    const hasJoinedChat = useSelector(selectUserHasJoinedChat());
 
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -42,10 +45,19 @@ const Chat = () => {
         dispatch(pageUpdateLocation("chat"));
     }, [dispatch]);
 
+    const toggleChatConnection = () => {
+        dispatch(userToggleHasJoinedChat());
+    };
+
     useEffect(() => {
         socket.connect();
-        socket.emit("sendUserData", chatUserData);
     }, []);
+
+    useEffect(() => {
+        hasJoinedChat
+            ? socket.emit("joinChat", userData)
+            : socket.emit("leaveChat", userData);
+    }, [hasJoinedChat]);
 
     useEffect(() => {
         fetch(`/API/chat/`, {
@@ -56,7 +68,6 @@ const Chat = () => {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log("sends socket message to server");
                 socket.emit("sendMessagesFromDB", data);
             })
             .catch((error) => {
@@ -83,6 +94,12 @@ const Chat = () => {
             {errorMessage !== "" && (
                 <ErrorMessage errorMessage={errorMessage} />
             )}
+            <Button
+                variant={hasJoinedChat ? "outlined" : "contained"}
+                onClick={toggleChatConnection}
+            >
+                {hasJoinedChat ? "Se déconnecter" : "Se connecter"}
+            </Button>
             <Box
                 component="section"
                 sx={{
@@ -96,9 +113,9 @@ const Chat = () => {
                 }}
             >
                 <Box>
-                    <Typography>Utilisateurs connectés :</Typography>
+                    <Typography>Utilisateurs connectés&nbsp;:</Typography>
                 </Box>
-                <Box sx={{ display: "flex", gap: ".5rem" }}>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: ".5rem" }}>
                     {chatUsers.map((user, index) => (
                         <div key={user.id}>
                             <ChatUser user={user} />
@@ -133,9 +150,11 @@ const Chat = () => {
                     <p>Aucun message à afficher.</p>
                 )}
             </Box>
-            <Box component="section">
-                <ChatPostForm />
-            </Box>
+            {hasJoinedChat && (
+                <Box component="section">
+                    <ChatPostForm />
+                </Box>
+            )}
         </Box>
     );
 };

@@ -1,8 +1,4 @@
-import {
-    createAction,
-    createAsyncThunk,
-    createReducer,
-} from "@reduxjs/toolkit";
+import { createAction, createReducer } from "@reduxjs/toolkit";
 
 const initialState = {
     limit: 100, // if change, also change .env in backend !
@@ -16,6 +12,7 @@ export const chatAddMessage = createAction("chat/messages/add");
 export const chatModerate = createAction("chat/messages/moderate");
 export const chatAlert = createAction("chat/messages/alert");
 export const chatRemoveOldest = createAction("chat/messages/removeOldest");
+export const chatLogout = createAction("chat/logout");
 
 const chatReducer = createReducer(initialState, (builder) => {
     return builder
@@ -37,6 +34,9 @@ const chatReducer = createReducer(initialState, (builder) => {
         })
         .addCase(chatRemoveOldest, (draft, action) => {
             draft.messages.shift();
+        })
+        .addCase(chatLogout, (draft, action) => {
+            return initialState;
         });
 });
 

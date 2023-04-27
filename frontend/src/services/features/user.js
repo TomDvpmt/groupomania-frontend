@@ -7,6 +7,7 @@ const initialState = {
     firstName: "",
     lastName: "",
     email: "",
+    hasJoinedChat: false,
 };
 
 export const userSetIsLoggedIn = createAction("user/login");
@@ -14,6 +15,7 @@ export const userSetInfo = createAction("user/setInfo");
 export const userSetFirstName = createAction("user/setFirstName");
 export const userSetLastName = createAction("user/setLastName");
 export const userSetEmail = createAction("user/setEmail");
+export const userToggleHasJoinedChat = createAction("user/toggleHasJoinedChat");
 export const userLogOut = createAction("user/logOut");
 
 const userReducer = createReducer(initialState, (builder) => {
@@ -36,6 +38,9 @@ const userReducer = createReducer(initialState, (builder) => {
         })
         .addCase(userSetEmail, (draft, action) => {
             draft.email = action.payload;
+        })
+        .addCase(userToggleHasJoinedChat, (draft, action) => {
+            draft.hasJoinedChat = !draft.hasJoinedChat;
         })
         .addCase(userLogOut, (draft, action) => {
             return initialState;

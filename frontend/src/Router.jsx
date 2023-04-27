@@ -29,6 +29,27 @@ const RouterWrapper = () => {
 };
 
 const Router = () => {
+    // WebSocket
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        socket.on("receiveLoggedUsers", (users) => {
+            dispatch(chatSetUsersFromSocket(users));
+        });
+
+        socket.on("receiveAllMessages", (messages) => {
+            dispatch(chatSetMessagesFromSocket(messages));
+        });
+
+        return () => {
+            socket.off("receiveLoggedUsers");
+            socket.off("receiveAllMessages");
+        };
+    }, [dispatch]);
+
+    // Router
+
     const isLoggedIn = useSelector(selectUserIsLoggedIn());
 
     const router = createBrowserRouter([
@@ -62,23 +83,6 @@ const Router = () => {
             ],
         },
     ]);
-
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        socket.on("receiveLoggedUsers", (users) => {
-            dispatch(chatSetUsersFromSocket(users));
-        });
-
-        socket.on("receiveAllMessages", (messages) => {
-            dispatch(chatSetMessagesFromSocket(messages));
-        });
-
-        return () => {
-            socket.off("receiveLoggedUsers");
-            socket.off("receiveAllMessages");
-        };
-    }, [dispatch]);
 
     return <RouterProvider router={router} />;
 };

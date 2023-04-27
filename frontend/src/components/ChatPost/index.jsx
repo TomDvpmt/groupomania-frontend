@@ -11,6 +11,8 @@ import {
     selectChatMessageAlert,
 } from "../../services/utils/selectors";
 
+import { getFullName } from "../../utils/utils";
+
 import { Box, Typography, Button } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
 
@@ -29,12 +31,7 @@ const ChatPost = ({ postIndex, post }) => {
     const moderation = useSelector(selectChatMessageModeration(postIndex));
     const alert = useSelector(selectChatMessageAlert(postIndex));
 
-    const authorFullName =
-        post.firstName || post.lastName
-            ? `${post.firstName}${post.firstName && post.lastName ? " " : ""}${
-                  post.lastName
-              }`
-            : `Anonyme (${post.email})`;
+    const authorFullName = getFullName(post);
 
     const authorIsAdmin = post.authorIsAdmin;
 

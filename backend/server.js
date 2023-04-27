@@ -17,15 +17,26 @@ let loggedUsers = [];
 io.on("connection", (socket) => {
     console.log(`--- Nouvelle connexion WebSocket (user id : ${socket.id} ---`);
 
-    socket.on("sendUserData", (user) => {
+    // socket.on("sendUserData", (user) => {
+    //     user = { ...user, socketId: socket.id };
+    //     const isAlreadyLogged = loggedUsers.find((item) => item.id === user.id);
+    //     !isAlreadyLogged && loggedUsers.push(user);
+    //     io.emit("receiveLoggedUsers", loggedUsers);
+    // });
+
+    socket.on("joinChat", (user) => {
         user = { ...user, socketId: socket.id };
         const isAlreadyLogged = loggedUsers.find((item) => item.id === user.id);
         !isAlreadyLogged && loggedUsers.push(user);
         io.emit("receiveLoggedUsers", loggedUsers);
     });
 
+    socket.on("leaveChat", () => {
+        loggedUsers = loggedUsers.filter((user) => user.socketId !== socket.id);
+        io.emit("receiveLoggedUsers", loggedUsers);
+    });
+
     socket.on("sendMessagesFromDB", (messages) => {
-        console.log("receives socket message from client");
         allMessages = [...messages];
         socket.emit("receiveAllMessages", allMessages);
     });

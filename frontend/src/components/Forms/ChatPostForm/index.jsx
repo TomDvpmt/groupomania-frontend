@@ -13,7 +13,7 @@ import {
     selectUserAdminStatus,
     selectUserEmail,
     selectChatLimit,
-    selectAllChatMessages,
+    selectChatAllMessages,
 } from "../../../services/utils/selectors";
 
 import { imgMimeTypes, sanitize } from "../../../utils/formValidation";
@@ -27,7 +27,7 @@ const ChatPostForm = () => {
     const dispatch = useDispatch();
 
     const chatLimit = useSelector(selectChatLimit());
-    const chatPosts = useSelector(selectAllChatMessages());
+    const chatPosts = useSelector(selectChatAllMessages());
     const admin = useSelector(selectUserAdminStatus());
     const firstName = useSelector(selectUserFirstName());
     const lastName = useSelector(selectUserLastName());
@@ -123,7 +123,7 @@ const ChatPostForm = () => {
             encType="multipart/form-data"
         >
             <TextField
-                autoFocus={chatPosts.length === 0}
+                autoFocus
                 multiline
                 name="content"
                 id="content"

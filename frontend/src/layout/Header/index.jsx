@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import { userLogOut } from "../../services/features/user";
+import { chatLogout } from "../../services/features/chat";
 import {
     selectUserIsLoggedIn,
     selectUserId,
@@ -62,6 +63,7 @@ const Header = () => {
         setAnchorEl(null);
         sessionStorage.clear();
         dispatch(userLogOut());
+        dispatch(chatLogout());
         socket.disconnect();
         navigate("/login");
     };

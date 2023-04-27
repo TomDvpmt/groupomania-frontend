@@ -13,7 +13,10 @@ import Error404 from "./pages/Error404";
 
 import { selectUserIsLoggedIn } from "./services/utils/selectors";
 
-import { chatSetFromSocket } from "./services/features/chat";
+import {
+    chatSetUsersFromSocket,
+    chatSetMessagesFromSocket,
+} from "./services/features/chat";
 import { socket } from "./socket";
 
 const RouterWrapper = () => {
@@ -63,12 +66,16 @@ const Router = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
+        socket.on("receiveLoggedUsers", (users) => {
+            dispatch(chatSetUsersFromSocket(users));
+        });
+
         socket.on("receiveAllMessages", (messages) => {
-            console.log("messages :", messages);
-            dispatch(chatSetFromSocket(messages));
+            dispatch(chatSetMessagesFromSocket(messages));
         });
 
         return () => {
+            socket.off("receiveLoggedUsers");
             socket.off("receiveAllMessages");
         };
     }, [dispatch]);

@@ -20,6 +20,8 @@ import {
 import { Link, Box, Typography, Container } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
 
+import { socket } from "../../socket";
+
 const Login = () => {
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState("");
@@ -83,16 +85,19 @@ const Login = () => {
                                     lastName,
                                     email,
                                 }) => {
+                                    const userData = {
+                                        id: userId,
+                                        admin,
+                                        firstName,
+                                        lastName,
+                                        email,
+                                    };
                                     dispatch(userSetIsLoggedIn());
-                                    dispatch(
-                                        userSetInfo({
-                                            id: userId,
-                                            admin,
-                                            firstName,
-                                            lastName,
-                                            email,
-                                        })
-                                    );
+                                    dispatch(userSetInfo(userData));
+
+                                    // socket.connect();
+                                    // socket.emit("sendUserData", userData);
+
                                     sessionStorage.setItem("token", token);
                                     navigate("/");
                                 }

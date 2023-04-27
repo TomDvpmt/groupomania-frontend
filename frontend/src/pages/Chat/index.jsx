@@ -2,14 +2,20 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
+import ChatUser from "../../components/ChatUser";
 import ChatPostForm from "../../components/Forms/ChatPostForm";
 import ChatPost from "../../components/ChatPost";
 import ErrorMessage from "../../components/ErrorMessage";
 
 import { pageUpdateLocation } from "../../services/features/page";
-// import { chatSetFromDB } from "../../services/features/chat";
-import { chatSetFromSocket } from "../../services/features/chat";
-import { selectAllChatMessages } from "../../services/utils/selectors";
+import {
+    selectAllChatMessages,
+    selectChatUsers,
+    selectUserEmail,
+    selectUserFirstName,
+    selectUserId,
+    selectUserLastName,
+} from "../../services/utils/selectors";
 
 import { Box, Typography } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
@@ -21,13 +27,27 @@ const Chat = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const chatUserData = {
+        id: useSelector(selectUserId()),
+        firstName: useSelector(selectUserFirstName()),
+        lastName: useSelector(selectUserLastName()),
+        email: useSelector(selectUserEmail()),
+    };
+    const chatPosts = useSelector(selectAllChatMessages());
+    const chatUsers = useSelector(selectChatUsers());
+
+    const [errorMessage, setErrorMessage] = useState("");
+
     useEffect(() => {
         dispatch(pageUpdateLocation("chat"));
     }, [dispatch]);
 
     useEffect(() => {
-        setLoading(true);
+        socket.connect();
+        socket.emit("sendUserData", chatUserData);
+    }, []);
 
+    useEffect(() => {
         fetch(`/API/chat/`, {
             method: "GET",
             headers: {
@@ -36,32 +56,14 @@ const Chat = () => {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log("sendMessagesFromDB");
+                console.log("sends socket message to server");
                 socket.emit("sendMessagesFromDB", data);
-                // dispatch(chatSetFromDB(data));
             })
             .catch((error) => {
                 setErrorMessage("Impossible d'afficher les messages.");
                 console.log(error);
-            })
-            .finally(setLoading(false));
+            });
     }, [token, navigate, dispatch]);
-
-    const chatPosts = useSelector(selectAllChatMessages());
-
-    const [loading, setLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-
-    // useEffect(() => {
-    //     socket.on("receiveAllMessages", (allMessages) => {
-    //         console.log("messages :", allMessages);
-    //         dispatch(chatSetFromSocket(allMessages));
-    //     });
-
-    //     return () => {
-    //         socket.off("receiveAllMessages");
-    //     };
-    // }, [dispatch, socket]);
 
     return (
         <Box
@@ -89,9 +91,35 @@ const Chat = () => {
                     padding: 4,
                     border: "1px solid rgba(0, 0, 0, .27)",
                     borderRadius: "4px",
+                    display: "flex",
+                    gap: "1rem",
                 }}
             >
-                {!loading && chatPosts.length > 0 ? (
+                <Box>
+                    <Typography>Utilisateurs connectés :</Typography>
+                </Box>
+                <Box sx={{ display: "flex", gap: ".5rem" }}>
+                    {chatUsers.map((user, index) => (
+                        <div key={user.id}>
+                            <ChatUser user={user} />
+                            <Typography component="span">
+                                {index < chatUsers.length - 1 && ", "}
+                            </Typography>
+                        </div>
+                    ))}
+                </Box>
+            </Box>
+            <Box
+                component="section"
+                sx={{
+                    backgroundColor: "white",
+                    marginTop: 4,
+                    padding: 4,
+                    border: "1px solid rgba(0, 0, 0, .27)",
+                    borderRadius: "4px",
+                }}
+            >
+                {chatPosts.length > 0 ? (
                     chatPosts
                         .slice() // = copy of array, important in strict mode (else error, because original array is freezed (read only))
                         .map((post, index) => (

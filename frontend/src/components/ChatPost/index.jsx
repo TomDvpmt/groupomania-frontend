@@ -34,7 +34,7 @@ const ChatPost = ({ postIndex, post }) => {
             ? `${post.firstName}${post.firstName && post.lastName ? " " : ""}${
                   post.lastName
               }`
-            : "(Anonyme)";
+            : `Anonyme (${post.email})`;
 
     const authorIsAdmin = post.authorIsAdmin;
 

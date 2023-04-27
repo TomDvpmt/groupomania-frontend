@@ -12,11 +12,20 @@ const io = new Server(server, {
 });
 
 let allMessages = [];
+let loggedUsers = [];
 
 io.on("connection", (socket) => {
     console.log(`--- Nouvelle connexion WebSocket (user id : ${socket.id} ---`);
 
+    socket.on("sendUserData", (user) => {
+        user = { ...user, socketId: socket.id };
+        const isAlreadyLogged = loggedUsers.find((item) => item.id === user.id);
+        !isAlreadyLogged && loggedUsers.push(user);
+        io.emit("receiveLoggedUsers", loggedUsers);
+    });
+
     socket.on("sendMessagesFromDB", (messages) => {
+        console.log("receives socket message from client");
         allMessages = [...messages];
         socket.emit("receiveAllMessages", allMessages);
     });
@@ -26,7 +35,9 @@ io.on("connection", (socket) => {
         socket.broadcast.emit("receiveAllMessages", allMessages);
     });
 
-    socket.on("disconnect", (socket) => {
+    socket.on("disconnect", () => {
+        loggedUsers = loggedUsers.filter((user) => user.socketId !== socket.id);
+        io.emit("receiveLoggedUsers", loggedUsers);
         console.log(
             `--- Fin de connexion WebSocket (user id : ${socket.id} ---`
         );

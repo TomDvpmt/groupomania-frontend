@@ -26,6 +26,8 @@ import {
 import { Logout } from "@mui/icons-material";
 import { theme } from "../../assets/styles/theme";
 
+import { socket } from "../../socket";
+
 const Header = () => {
     const token = sessionStorage.getItem("token");
 
@@ -60,6 +62,7 @@ const Header = () => {
         setAnchorEl(null);
         sessionStorage.clear();
         dispatch(userLogOut());
+        socket.disconnect();
         navigate("/login");
     };
 

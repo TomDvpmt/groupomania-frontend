@@ -69,6 +69,10 @@ export const selectChatMessageAlert = (index) => {
     return (state) => state.chat.messages[index].alert;
 };
 
+export const selectChatUsers = () => {
+    return (state) => state.chat.users;
+};
+
 // Profile
 
 export const selectProfileFirstName = () => {

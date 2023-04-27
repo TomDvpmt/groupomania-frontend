@@ -11,6 +11,7 @@ import {
     selectUserFirstName,
     selectUserLastName,
     selectUserAdminStatus,
+    selectUserEmail,
     selectChatLimit,
     selectAllChatMessages,
 } from "../../../services/utils/selectors";
@@ -30,6 +31,7 @@ const ChatPostForm = () => {
     const admin = useSelector(selectUserAdminStatus());
     const firstName = useSelector(selectUserFirstName());
     const lastName = useSelector(selectUserLastName());
+    const email = useSelector(selectUserEmail());
 
     const [content, setContent] = useState("");
     const [chosenFile, setChosenFile] = useState("");
@@ -89,6 +91,7 @@ const ChatPostForm = () => {
                                 authorIsAdmin: admin,
                                 firstName,
                                 lastName,
+                                email,
                                 content: sanitizedContent,
                                 imgUrl: data.imgUrl || "",
                                 moderation: 0,
@@ -97,6 +100,7 @@ const ChatPostForm = () => {
                             };
 
                             dispatch(chatAddMessage(chatMessage));
+
                             socket.emit("sendMessage", chatMessage);
 
                             e.target.imageFile.value = "";

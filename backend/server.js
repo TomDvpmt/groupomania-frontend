@@ -24,11 +24,6 @@ io.on("connection", (socket) => {
         io.emit("receiveLoggedUsers", loggedUsers);
     });
 
-    socket.on("leaveChat", () => {
-        loggedUsers = loggedUsers.filter((user) => user.socketId !== socket.id);
-        io.emit("receiveLoggedUsers", loggedUsers);
-    });
-
     socket.on("sendMessagesFromDB", (messages) => {
         allMessages = [...messages];
         socket.emit("receiveAllMessages", allMessages);
@@ -41,8 +36,12 @@ io.on("connection", (socket) => {
 
     socket.on("sendUpdatedMessages", (messages) => {
         allMessages = [...messages];
-        // socket.emit("receiveAllMessages", allMessages);
         socket.broadcast.emit("receiveAllMessages", allMessages);
+    });
+
+    socket.on("leaveChat", () => {
+        loggedUsers = loggedUsers.filter((user) => user.socketId !== socket.id);
+        io.emit("receiveLoggedUsers", loggedUsers);
     });
 
     socket.on("disconnect", () => {
@@ -57,5 +56,3 @@ io.on("connection", (socket) => {
 server.listen(process.env.PORT || 3000);
 
 console.log(`Server running on port ${process.env.PORT || 3000}`);
-
-module.exports = server;

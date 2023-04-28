@@ -17,14 +17,6 @@ exports.getAllMessages = (req, res, config) => {
     const parentId = parseInt(req.params.parentId);
 
     connectToDb(getAllLabel)
-        .catch((error) => {
-            handleError(
-                res,
-                "Impossible de se connecter à la base de données.",
-                500,
-                error
-            );
-        })
         .then((connection) => {
             connection
                 .execute(
@@ -121,6 +113,14 @@ exports.getAllMessages = (req, res, config) => {
                         error
                     );
                 });
+        })
+        .catch((error) => {
+            handleError(
+                res,
+                "Impossible de se connecter à la base de données.",
+                500,
+                error
+            );
         });
 };
 
@@ -142,41 +142,37 @@ exports.createMessage = (req, res, config) => {
         ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
         : "";
     if (!req.file && !req.body.content) {
-        handleError(res, "Le message ne peut pas être vide.", 400);
-    } else {
-        connectToDb(createLabel)
-            .catch((error) => {
-                handleError(
-                    res,
-                    "Impossible de se connecter à la base de données.",
-                    500,
-                    error
-                );
-            })
-            .then((connection) => {
-                connection.execute(
-                    `
+        return res
+            .status(400)
+            .json({ message: "Le message ne peut pas être vide." });
+    }
+    connectToDb(createLabel)
+        .catch((error) => {
+            handleError(
+                res,
+                "Impossible de se connecter à la base de données.",
+                500,
+                error
+            );
+        })
+        .then((connection) => {
+            connection.execute(
+                `
                     INSERT INTO ${table} (parent_id, author_id, content, img_url, created_at)
                     VALUES (?, ?, ?, ?, ?)
                     `,
-                    [parentId, userId, content, imgUrl, createdAt]
-                );
-                close(connection);
-            })
-            .then(() => {
-                console.log("Message ajouté à la base de données.");
-                res.status(201).json({ imgUrl });
-            })
-            .catch((error) => {
-                handleError(
-                    res,
-                    "Impossible de publier le message.",
-                    400,
-                    error
-                );
-                process.exit(1);
-            });
-    }
+                [parentId, userId, content, imgUrl, createdAt]
+            );
+            close(connection);
+        })
+        .then(() => {
+            console.log("Message ajouté à la base de données.");
+            res.status(201).json({ imgUrl });
+        })
+        .catch((error) => {
+            handleError(res, "Impossible de publier le message.", 400, error);
+            process.exit(1);
+        });
 };
 
 /**
@@ -519,41 +515,87 @@ exports.likeMessage = (req, res, config) => {
                                         ? 0
                                         : prevDislikesCount;
 
-                                if (prevLikeValue === 0) {
-                                    newLikeValue = clickValue;
-                                    likesCount =
-                                        clickValue === 1
-                                            ? likesCount + 1
-                                            : likesCount;
-                                    dislikesCount =
-                                        clickValue === 1
-                                            ? dislikesCount
-                                            : dislikesCount - 1;
-                                } else if (prevLikeValue === clickValue) {
-                                    newLikeValue = 0;
-                                    likesCount =
-                                        clickValue === 1
-                                            ? likesCount - 1
-                                            : likesCount;
-                                    dislikesCount =
-                                        clickValue === 1
-                                            ? dislikesCount
-                                            : dislikesCount - 1;
-                                } else if (
-                                    prevLikeValue === 1 &&
-                                    clickValue === -1
-                                ) {
-                                    newLikeValue = -1;
-                                    likesCount = likesCount - 1;
-                                    dislikesCount = dislikesCount + 1;
-                                } else if (
-                                    prevLikeValue === -1 &&
-                                    clickValue === 1
-                                ) {
-                                    newLikeValue = 1;
-                                    likesCount = likesCount + 1;
-                                    dislikesCount = dislikesCount - 1;
+                                switch (prevLikeValue) {
+                                    case 0:
+                                        newLikeValue = clickValue;
+                                        likesCount =
+                                            clickValue === 1
+                                                ? likesCount + 1
+                                                : likesCount;
+                                        dislikesCount =
+                                            clickValue === 1
+                                                ? dislikesCount
+                                                : dislikesCount - 1;
+                                        break;
+
+                                    case clickValue:
+                                        newLikeValue = 0;
+                                        likesCount =
+                                            clickValue === 1
+                                                ? likesCount - 1
+                                                : likesCount;
+                                        dislikesCount =
+                                            clickValue === 1
+                                                ? dislikesCount
+                                                : dislikesCount - 1;
+                                        break;
+
+                                    case 1:
+                                        if (clickValue === -1) {
+                                            newLikeValue = -1;
+                                            likesCount = likesCount - 1;
+                                            dislikesCount = dislikesCount + 1;
+                                        }
+                                        break;
+
+                                    case -1:
+                                        if (clickValue === 1) {
+                                            newLikeValue = 1;
+                                            likesCount = likesCount + 1;
+                                            dislikesCount = dislikesCount - 1;
+                                        }
+                                        break;
+
+                                    default: {
+                                        return;
+                                    }
                                 }
+
+                                // if (prevLikeValue === 0) {
+                                //     newLikeValue = clickValue;
+                                //     likesCount =
+                                //         clickValue === 1
+                                //             ? likesCount + 1
+                                //             : likesCount;
+                                //     dislikesCount =
+                                //         clickValue === 1
+                                //             ? dislikesCount
+                                //             : dislikesCount - 1;
+                                // } else if (prevLikeValue === clickValue) {
+                                //     newLikeValue = 0;
+                                //     likesCount =
+                                //         clickValue === 1
+                                //             ? likesCount - 1
+                                //             : likesCount;
+                                //     dislikesCount =
+                                //         clickValue === 1
+                                //             ? dislikesCount
+                                //             : dislikesCount - 1;
+                                // } else if (
+                                //     prevLikeValue === 1 &&
+                                //     clickValue === -1
+                                // ) {
+                                //     newLikeValue = -1;
+                                //     likesCount = likesCount - 1;
+                                //     dislikesCount = dislikesCount + 1;
+                                // } else if (
+                                //     prevLikeValue === -1 &&
+                                //     clickValue === 1
+                                // ) {
+                                //     newLikeValue = 1;
+                                //     likesCount = likesCount + 1;
+                                //     dislikesCount = dislikesCount - 1;
+                                // }
 
                                 if (newLikeValue === 0) {
                                     connection

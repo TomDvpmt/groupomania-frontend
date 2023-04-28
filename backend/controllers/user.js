@@ -74,25 +74,25 @@ exports.signUp = async (req, res, next) => {
                     logAfterSignUp(connection, email, res);
                 })
                 .catch((error) => {
-                    console.log(
-                        "========= Impossible de créer l'utilisateur :",
+                    close(connection);
+                    handleError(
+                        res,
+                        error.code === "ER_DUP_ENTRY"
+                            ? "Cet email est déjà utilisé, veuillez en choisir un autre."
+                            : "Impossible de créer l'utilisateur.",
+                        400,
                         error
                     );
-                    if (error.code === "ER_DUP_ENTRY") {
-                        close(connection);
-                        return res.status(400).json({
-                            message:
-                                "Cet email est déjà utilisé, veuillez en choisir un autre.",
-                        });
-                    }
                 });
         })
-        .catch((error) =>
-            console.error(
-                "Impossible de se connecter à la base de données :",
+        .catch((error) => {
+            handleError(
+                res,
+                "Impossible de se connecter à la base de données.",
+                500,
                 error
-            )
-        );
+            );
+        });
 };
 
 /** Logs the user in
@@ -119,68 +119,66 @@ exports.login = (req, res, next) => {
                 .then(([rows]) => {
                     const count = rows[0].count;
 
-                    if (count === 1) {
-                        connection
-                            .execute(
-                                `
+                    if (count !== 1) {
+                        throw new Error();
+                    }
+
+                    connection
+                        .execute(
+                            `
                             SELECT id, admin, first_name, last_name, password_hash, admin
                             FROM users
                             WHERE email = ?
                         `,
-                                [email]
-                            )
-                            .then(([rows]) => {
-                                const userId = rows[0].id;
-                                const admin = rows[0].admin;
-                                const firstName = rows[0].first_name;
-                                const lastName = rows[0].last_name;
-                                const passwordHash = rows[0].password_hash;
-                                bcrypt
-                                    .compare(password, passwordHash)
-                                    .then((isValidPassword) => {
-                                        if (!isValidPassword) {
-                                            throw new Error();
-                                        } else {
-                                            close(connection);
-                                            res.status(200).json({
-                                                token: jwt.sign(
-                                                    { userId, admin },
-                                                    process.env
-                                                        .TOKEN_CREATION_PHRASE
-                                                ),
-                                                userId,
-                                                admin,
-                                                firstName,
-                                                lastName,
-                                                email,
-                                            });
-                                            console.log(
-                                                "======== Utilisateur connecté à l'application. =========="
-                                            );
-                                        }
-                                    })
-                                    .catch((error) => {
-                                        close(connection);
-                                        handleError(
-                                            res,
-                                            "Email ou mot de passe invalide.",
-                                            401,
-                                            error
-                                        );
+                            [email]
+                        )
+                        .then(([rows]) => {
+                            const userId = rows[0].id;
+                            const admin = rows[0].admin;
+                            const firstName = rows[0].first_name;
+                            const lastName = rows[0].last_name;
+                            const passwordHash = rows[0].password_hash;
+                            bcrypt
+                                .compare(password, passwordHash)
+                                .then((isValidPassword) => {
+                                    if (!isValidPassword) {
+                                        throw new Error();
+                                    }
+                                    close(connection);
+                                    res.status(200).json({
+                                        token: jwt.sign(
+                                            { userId, admin },
+                                            process.env.TOKEN_CREATION_PHRASE
+                                        ),
+                                        userId,
+                                        admin,
+                                        firstName,
+                                        lastName,
+                                        email,
                                     });
-                            })
-                            .catch(() => {
-                                close(connection);
-                                handleError(
-                                    res,
-                                    "Connexion à l'application impossible.",
-                                    400,
-                                    error
-                                );
-                            });
-                    } else {
-                        throw new Error();
-                    }
+                                    console.log(
+                                        "======== Utilisateur connecté à l'application. =========="
+                                    );
+                                })
+                                .catch((error) => {
+                                    close(connection);
+                                    handleError(
+                                        res,
+                                        "Email ou mot de passe invalide.",
+                                        401,
+                                        error
+                                    );
+                                });
+                        })
+                        .catch(() => {
+                            close(connection);
+                            handleError(
+                                res,
+                                "Connexion à l'application impossible.",
+                                400,
+                                error
+                            );
+                        });
                 })
                 .catch((error) => {
                     close(connection);
@@ -192,12 +190,14 @@ exports.login = (req, res, next) => {
                     );
                 });
         })
-        .catch((error) =>
-            console.error(
-                "=========== Impossible de se connecter à la base de données :",
+        .catch((error) => {
+            handleError(
+                res,
+                "Impossible de se connecter à la base de données.",
+                500,
                 error
-            )
-        );
+            );
+        });
 };
 
 /** Gets a user's info
@@ -227,17 +227,16 @@ exports.getOneUser = async (req, res, next) => {
         );
         close(connection);
         if (rows.length === 0) {
-            return res.status(404).json({ message: "Page introuvable." });
-        } else {
-            return res.status(200).json({
-                id: rows[0].id,
-                admin: rows[0].admin,
-                firstName: rows[0].first_name ? rows[0].first_name : "",
-                lastName: rows[0].last_name ? rows[0].last_name : "",
-                email: rows[0].email,
-                modifiable: modifiable,
-            });
+            handleError(res, "Page introuvable.", 404, error);
         }
+        return res.status(200).json({
+            id: rows[0].id,
+            admin: rows[0].admin,
+            firstName: rows[0].first_name ? rows[0].first_name : "",
+            lastName: rows[0].last_name ? rows[0].last_name : "",
+            email: rows[0].email,
+            modifiable: modifiable,
+        });
     } catch (error) {
         handleError(res, "Impossible d'afficher les informations.", 400, error);
     }
@@ -257,30 +256,29 @@ exports.updateUser = async (req, res, next) => {
     const email = req.body.email;
 
     if (!req.auth.admin && paramUserId !== loggedUserId) {
-        return res.status(401).json({ message: "Non autorisé" });
-    } else {
-        const connection = await connectToDb("updateUser");
+        handleError(res, "Non autorisé.", 401, error);
+    }
+    const connection = await connectToDb("updateUser");
 
-        try {
-            connection.execute(
-                `
+    try {
+        connection.execute(
+            `
                 UPDATE users
                 SET first_name = ?, last_name = ?, email = ?
                 WHERE id = ?
             `,
-                [firstName, lastName, email, paramUserId]
-            );
+            [firstName, lastName, email, paramUserId]
+        );
 
-            close(connection);
-            return res.status(200).json({ firstName, lastName, email });
-        } catch (error) {
-            handleError(
-                res,
-                "Impossible de mettre à jour l'utilisateur.",
-                400,
-                error
-            );
-        }
+        close(connection);
+        return res.status(200).json({ firstName, lastName, email });
+    } catch (error) {
+        handleError(
+            res,
+            "Impossible de mettre à jour l'utilisateur.",
+            400,
+            error
+        );
     }
 };
 
@@ -295,28 +293,22 @@ exports.deleteUser = async (req, res, next) => {
     const loggedUserId = req.auth.userId;
 
     if (!req.auth.admin && paramUserId !== loggedUserId) {
-        return res.status(401).json({ message: "Non autorisé" });
-    } else {
-        const connection = await connectToDb("deleteUser");
-        try {
-            connection.execute(
-                `
+        handleError(res, "Non autorisé.", 401, error);
+    }
+    const connection = await connectToDb("deleteUser");
+    try {
+        connection.execute(
+            `
                 DELETE from users
                 WHERE id = ?
             `,
-                [paramUserId]
-            );
+            [paramUserId]
+        );
 
-            close(connection);
-            return res.status(200).json({ message: "Utilisateur supprimé." });
-        } catch (error) {
-            close(connection);
-            handleError(
-                res,
-                "Impossible de supprimer l'utilisateur.",
-                400,
-                error
-            );
-        }
+        close(connection);
+        return res.status(200).json({ message: "Utilisateur supprimé." });
+    } catch (error) {
+        close(connection);
+        handleError(res, "Impossible de supprimer l'utilisateur.", 400, error);
     }
 };

@@ -47,7 +47,7 @@ const Profile = () => {
     const [showValidationMessage, setShowValidationMessage] = useState(false);
     const [showAlert, setShowAlert] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const userId = userIsAuthor ? loggedUserId : postAuthorId;
 
@@ -69,7 +69,6 @@ const Profile = () => {
     }, [showUserUpdateForm]);
 
     useEffect(() => {
-        setLoading(true);
         fetch(`/API/auth/${userId}`, {
             method: "GET",
             headers: {

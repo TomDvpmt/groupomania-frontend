@@ -11,6 +11,8 @@ import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
 import Error404 from "./pages/Error404";
 
+import Test from "./pages/Test";
+
 import { selectUserIsLoggedIn } from "./services/utils/selectors";
 
 import {
@@ -79,6 +81,10 @@ const Router = () => {
                 {
                     path: "*",
                     element: <Error404 />,
+                },
+                {
+                    path: "/test",
+                    element: <Test />,
                 },
             ],
         },

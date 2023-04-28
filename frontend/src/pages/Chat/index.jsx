@@ -6,6 +6,7 @@ import ChatUser from "../../components/ChatUser";
 import ChatPostForm from "../../components/Forms/ChatPostForm";
 import ChatPost from "../../components/ChatPost";
 import ErrorMessage from "../../components/ErrorMessage";
+import Loader from "../../components/Loader";
 
 import { userToggleHasJoinedChat } from "../../services/features/user";
 import { pageUpdateLocation } from "../../services/features/page";
@@ -39,6 +40,7 @@ const Chat = () => {
     const chatUsers = useSelector(selectChatUsers());
     const hasJoinedChat = useSelector(selectUserHasJoinedChat());
 
+    const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
@@ -73,6 +75,9 @@ const Chat = () => {
             .catch((error) => {
                 setErrorMessage("Impossible d'afficher les messages.");
                 console.log(error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }, [token, navigate, dispatch]);
 
@@ -126,30 +131,34 @@ const Chat = () => {
                     ))}
                 </Box>
             </Box>
-            <Box
-                component="section"
-                sx={{
-                    backgroundColor: "white",
-                    marginTop: 4,
-                    padding: 4,
-                    border: "1px solid rgba(0, 0, 0, .27)",
-                    borderRadius: "4px",
-                }}
-            >
-                {chatPosts.length > 0 ? (
-                    chatPosts
-                        .slice() // = copy of array, important in strict mode (else error, because original array is freezed (read only))
-                        .map((post, index) => (
-                            <ChatPost
-                                key={index}
-                                postIndex={index}
-                                post={post}
-                            />
-                        ))
-                ) : (
-                    <p>Aucun message à afficher.</p>
-                )}
-            </Box>
+            {loading ? (
+                <Loader />
+            ) : (
+                <Box
+                    component="section"
+                    sx={{
+                        backgroundColor: "white",
+                        marginTop: 4,
+                        padding: 4,
+                        border: "1px solid rgba(0, 0, 0, .27)",
+                        borderRadius: "4px",
+                    }}
+                >
+                    {chatPosts.length > 0 ? (
+                        chatPosts
+                            .slice() // = copy of array, important in strict mode (else error, because original array is freezed (read only))
+                            .map((post, index) => (
+                                <ChatPost
+                                    key={index}
+                                    postIndex={index}
+                                    post={post}
+                                />
+                            ))
+                    ) : (
+                        <p>Aucun message à afficher.</p>
+                    )}
+                </Box>
+            )}
             {hasJoinedChat && (
                 <Box component="section">
                     <ChatPostForm />

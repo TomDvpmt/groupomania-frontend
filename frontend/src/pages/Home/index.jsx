@@ -23,15 +23,13 @@ const Home = () => {
     const [hasNewPosts, setHasNewPosts] = useState(0);
     const [showNewPostForm, setShowNewPostForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         dispatch(pageUpdateLocation("home"));
     }, [dispatch]);
 
     useEffect(() => {
-        setLoading(true);
-
         fetch(`/API/posts/all/0`, {
             method: "GET",
             headers: {
@@ -85,45 +83,46 @@ const Home = () => {
 
     return (
         <>
-            <Box
-                component="main"
-                maxWidth={theme.maxWidth.desktop}
-                margin="auto"
-                padding="2rem .5rem"
-            >
-                <Typography
-                    component="h2"
-                    variant="h4"
-                    align="center"
-                    margin="2rem 0 4rem"
-                >
-                    Forum
-                </Typography>
+            {loading ? (
+                <Loader />
+            ) : (
                 <Box
-                    component="section"
-                    sx={{
-                        marginTop: 4,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "stretch",
-                    }}
+                    component="main"
+                    maxWidth={theme.maxWidth.desktop}
+                    margin="auto"
+                    padding="2rem .5rem"
                 >
-                    <PostNewMessageButton
-                        showNewPostForm={showNewPostForm}
-                        setShowNewPostForm={setShowNewPostForm}
-                    />
-                    <Collapse in={showNewPostForm}>
-                        <CreateMessageForm
-                            isReply={false}
-                            parentId={0}
-                            setHasNewMessages={setHasNewPosts}
-                            setShowNewMessageForm={setShowNewPostForm}
+                    <Typography
+                        component="h2"
+                        variant="h4"
+                        align="center"
+                        margin="2rem 0 4rem"
+                    >
+                        Forum
+                    </Typography>
+                    <Box
+                        component="section"
+                        sx={{
+                            marginTop: 4,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "stretch",
+                        }}
+                    >
+                        <PostNewMessageButton
+                            showNewPostForm={showNewPostForm}
+                            setShowNewPostForm={setShowNewPostForm}
                         />
-                    </Collapse>
-                </Box>
-                {loading ? (
-                    <Loader />
-                ) : (
+                        <Collapse in={showNewPostForm}>
+                            <CreateMessageForm
+                                isReply={false}
+                                parentId={0}
+                                setHasNewMessages={setHasNewPosts}
+                                setShowNewMessageForm={setShowNewPostForm}
+                            />
+                        </Collapse>
+                    </Box>
+
                     <Box
                         component="section"
                         sx={{
@@ -131,35 +130,12 @@ const Home = () => {
                         }}
                     >
                         {posts}
-                        {/* {posts.map((post, index) => (
-                            <Post
-                                key={post.id}
-                                postIndex={index}
-                                postData={{
-                                    id: post.id,
-                                    parentId: 0,
-                                    authorId: post.authorId,
-                                    authorFirstName: post.firstName,
-                                    authorLastName: post.lastName,
-                                    authorIsAdmin: post.authorIsAdmin,
-                                    authorEmail: post.email,
-                                    imgUrl: post.imgUrl,
-                                    content: post.content,
-                                    date: post.date,
-                                    modified: post.modified,
-                                    likes: post.likes,
-                                    dislikes: post.dislikes,
-                                }}
-                                currentUserLikeValue={post.currentUserLikeValue}
-                                setHasNewPosts={setHasNewPosts}
-                            />
-                        ))} */}
                         {errorMessage && (
                             <ErrorMessage errorMessage={errorMessage} />
                         )}
                     </Box>
-                )}
-            </Box>
+                </Box>
+            )}
         </>
     );
 };

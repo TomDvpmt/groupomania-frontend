@@ -561,42 +561,6 @@ exports.likeMessage = (req, res, config) => {
                                     }
                                 }
 
-                                // if (prevLikeValue === 0) {
-                                //     newLikeValue = clickValue;
-                                //     likesCount =
-                                //         clickValue === 1
-                                //             ? likesCount + 1
-                                //             : likesCount;
-                                //     dislikesCount =
-                                //         clickValue === 1
-                                //             ? dislikesCount
-                                //             : dislikesCount - 1;
-                                // } else if (prevLikeValue === clickValue) {
-                                //     newLikeValue = 0;
-                                //     likesCount =
-                                //         clickValue === 1
-                                //             ? likesCount - 1
-                                //             : likesCount;
-                                //     dislikesCount =
-                                //         clickValue === 1
-                                //             ? dislikesCount
-                                //             : dislikesCount - 1;
-                                // } else if (
-                                //     prevLikeValue === 1 &&
-                                //     clickValue === -1
-                                // ) {
-                                //     newLikeValue = -1;
-                                //     likesCount = likesCount - 1;
-                                //     dislikesCount = dislikesCount + 1;
-                                // } else if (
-                                //     prevLikeValue === -1 &&
-                                //     clickValue === 1
-                                // ) {
-                                //     newLikeValue = 1;
-                                //     likesCount = likesCount + 1;
-                                //     dislikesCount = dislikesCount - 1;
-                                // }
-
                                 if (newLikeValue === 0) {
                                     connection
                                         .execute(

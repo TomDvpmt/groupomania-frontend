@@ -27,10 +27,9 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
     const [hasNewComments, setHasNewComments] = useState(0);
     const [commentsNumber, setCommentsNumber] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setLoading(true);
         fetch(`/API/comments/all/${parentId}`, {
             method: "GET",
             headers: {

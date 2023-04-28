@@ -100,7 +100,7 @@ const Comment = ({ commentData, currentUserLikeValue, setHasNewComments }) => {
                     }
                     titleTypographyProps={{
                         fontSize: "1rem",
-                        component: "h5",
+                        component: "h4",
                         variant: "h6",
                         fontWeight: "bold",
                     }}

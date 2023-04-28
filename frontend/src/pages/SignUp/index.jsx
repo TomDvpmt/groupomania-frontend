@@ -53,14 +53,14 @@ const SignUp = () => {
                 "firstName",
                 firstName,
                 "",
-                "Format de prénom invalide.",
+                "Le prénom ne peut inclure que des lettres, espaces et apostrophes.",
                 setFirstNameError,
             ],
             [
                 "lastName",
                 lastName,
                 "",
-                "Format de nom invalide",
+                "Le nom ne peut inclure que des lettres, espaces et apostrophes.",
                 setLastNameError,
             ],
             [
@@ -74,7 +74,7 @@ const SignUp = () => {
                 "password",
                 password,
                 "Mot de passe requis.",
-                "Le mot de passe doit comporter au moins 4 charactères.",
+                "Le mot de passe doit comporter au moins 4 caractères.",
                 setPasswordError,
             ],
         ]);

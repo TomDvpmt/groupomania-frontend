@@ -109,7 +109,7 @@ const Comments = ({ parentId, showCommentForm, setShowCommentForm }) => {
                         },
                     }}
                 >
-                    <Typography component="h4" variant="h5" mt={3} mb={2}>
+                    <Typography component="h3" variant="h5" mt={3} mb={2}>
                         {commentsNumber} commentaire
                         {commentsNumber > 1 ? "s" : ""} :{" "}
                     </Typography>

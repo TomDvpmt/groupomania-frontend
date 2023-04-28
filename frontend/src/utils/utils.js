@@ -34,8 +34,8 @@ export const getFullName = (data) => {
     }`;
 };
 
-/**
- * Set Redux's state.user
+/** Set Redux's state.user
+ *
  * @param {String} token
  */
 

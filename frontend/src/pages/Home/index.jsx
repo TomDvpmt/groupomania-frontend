@@ -41,11 +41,16 @@ const Home = () => {
                     sessionStorage.removeItem("token");
                     console.error("Non autorisé.");
                     navigate("/login");
-                } else return response.json();
+                }
+                return response.json();
             })
             .then((data) => {
                 if (data.results.length === 0) {
-                    return <p>Aucun message à afficher.</p>;
+                    return (
+                        <Typography paragraph>
+                            Aucun message n'a encore été posté.
+                        </Typography>
+                    );
                 } else {
                     dispatch(postsSetFromDB(data.results));
                     return data.results.map((result, index) => (
@@ -93,7 +98,7 @@ const Home = () => {
                     padding="2rem .5rem"
                 >
                     <Typography
-                        component="h2"
+                        component="h1"
                         variant="h4"
                         align="center"
                         margin="2rem 0 4rem"

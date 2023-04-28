@@ -96,12 +96,10 @@ const ChatPost = ({ postIndex, post }) => {
     };
 
     const handleModerate = () => {
-        // sendUpdatedChatPosts();
         updatePost("moderation", moderation);
     };
 
     const handleAlert = () => {
-        // sendUpdatedChatPosts();
         updatePost("alert", alert);
     };
 

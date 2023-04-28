@@ -112,7 +112,7 @@ const Post = ({
                     )
                 }
                 titleTypographyProps={{
-                    component: "h3",
+                    component: "h2",
                     variant: "h6",
                     fontWeight: "bold",
                     fontSize: "1rem",

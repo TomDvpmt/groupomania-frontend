@@ -57,50 +57,47 @@ const Login = () => {
 
         if (hasErrors || password === "") {
             return;
-        } else {
-            const loginData = {
-                email: email,
-                password: password,
-            };
+        }
+        const loginData = {
+            email: email,
+            password: password,
+        };
 
-            fetchCredentials("login", loginData)
-                .then((response) => {
-                    if (response.status >= 400) {
-                        response
-                            .json()
-                            .then(({ message }) =>
-                                setGlobalErrorMessage(message)
-                            );
-                    } else {
-                        response
-                            .json()
-                            .then(
-                                ({
-                                    token,
-                                    userId,
+        fetchCredentials("login", loginData)
+            .then((response) => {
+                if (response.status >= 400) {
+                    response.json().then(({ message }) => {
+                        setGlobalErrorMessage(message);
+                    });
+                } else {
+                    response
+                        .json()
+                        .then(
+                            ({
+                                token,
+                                userId,
+                                admin,
+                                firstName,
+                                lastName,
+                                email,
+                            }) => {
+                                const userData = {
+                                    id: userId,
                                     admin,
                                     firstName,
                                     lastName,
                                     email,
-                                }) => {
-                                    const userData = {
-                                        id: userId,
-                                        admin,
-                                        firstName,
-                                        lastName,
-                                        email,
-                                    };
-                                    dispatch(userSetIsLoggedIn());
-                                    dispatch(userSetInfo(userData));
+                                };
+                                dispatch(userSetIsLoggedIn());
+                                dispatch(userSetInfo(userData));
 
-                                    sessionStorage.setItem("token", token);
-                                    navigate("/");
-                                }
-                            );
-                    }
-                })
-                .catch((error) => console.log(error));
-        }
+                                sessionStorage.setItem("token", token);
+                                navigate("/");
+                            }
+                        );
+                }
+            })
+            .catch((error) => console.log(error));
     };
 
     return (

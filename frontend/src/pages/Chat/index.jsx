@@ -89,7 +89,7 @@ const Chat = () => {
             padding="2rem .5rem"
         >
             <Typography
-                component="h2"
+                component="h1"
                 variant="h4"
                 align="center"
                 margin="2rem 0 4rem"

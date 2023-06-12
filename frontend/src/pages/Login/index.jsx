@@ -17,7 +17,7 @@ import {
     checkInputErrors,
 } from "../../utils/formValidation";
 
-import { Link, Box, Typography, Container } from "@mui/material";
+import { Link, Box, Typography, Container, Button } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
 
 const Login = () => {
@@ -53,15 +53,31 @@ const Login = () => {
         password === "" && setPasswordError("Mot de passe requis.");
 
         const hasErrors = checkInputErrors(inputFields);
-        hasErrors && setInputErrorMessages(inputFields);
 
-        if (hasErrors || password === "") {
-            return;
+        if (e.target.id !== "demo1" && e.target.id !== "demo2") {
+            hasErrors && setInputErrorMessages(inputFields);
+
+            if (hasErrors || password === "") {
+                return;
+            }
         }
-        const loginData = {
+        let loginData = {
             email: email,
             password: password,
         };
+
+        if (e.target.id === "demo1") {
+            loginData = {
+                email: "demo_user@gmail.com",
+                password: "password",
+            };
+        }
+        if (e.target.id === "demo2") {
+            loginData = {
+                email: "demo2_user@gmail.com",
+                password: "password",
+            };
+        }
 
         fetchCredentials("login", loginData)
             .then((response) => {
@@ -141,6 +157,27 @@ const Login = () => {
                     <Link component={RouterLink} to="/signup" variant="body2">
                         Créer un compte
                     </Link>
+                </Box>
+                <Box
+                    mt="2rem"
+                    display="flex"
+                    justifyContent="center"
+                    gap="1rem"
+                >
+                    <Button
+                        id="demo1"
+                        variant="contained"
+                        onClick={handleSubmit}
+                    >
+                        Demo user 1
+                    </Button>
+                    <Button
+                        id="demo2"
+                        variant="contained"
+                        onClick={handleSubmit}
+                    >
+                        Demo user 2
+                    </Button>
                 </Box>
             </Box>
         </Container>

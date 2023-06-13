@@ -52,6 +52,7 @@ export const theme = createTheme({
     // Custom properties
     maxWidth: {
         desktop: 800,
+        form: "600px",
     },
     form: {
         margin: "1rem .5rem",

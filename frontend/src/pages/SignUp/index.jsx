@@ -119,7 +119,7 @@ const SignUp = () => {
 
     return (
         <Container component="main" maxWidth="xs">
-            <Box sx={theme.form}>
+            <Box pb="4rem" sx={theme.form}>
                 <Typography component="h1" variant="h4" mt={4} mb={2}>
                     Créer un compte
                 </Typography>
@@ -190,9 +190,15 @@ const SignUp = () => {
                         </Typography>
                     )}
                     <SubmitButton text="S'enregistrer" />
-                    <Link component={RouterLink} to="/login" variant="body2">
-                        Déjà un compte ? S'identifier
-                    </Link>
+                    <Box display="flex" justifyContent="flex-end">
+                        <Link
+                            component={RouterLink}
+                            to="/login"
+                            variant="body2"
+                        >
+                            Déjà un compte ? S'identifier
+                        </Link>
+                    </Box>
                 </Box>
             </Box>
         </Container>

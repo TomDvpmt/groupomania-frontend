@@ -139,7 +139,7 @@ const Chat = () => {
                     sx={{
                         backgroundColor: "white",
                         marginTop: 4,
-                        padding: 4,
+                        padding: { xs: 1, sm: 2, md: 3, lg: 4 },
                         border: "1px solid rgba(0, 0, 0, .27)",
                         borderRadius: "4px",
                     }}

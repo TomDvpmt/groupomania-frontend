@@ -118,10 +118,33 @@ const Login = () => {
 
     return (
         <Container component="main" maxWidth="xs">
-            <Box sx={theme.form}>
+            <Box pb="4rem" sx={theme.form}>
                 <Typography variant="h4" component="h1" mt={4}>
                     Connexion
                 </Typography>
+                <Box
+                    m="4rem 0 3rem"
+                    display="flex"
+                    justifyContent="center"
+                    gap="1rem"
+                >
+                    <Button
+                        id="demo1"
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleSubmit}
+                    >
+                        Utilisateur démo 1
+                    </Button>
+                    <Button
+                        id="demo2"
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleSubmit}
+                    >
+                        Utilisateur démo 2
+                    </Button>
+                </Box>
                 <Box
                     component="form"
                     noValidate
@@ -154,30 +177,15 @@ const Login = () => {
                         <Typography color="red">{passwordError}</Typography>
                     )}
                     <SubmitButton text="Se connecter" />
-                    <Link component={RouterLink} to="/signup" variant="body2">
-                        Créer un compte
-                    </Link>
-                </Box>
-                <Box
-                    mt="2rem"
-                    display="flex"
-                    justifyContent="center"
-                    gap="1rem"
-                >
-                    <Button
-                        id="demo1"
-                        variant="contained"
-                        onClick={handleSubmit}
-                    >
-                        Demo user 1
-                    </Button>
-                    <Button
-                        id="demo2"
-                        variant="contained"
-                        onClick={handleSubmit}
-                    >
-                        Demo user 2
-                    </Button>
+                    <Box display="flex" justifyContent="flex-end">
+                        <Link
+                            component={RouterLink}
+                            to="/signup"
+                            variant="body2"
+                        >
+                            Créer un compte
+                        </Link>
+                    </Box>
                 </Box>
             </Box>
         </Container>

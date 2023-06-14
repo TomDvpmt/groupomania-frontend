@@ -1,7 +1,12 @@
 import React from "react";
 import { useEffect } from "react";
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import {
+    createBrowserRouter,
+    RouterProvider,
+    Outlet,
+    redirect,
+} from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import Header from "./layout/Header";
 import Login from "./pages/Login";
@@ -10,8 +15,6 @@ import Home from "./pages/Home";
 import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
 import Error404 from "./pages/Error404";
-
-import { selectUserIsLoggedIn } from "./services/utils/selectors";
 
 import {
     chatSetUsersFromSocket,
@@ -33,6 +36,14 @@ const Router = () => {
 
     const dispatch = useDispatch();
 
+    const privateRouteLoader = () => {
+        const token = sessionStorage.getItem("token");
+        if (!token) {
+            return redirect("/login");
+        }
+        return null;
+    };
+
     useEffect(() => {
         socket.on("receiveLoggedUsers", (users) => {
             dispatch(chatSetUsersFromSocket(users));
@@ -49,16 +60,14 @@ const Router = () => {
     }, [dispatch]);
 
     // Router
-
-    const isLoggedIn = useSelector(selectUserIsLoggedIn());
-
     const router = createBrowserRouter([
         {
             element: <RouterWrapper />,
             children: [
                 {
                     path: "/",
-                    element: isLoggedIn ? <Home /> : <Login />,
+                    element: <Home />,
+                    loader: () => privateRouteLoader(),
                 },
                 {
                     path: "/login",
@@ -70,11 +79,13 @@ const Router = () => {
                 },
                 {
                     path: "/users/:userId",
-                    element: isLoggedIn ? <Profile /> : <Login />,
+                    element: <Profile />,
+                    loader: () => privateRouteLoader(),
                 },
                 {
                     path: "/chat",
-                    element: isLoggedIn ? <Chat /> : <Login />,
+                    element: <Chat />,
+                    loader: () => privateRouteLoader(),
                 },
                 {
                     path: "*",

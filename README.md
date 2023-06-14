@@ -89,3 +89,10 @@ CHAT_POSTS_LIMIT=100
 -   Dans le répertoire `frontend`, exécuter la commande :
 
 `npm start`
+
+# Configuration
+
+Pour changer le nombre maximum de messages affichés dans le chat :
+
+-   dans le fichier `backend/.env`, changer la valeur de `CHAT_POSTS_LIMIT`,
+-   dans le fichier `frontend/src/services/features/chat.js`, changer la valeur de `initialState.limit`

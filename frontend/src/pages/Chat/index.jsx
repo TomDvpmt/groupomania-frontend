@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -9,7 +9,6 @@ import ErrorMessage from "../../components/ErrorMessage";
 import Loader from "../../components/Loader";
 
 import { userToggleHasJoinedChat } from "../../services/features/user";
-import { pageUpdateLocation } from "../../services/features/page";
 import {
     selectUserEmail,
     selectUserFirstName,
@@ -30,22 +29,27 @@ const Chat = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const userData = {
-        id: useSelector(selectUserId()),
-        firstName: useSelector(selectUserFirstName()),
-        lastName: useSelector(selectUserLastName()),
-        email: useSelector(selectUserEmail()),
-    };
+    const id = useSelector(selectUserId());
+    const firstName = useSelector(selectUserFirstName());
+    const lastName = useSelector(selectUserLastName());
+    const email = useSelector(selectUserEmail());
+
+    const getUserData = useCallback(
+        () => ({
+            id,
+            firstName,
+            lastName,
+            email,
+        }),
+        [id, firstName, lastName, email]
+    );
+
     const chatPosts = useSelector(selectChatAllMessages());
     const chatUsers = useSelector(selectChatUsers());
     const hasJoinedChat = useSelector(selectUserHasJoinedChat());
 
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
-
-    useEffect(() => {
-        dispatch(pageUpdateLocation("chat"));
-    }, [dispatch]);
 
     const toggleChatConnection = () => {
         dispatch(userToggleHasJoinedChat());
@@ -56,10 +60,12 @@ const Chat = () => {
     }, []);
 
     useEffect(() => {
+        const userData = getUserData();
+
         hasJoinedChat
             ? socket.emit("joinChat", userData)
             : socket.emit("leaveChat", userData);
-    }, [hasJoinedChat]);
+    }, [hasJoinedChat, getUserData]);
 
     useEffect(() => {
         fetch(`/API/chat/`, {

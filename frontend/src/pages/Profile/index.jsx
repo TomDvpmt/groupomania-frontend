@@ -9,7 +9,6 @@ import ErrorMessage from "../../components/ErrorMessage";
 import Loader from "../../components/Loader";
 
 import { profileUpdate } from "../../services/features/profile";
-import { pageUpdateLocation } from "../../services/features/page";
 
 import {
     selectUserId,
@@ -50,10 +49,6 @@ const Profile = () => {
     const [loading, setLoading] = useState(true);
 
     const userId = userIsAuthor ? loggedUserId : postAuthorId;
-
-    useEffect(() => {
-        dispatch(pageUpdateLocation("profile"));
-    }, [dispatch]);
 
     const handleUpdate = () => {
         setShowUserUpdateForm((showUserUpdateForm) => !showUserUpdateForm);

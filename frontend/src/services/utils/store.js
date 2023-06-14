@@ -4,8 +4,6 @@ import userReducer from "../features/user";
 import postsReducer from "../features/posts";
 import chatReducer from "../features/chat";
 import profileReducer from "../features/profile";
-// import commentsReducer from "../features/comments";
-// import pageReducer from "../features/page";
 
 const store = configureStore({
     reducer: {
@@ -13,10 +11,8 @@ const store = configureStore({
         posts: postsReducer,
         chat: chatReducer,
         profile: profileReducer,
-        // comments: commentsReducer,
-        // page: pageReducer,
     },
-    devTools: true,
+    devTools: false,
 });
 
 export default store;

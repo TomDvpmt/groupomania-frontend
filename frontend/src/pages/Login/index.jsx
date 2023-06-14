@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
@@ -8,7 +8,6 @@ import PasswordField from "../../components/FormFields/PasswordField";
 import ErrorMessage from "../../components/ErrorMessage";
 
 import { userSetIsLoggedIn, userSetInfo } from "../../services/features/user";
-import { pageUpdateLocation } from "../../services/features/page";
 
 import { fetchCredentials } from "../../utils/requests";
 import {
@@ -30,10 +29,6 @@ const Login = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
-    useEffect(() => {
-        dispatch(pageUpdateLocation("login"));
-    }, [dispatch]);
 
     const handleSubmit = (e) => {
         e.preventDefault();

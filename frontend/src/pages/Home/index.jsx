@@ -9,7 +9,6 @@ import ErrorMessage from "../../components/ErrorMessage";
 import Loader from "../../components/Loader";
 
 import { postsSetFromDB } from "../../services/features/posts";
-import { pageUpdateLocation } from "../../services/features/page";
 
 import { Box, Typography, Collapse } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
@@ -24,10 +23,6 @@ const Home = () => {
     const [showNewPostForm, setShowNewPostForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        dispatch(pageUpdateLocation("home"));
-    }, [dispatch]);
 
     useEffect(() => {
         fetch(`/API/posts/all/0`, {

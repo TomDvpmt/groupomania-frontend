@@ -1,19 +1,10 @@
-import { useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { useDispatch } from "react-redux";
-
-import { pageUpdateLocation } from "../../services/features/page";
 
 import { Box, Link, Typography } from "@mui/material";
 import { theme } from "../../assets/styles/theme";
 
 const Error404 = () => {
     const token = sessionStorage.getItem("token");
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        dispatch(pageUpdateLocation("error404"));
-    }, [dispatch]);
 
     return (
         <Box

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 
 import FirstNameField from "../../components/FormFields/FirstNameField";
 import LastNameField from "../../components/FormFields/LastNameField";
@@ -9,8 +8,6 @@ import PasswordField from "../../components/FormFields/PasswordField";
 import PasswordConfirmField from "../../components/FormFields/PasswordConfirmField";
 import SubmitButton from "../../components/Buttons/SubmitButton";
 import ErrorMessage from "../../components/ErrorMessage";
-
-import { pageUpdateLocation } from "../../services/features/page";
 
 import { fetchCredentials } from "../../utils/requests";
 import {
@@ -37,11 +34,6 @@ const SignUp = () => {
     const [globalErrorMessage, setGlobalErrorMessage] = useState("");
 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        dispatch(pageUpdateLocation("signup"));
-    }, [dispatch]);
 
     const handleSubmit = (e) => {
         e.preventDefault();

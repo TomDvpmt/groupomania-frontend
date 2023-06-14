@@ -1,6 +1,6 @@
 <center>
 
-![Logo de l'application Groupomania](/frontend//src//assets//img/brand/icon-left-font-cropped.png)
+![Logo de l'application Groupomania](/src//assets//img/brand/icon-left-font-cropped.png)
 
 </center>
 
@@ -14,16 +14,15 @@ Projet réalisé en 2023 dans le cadre de la formation "Développeur web" d'Open
 
 Le projet consistait à créer le back-end et le front-end de l'application, en utilisant une **base de données**, un **framework JavaScript** et un **state manager**.
 
+# Dépôts
+
+Ce dépôt contient uniquement le **front-end** de l'application.
+
+Le back-end : [https://github.com/TomDvpmt/groupomania-backend](https://github.com/TomDvpmt/groupomania-backend)
+
 # Technologies utilisées
 
--   MySQL (sans ORM)
--   JavaScript
--   Node.js
--   Express
--   Bcrypt
--   JWT
--   Multer
--   React
+-   ReactJS
 -   React Router 6
 -   Redux
 -   Redux Toolkit
@@ -42,51 +41,25 @@ Le projet consistait à créer le back-end et le front-end de l'application, en 
 
 <center>
 
-![Page forum de Groupomania](/frontend/src/assets/img/captures/groupomania-forum.webp)
+![Page forum de Groupomania](/src/assets/img/captures/groupomania-forum.webp)
 
 </center>
 
 <center>
 
-![Page chat de Groupomania](/frontend/src/assets/img/captures/groupomania-chat.webp)
+![Page chat de Groupomania](/src/assets/img/captures/groupomania-chat.webp)
 
 </center>
 
 # Installation
 
-## Back-end
-
--   Installer MySQL en suivant [ces instructions](https://openclassrooms.com/fr/courses/6971126-implementez-vos-bases-de-donnees-relationnelles-avec-sql/7152681-installez-le-sgbd-mysql).
-
--   Dans le répertoire `backend`, créer un fichier `.env` contenant les instructions suivantes, avec les noms d'utilisateur et mot de passe à remplacer par les données relatives à votre installation de MySQL (supprimer les balises `<>`), et la phrase de création du token à remplacer par une phrase de votre choix :
-
-```
-PORT=3000
-DB_HOST=localhost
-DB_NAME=groupomania
-DB_USER=<nom d'utilisateur>
-DB_PASSWORD=<mot de passe>
-TOKEN_CREATION_PHRASE=<choisir une phrase complexe>
-CHAT_POSTS_LIMIT=100
-```
-
--   Toujours dans le répertoire `backend`, exécuter la commande :
-
-`npm install`
-
-## Front-end
-
--   Dans le répertoire `frontend`, exécuter la commande :
+-   Dans le répertoire racine, exécuter la commande :
 
 `npm install`
 
 # Lancement de l'application
 
--   Dans le répertoire `backend`, exécuter la commande :
-
-`node server`
-
--   Dans le répertoire `frontend`, exécuter la commande :
+-   Dans le répertoire racine, exécuter la commande :
 
 `npm start`
 
@@ -94,5 +67,4 @@ CHAT_POSTS_LIMIT=100
 
 Pour changer le nombre maximum de messages affichés dans le chat :
 
--   dans le fichier `backend/.env`, changer la valeur de `CHAT_POSTS_LIMIT`,
--   dans le fichier `frontend/src/services/features/chat.js`, changer la valeur de `initialState.limit`
+-   dans le fichier `/src/services/features/chat.js`, changer la valeur de `initialState.limit`
